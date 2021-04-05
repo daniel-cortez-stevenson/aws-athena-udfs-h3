@@ -1,0 +1,76 @@
+Transform: 'AWS::Serverless-2016-10-31'
+
+Description: This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: H3UDFHandler
+    Description: Run h3-java functions as AWS Athena UDFs
+    SemanticVersion: 1.0.0
+    Author: Daniel Cortez Stevenson
+    SpdxLicenseId: Apache-2.0
+    LicenseUrl: LICENSE.txt
+    ReadmeUrl: README.md
+    Labels:
+      - athena-federation
+    HomePageUrl: 'https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3'
+    SourceCodeUrl: 'https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3'
+
+Parameters:
+  LambdaFunctionName:
+    Description: 'The name you will give to Lambda function which executes your UDFs. This name must satisfy the pattern ^[a-z0-9-_]{1,64}$'
+    Type: String
+    Default: "aws_athena_udfs_h3_stage"
+    AllowedPattern: ^[a-z0-9-_]{1,64}$
+  LambdaTimeout:
+    Description: 'Maximum Lambda invocation runtime in seconds. (min 1 - 900 max)'
+    Default: 300
+    Type: Number
+  LambdaMemory:
+    Description: 'Lambda memory in MB (min 128 - 10240 max).'
+    Default: 3008
+    Type: Number
+  SpillBucket:
+    Description: 'The name of the bucket where this function can spill data.'
+    Type: String
+  DataBucket:
+      Description: "The bucket where this tutorial's data lives."
+      Type: String
+  SpillPrefix:
+    Description: 'The prefix within SpillBucket where this function can spill data.'
+    Type: String
+    Default: athena-spill 
+  DisableSpillEncryption:
+    Description: "WARNING: If set to 'true' encryption for spilled data is disabled."
+    Default: "true"
+    Type: String
+
+Resources:
+  ConnectorConfig:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Handler: "io.jyde.athena.connectors.udf.h3.H3UDFHandler"
+      CodeUri: "./target/aws-athena-udfs-h3-1.0.jar"
+      Description: This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
+      Runtime: java8
+      Timeout: !Ref LambdaTimeout
+      MemorySize: !Ref LambdaMemory
+      Environment:
+        Variables:
+          disable_spill_encryption: !Ref DisableSpillEncryption
+          spill_bucket: !Ref SpillBucket
+          spill_prefix: !Ref SpillPrefix
+          data_bucket: !Ref DataBucket
+      Policies:
+        - Statement:
+            - Action:
+                - athena:GetQueryExecution
+                - s3:ListAllMyBuckets
+              Effect: Allow
+              Resource: '*'
+          Version: '2012-10-17'
+        - S3CrudPolicy:
+            BucketName: !Ref SpillBucket
+        - S3CrudPolicy:
+            BucketName: !Ref DataBucket
