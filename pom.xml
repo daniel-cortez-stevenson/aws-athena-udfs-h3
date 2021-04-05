@@ -12,18 +12,16 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws-sdk.version>1.11.800</aws-sdk.version>
         <aws.lambda-java-core.version>1.2.0</aws.lambda-java-core.version>
+        <aws-java-sdk-bom.version>1.11.928</aws-java-sdk-bom.version>
+        <aws-sdk.version>1.11.800</aws-sdk.version>
         <mockito.version>1.10.19</mockito.version>
         <junit.version>4.13.1</junit.version>
         <testng.version>7.0.0</testng.version>
-        <fasterxml.jackson.version>2.11.3</fasterxml.jackson.version>
-        <aws-cdk.version>1.72.0</aws-cdk.version>
         <surefire.failsafe.version>3.0.0-M5</surefire.failsafe.version>
         <spotless.version>2.9.0</spotless.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j2.version>2.13.3</log4j2.version>
-        <aws-java-sdk-bom.version>1.11.928</aws-java-sdk-bom.version>
         <h3.version>3.6.4</h3.version>
     </properties>
 
@@ -41,17 +39,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <repositories>
-        <repository>
-            <id>athena-federation-sdk</id>
-            <url>https://raw.github.com/awslabs/aws-athena-query-federation/athena-federation-sdk/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
     
         <dependencies>
             <dependency>
@@ -251,6 +238,46 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <ratchetFrom>origin/main</ratchetFrom>
+                    <formats>
+                    <format>
+                        <includes>
+                        <include>*.md</include>
+                        <include>.gitignore</include>
+                        </includes>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                        <indent>
+                        <tabs>true</tabs>
+                        <spacesPerTab>4</spacesPerTab>
+                        </indent>
+                    </format>
+                    </formats>
+                    <java>
+                    <googleJavaFormat>
+                        <version>1.7</version>
+                        <style>AOSP</style>
+                    </googleJavaFormat>
+                    <licenseHeader>
+                        <content>/* (C)$YEAR Daniel Cortez Stevenson*/</content>  <!-- or <file>${basedir}/license-header</file> -->
+                    </licenseHeader>
+                    </java>
+                </configuration>
             </plugin>
         </plugins>
     </build>
