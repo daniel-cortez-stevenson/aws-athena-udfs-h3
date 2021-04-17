@@ -10,19 +10,17 @@
     <version>1.0</version>
 
     <properties>
+        <aws-athena-federation-sdk.version>2020.51.1</aws-athena-federation-sdk.version>
+        <h3.version>3.6.4</h3.version>
+        <log4j2.version>2.13.3</log4j2.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws.lambda-java-core.version>1.2.0</aws.lambda-java-core.version>
-        <aws-java-sdk-bom.version>1.11.928</aws-java-sdk-bom.version>
-        <aws-sdk.version>1.11.800</aws-sdk.version>
         <mockito.version>1.10.19</mockito.version>
         <junit.version>4.13.1</junit.version>
-        <testng.version>7.0.0</testng.version>
-        <surefire.failsafe.version>3.0.0-M5</surefire.failsafe.version>
-        <spotless.version>2.9.0</spotless.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <log4j2.version>2.13.3</log4j2.version>
-        <h3.version>3.6.4</h3.version>
+        <spotless.version>2.9.0</spotless.version>
+        <surefire.failsafe.version>3.0.0-M5</surefire.failsafe.version>
+        <testng.version>7.0.0</testng.version>
     </properties>
 
     <organization>
@@ -41,12 +39,6 @@
     </licenses>
     
         <dependencies>
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-lambda-java-core</artifactId>
-                <version>${aws.lambda-java-core.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -69,14 +61,6 @@
             </dependency>
 
             <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-bom</artifactId>
-                <version>${aws-java-sdk-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>com.uber</groupId>
                 <artifactId>h3</artifactId>
                 <version>${h3.version}</version>
@@ -85,7 +69,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-athena-federation-sdk</artifactId>
-                <version>2020.51.1</version>
+                <version>${aws-athena-federation-sdk.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -136,32 +120,6 @@
         </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>classworlds:classworlds</exclude>
-                                    <exclude>junit:junit</exclude>
-                                    <exclude>jmock:*</exclude>
-                                    <exclude>*:xml-apis</exclude>
-                                    <exclude>org.apache.maven:lib:tests</exclude>
-                                    <exclude>java.*</exclude>
-                                </excludes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

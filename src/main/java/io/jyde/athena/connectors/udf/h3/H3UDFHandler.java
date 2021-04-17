@@ -6,7 +6,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.GeoCoord;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class H3UDFHandler extends UserDefinedFunctionHandler {
@@ -118,67 +120,40 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
-    public String h3indextogeo(Long h3index) {
+    public Map<String, Double> h3indextogeo(Long h3index) {
         try {
-            GeoCoord geocoord = h3.h3ToGeo(h3index);
-            return String.format("POINT (%f %f)", geocoord.lng, geocoord.lat);
+            return serializeGeoCoord(h3.h3ToGeo(h3index));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
-    public String h3addresstogeo(String h3address) {
+    public Map<String, Double> h3addresstogeo(String h3address) {
         try {
-            GeoCoord geoCoord = h3.h3ToGeo(h3address);
-            return String.format("POINT (%f %f)", geoCoord.lng, geoCoord.lat);
+            return serializeGeoCoord(h3.h3ToGeo(h3address));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
-    public String h3indextogeoboundary(Long h3index) {
+    public List<Map<String, Double>> h3indextogeoboundary(Long h3index) {
         try {
-            List<String> geoStringList =
-                    h3.h3ToGeoBoundary(h3index).stream()
-                            .map(
-                                    geoCoord ->
-                                            String.format(
-                                                    "POINT (%f %f)", geoCoord.lng, geoCoord.lat))
-                            .collect(Collectors.toList());
-            return geoStringList.toString();
+            return h3.h3ToGeoBoundary(h3index).stream()
+                    .map(this::serializeGeoCoord)
+                    .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
-    public String h3addresstogeoboundary(String h3address) {
+    public List<Map<String, Double>> h3addresstogeoboundary(String h3address) {
         try {
-            List<String> geoStringList =
-                    h3.h3ToGeoBoundary(h3address).stream()
-                            .map(
-                                    geoCoord ->
-                                            String.format(
-                                                    "POINT (%f %f)", geoCoord.lng, geoCoord.lat))
-                            .collect(Collectors.toList());
-            return geoStringList.toString();
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Neighboring indexes in all directions.
-     *
-     * @param h3address Origin index
-     * @param k Number of rings around the origin
-     */
-    public String h3addresskring(String h3address, Integer k) {
-        try {
-            List<String> kRingList = h3.kRing(h3address, k);
-            return kRingList.toString();
+            return h3.h3ToGeoBoundary(h3address).stream()
+                    .map(this::serializeGeoCoord)
+                    .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
@@ -190,12 +165,34 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
      * @param h3index Origin index
      * @param k Number of rings around the origin
      */
-    public String h3indexkring(Long h3index, Integer k) {
+    public List<Long> h3indexkring(Long h3index, Integer k) {
         try {
-            List<Long> kRingList = h3.kRing(h3index, k);
-            return kRingList.toString();
+            return h3.kRing(h3index, k);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Neighboring addresses in all directions.
+     *
+     * @param h3address Origin address
+     * @param k Number of rings around the origin
+     */
+    public List<String> h3addresskring(String h3address, Integer k) {
+        try {
+            return h3.kRing(h3address, k);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, Double> serializeGeoCoord(GeoCoord geoCoord) {
+        return new HashMap<String, Double>() {
+            {
+                put("lat", geoCoord.lat);
+                put("lng", geoCoord.lng);
+            }
+        };
     }
 }
