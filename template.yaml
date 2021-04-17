@@ -4,7 +4,7 @@ Description: This connector extends Amazon Athena's capability by adding UDFs (v
 
 Metadata:
   AWS::ServerlessRepo::Application:
-    Name: H3UDFHandler
+    Name: aws-athena-udfs-h3
     Description: Run h3-java functions as AWS Athena UDFs
     SemanticVersion: 0.0.0
     Author: Daniel Cortez Stevenson
@@ -20,7 +20,7 @@ Parameters:
   LambdaFunctionName:
     Description: 'The name you will give to Lambda function which executes your UDFs. This name must satisfy the pattern ^[a-z0-9-_]{1,64}$'
     Type: String
-    Default: "aws_athena_udfs_h3"
+    Default: 'aws_athena_udfs_h3'
     AllowedPattern: ^[a-z0-9-_]{1,64}$
   LambdaTimeout:
     Description: 'Maximum Lambda invocation runtime in seconds. (min 1 - 900 max)'
@@ -34,15 +34,15 @@ Parameters:
     Description: 'The name of the bucket where this function can spill data.'
     Type: String
   DataBucket:
-      Description: "The bucket where this tutorial's data lives."
-      Type: String
+    Description: 'S3 bucket name, which holds the data to query'
+    Type: String
   SpillPrefix:
     Description: 'The prefix within SpillBucket where this function can spill data.'
     Type: String
-    Default: 'aws-athena-udfs-h3'
+    Default: 'spill/aws-athena-udfs-h3'
   DisableSpillEncryption:
-    Description: "WARNING: If set to 'true' encryption for spilled data is disabled."
-    Default: "true"
+    Description: 'WARNING: If set to "true" encryption for spilled data is disabled.'
+    Default: 'true'
     Type: String
 
 Resources:
@@ -50,8 +50,8 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       FunctionName: !Ref LambdaFunctionName
-      Handler: "io.jyde.athena.connectors.udf.h3.H3UDFHandler"
-      CodeUri: "./target/aws-athena-udfs-h3-1.0.jar"
+      Handler: 'io.jyde.athena.connectors.udf.h3.H3UDFHandler'
+      CodeUri: './target/aws-athena-udfs-h3-1.0.jar'
       Description: This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
       Runtime: java8
       Timeout: !Ref LambdaTimeout
