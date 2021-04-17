@@ -6,13 +6,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.GeoCoord;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class H3UDFHandler extends UserDefinedFunctionHandler {
-    private static final String SOURCE_TYPE = "athena_common_udfs";
+    private static final String SOURCE_TYPE = "jyde";
 
     private final H3Core h3;
 
@@ -120,40 +118,40 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
-    public Map<String, Double> h3indextogeo(Long h3index) {
+    public String h3indextogeo(Long h3index) {
         try {
-            return serializeGeoCoord(h3.h3ToGeo(h3index));
+            return "POINT (" + serializeGeoCoord(h3.h3ToGeo(h3index)) + ")";
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
-    public Map<String, Double> h3addresstogeo(String h3address) {
+    public String h3addresstogeo(String h3address) {
         try {
-            return serializeGeoCoord(h3.h3ToGeo(h3address));
+            return "POINT (" + serializeGeoCoord(h3.h3ToGeo(h3address)) + ")";
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
-    public List<Map<String, Double>> h3indextogeoboundary(Long h3index) {
+    public String h3indextogeoboundary(Long h3index) {
         try {
             return h3.h3ToGeoBoundary(h3index).stream()
                     .map(this::serializeGeoCoord)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.joining(",", "POLYGON ((", "))"));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
-    public List<Map<String, Double>> h3addresstogeoboundary(String h3address) {
+    public String h3addresstogeoboundary(String h3address) {
         try {
             return h3.h3ToGeoBoundary(h3address).stream()
                     .map(this::serializeGeoCoord)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.joining(",", "POLYGON ((", "))"));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
@@ -187,12 +185,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
         }
     }
 
-    private Map<String, Double> serializeGeoCoord(GeoCoord geoCoord) {
-        return new HashMap<String, Double>() {
-            {
-                put("lat", geoCoord.lat);
-                put("lng", geoCoord.lng);
-            }
-        };
+    private String serializeGeoCoord(GeoCoord geoCoord) {
+        return String.format("%f %f", geoCoord.lng, geoCoord.lat);
     }
 }
