@@ -4,7 +4,10 @@ package io.jyde.athena.connectors.udf.h3;
 import com.amazonaws.athena.connector.lambda.handlers.UserDefinedFunctionHandler;
 import com.google.common.annotations.VisibleForTesting;
 import com.uber.h3core.H3Core;
+import com.uber.h3core.util.GeoCoord;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class H3UDFHandler extends UserDefinedFunctionHandler {
     private static final String SOURCE_TYPE = "athena_common_udfs";
@@ -27,7 +30,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns true if this is a valid H3 index. */
-    public Boolean h3isvalid(Long h3index) {
+    public Boolean h3indexisvalid(Long h3index) {
         try {
             return h3.h3IsValid(h3index);
         } catch (IllegalArgumentException e) {
@@ -36,7 +39,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns true if this is a valid H3 index. */
-    public Boolean h3isvalid(String h3address) {
+    public Boolean h3addressisvalid(String h3address) {
         try {
             return h3.h3IsValid(h3address);
         } catch (IllegalArgumentException e) {
@@ -45,7 +48,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns the base cell number for this index. */
-    public Integer h3getbasecell(Long h3index) {
+    public Integer h3indexgetbasecell(Long h3index) {
         try {
             return h3.h3GetBaseCell(h3index);
         } catch (IllegalArgumentException e) {
@@ -54,7 +57,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns the base cell number for this index. */
-    public Integer h3getbasecell(String h3address) {
+    public Integer h3addressgetbasecell(String h3address) {
         try {
             return h3.h3GetBaseCell(h3address);
         } catch (IllegalArgumentException e) {
@@ -63,7 +66,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns <code>true</code> if this index is one of twelve pentagons per resolution. */
-    public Boolean h3ispentagon(Long h3index) {
+    public Boolean h3indexispentagon(Long h3index) {
         try {
             return h3.h3IsPentagon(h3index);
         } catch (IllegalArgumentException e) {
@@ -72,9 +75,26 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns <code>true</code> if this index is one of twelve pentagons per resolution. */
-    public Boolean h3ispentagon(String h3address) {
+    public Boolean h3addressispentagon(String h3address) {
         try {
             return h3.h3IsPentagon(h3address);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Find the H3 index of the resolution <code>res</code> cell containing the lat/lon (in degrees)
+     *
+     * @param lat Latitude in degrees.
+     * @param lng Longitude in degrees.
+     * @param res Resolution, 0 &lt;= res &lt;= 15
+     * @return The H3 index.
+     * @throws IllegalArgumentException latitude, longitude, or resolution are out of range.
+     */
+    public Long geotoh3index(Double lat, Double lng, Integer res) {
+        try {
+            return h3.geoToH3(lat, lng, res);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
@@ -97,34 +117,85 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
         }
     }
 
-    /**
-     * Find the H3 index of the resolution <code>res</code> cell containing the lat/lon (in degrees)
-     *
-     * @param lat Latitude in degrees.
-     * @param lng Longitude in degrees.
-     * @param res Resolution, 0 &lt;= res &lt;= 15
-     * @return The H3 index.
-     * @throws IllegalArgumentException latitude, longitude, or resolution are out of range.
-     */
-    public Long geotoh3(Double lat, Double lng, Integer res) {
-        try {
-            return h3.geoToH3(lat, lng, res);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
-    public String h3togeostring(Long h3index) {
+    public String h3indextogeo(Long h3index) {
         try {
-            return h3.h3ToGeo(h3index).toString();
+            GeoCoord geocoord = h3.h3ToGeo(h3index);
+            return String.format("POINT (%f %f)", geocoord.lng, geocoord.lat);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
-    public String h3togeostring(String h3address) {
-        return h3.h3ToGeo(h3address).toString();
+    public String h3addresstogeo(String h3address) {
+        try {
+            GeoCoord geoCoord = h3.h3ToGeo(h3address);
+            return String.format("POINT (%f %f)", geoCoord.lng, geoCoord.lat);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
+    public String h3indextogeoboundary(Long h3index) {
+        try {
+            List<String> geoStringList =
+                    h3.h3ToGeoBoundary(h3index).stream()
+                            .map(
+                                    geoCoord ->
+                                            String.format(
+                                                    "POINT (%f %f)", geoCoord.lng, geoCoord.lat))
+                            .collect(Collectors.toList());
+            return geoStringList.toString();
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
+    public String h3addresstogeoboundary(String h3address) {
+        try {
+            List<String> geoStringList =
+                    h3.h3ToGeoBoundary(h3address).stream()
+                            .map(
+                                    geoCoord ->
+                                            String.format(
+                                                    "POINT (%f %f)", geoCoord.lng, geoCoord.lat))
+                            .collect(Collectors.toList());
+            return geoStringList.toString();
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Neighboring indexes in all directions.
+     *
+     * @param h3address Origin index
+     * @param k Number of rings around the origin
+     */
+    public String h3addresskring(String h3address, Integer k) {
+        try {
+            List<String> kRingList = h3.kRing(h3address, k);
+            return kRingList.toString();
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Neighboring indexes in all directions.
+     *
+     * @param h3index Origin index
+     * @param k Number of rings around the origin
+     */
+    public String h3indexkring(Long h3index, Integer k) {
+        try {
+            List<Long> kRingList = h3.kRing(h3index, k);
+            return kRingList.toString();
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

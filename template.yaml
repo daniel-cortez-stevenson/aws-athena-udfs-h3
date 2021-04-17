@@ -6,7 +6,7 @@ Metadata:
   AWS::ServerlessRepo::Application:
     Name: H3UDFHandler
     Description: Run h3-java functions as AWS Athena UDFs
-    SemanticVersion: 1.0.0
+    SemanticVersion: 0.0.0
     Author: Daniel Cortez Stevenson
     SpdxLicenseId: Apache-2.0
     LicenseUrl: LICENSE.txt
@@ -20,7 +20,7 @@ Parameters:
   LambdaFunctionName:
     Description: 'The name you will give to Lambda function which executes your UDFs. This name must satisfy the pattern ^[a-z0-9-_]{1,64}$'
     Type: String
-    Default: "aws_athena_udfs_h3_stage"
+    Default: "aws_athena_udfs_h3"
     AllowedPattern: ^[a-z0-9-_]{1,64}$
   LambdaTimeout:
     Description: 'Maximum Lambda invocation runtime in seconds. (min 1 - 900 max)'
@@ -39,7 +39,7 @@ Parameters:
   SpillPrefix:
     Description: 'The prefix within SpillBucket where this function can spill data.'
     Type: String
-    Default: athena-spill 
+    Default: 'aws-athena-udfs-h3'
   DisableSpillEncryption:
     Description: "WARNING: If set to 'true' encryption for spilled data is disabled."
     Default: "true"

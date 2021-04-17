@@ -2,6 +2,11 @@
 
 This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
 
+## Quickstart
+
+```bash
+sam package --config-env stage
+sam publish --template-file ./packaged.yaml```
 ## Usage
 
 **To enable this Preview feature you need to create an Athena workgroup named AmazonAthenaPreviewFunctionality and run any queries attempting to use a UDF from that workgroup.**
@@ -29,7 +34,7 @@ Then try the query examples below, or examples of your own, using the UDF.
 ## How the UDF works
 For more information about the Athena UDF framework, see [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/latest/ug/querying-udf.html).
 
-The Java class [TextAnalyticsUDFHandler](./src/main/java/com/amazonaws/athena/connectors/textanalytics/TextAnalyticsUDFHandler.java) implements our UDF Lambda function handler. Each text analytics function has a corresponding public method in this class. 
+The Java class [TextAnalyticsUDFHandler](./src/main/java/com/amazonaws/athena/connectors/textanalytics/TextAnalyticsUDFHandler.java) implements our UDF Lambda function handler. Each text analytics function has a corresponding public method in this class.
 
 Athena invokes our UDF Lambda function with batches of input records. The TextAnalyticsUDFHandler subdivides these batches into smaller batches of up to 25 rows to take advantage of the Amazon Comprehend synchronous multi-document batch APIs where they are available (for example, for detecting language, entities, and sentiment). When there is no synchronous multi-document API available (such as for DetectPiiEntity and TranslateText), we use the single-document API instead.
 
@@ -40,15 +45,15 @@ Amazon Comprehend and Amazon Translate each enforce a maximum input string lengt
 ## Optimizing cost
 In addition to Athena query costs, the text analytics UDF incurs usage costs from Lambda and Amazon Comprehend and Amazon Translate. The amount you pay is a factor of the total number of records and characters that you process with the UDF. For more information, see [AWS Lambda pricing](https://aws.amazon.com/lambda/pricing/), [Amazon Comprehend pricing](https://aws.amazon.com/comprehend/pricing/), and [Amazon Translate pricing](https://aws.amazon.com/translate/pricing/).
 
-To minimize the costs, avoid processing the same records multiple times. Instead, materialize the results of the text analytics UDF by using CREATE TABLE AS SELECT (CTAS) queries to capture the results in a separate table that you can then cost-effectively query as often as needed without incurring additional UDF charges.  Process newly arriving records incrementally using INSERT INTO…SELECT queries to analyze and enrich only the new records and add them to the target table. 
+To minimize the costs, avoid processing the same records multiple times. Instead, materialize the results of the text analytics UDF by using CREATE TABLE AS SELECT (CTAS) queries to capture the results in a separate table that you can then cost-effectively query as often as needed without incurring additional UDF charges.  Process newly arriving records incrementally using INSERT INTO…SELECT queries to analyze and enrich only the new records and add them to the target table.
 
-Avoid calling the text analytics functions needlessly on records that you will subsequently discard. Write your queries to filter the dataset first using temporary tables, views, or nested queries, and then apply the text analytics functions to the resulting filtered records. 
+Avoid calling the text analytics functions needlessly on records that you will subsequently discard. Write your queries to filter the dataset first using temporary tables, views, or nested queries, and then apply the text analytics functions to the resulting filtered records.
 
-Always assess the potential cost before you run text analytics queries on tables with vary large numbers of records. 
+Always assess the potential cost before you run text analytics queries on tables with vary large numbers of records.
 
 Here are two example cost assessments:
 
-**Example 1: Analyze the language and sentiment of tweets**  
+**Example 1: Analyze the language and sentiment of tweets**
 
 Let’s assume you have 10,000 tweet records, with average length 100 characters per tweet. Your SQL query detects the dominant language and sentiment for each tweet. You’re in your second year of service (the Free Tier no longer applies). The cost details are as follows:
 
@@ -56,9 +61,9 @@ Let’s assume you have 10,000 tweet records, with average length 100 characters
 - Number of units (100 character) per record (minimum is 3 units) = 3
 - Total Units: 10,000 (records) x 3 (units per record) x 2 (Amazon Comprehend requests per record) = 60,000
 - Price per unit = $0.0001
-- Total cost for Amazon Comprehend = [number of units] x [cost per unit] = 60,000 x $0.0001 = $6.00   
+- Total cost for Amazon Comprehend = [number of units] x [cost per unit] = 60,000 x $0.0001 = $6.00
 
-**Example 2: Translate tweets**  
+**Example 2: Translate tweets**
 
 Let’s assume that 2,000 of your tweets aren’t in your local language, so you run a second SQL query to translate them. The cost details are as follows:
 
@@ -66,7 +71,7 @@ Let’s assume that 2,000 of your tweets aren’t in your local language, so you
 - Total characters: 2,000 (records) * 100 (characters per record) x 1 (Translate requests per record) = 200,000
 - Price per character = $0.000015
 - Total cost for Amazon Translate = [number of characters] x [cost per character] = 200,000 x $0.000015 = $3.00
- 
+
 
 ## Functions
 
@@ -75,10 +80,10 @@ Let’s assume that 2,000 of your tweets aren’t in your local language, so you
 #### translate\_text(text_col VARCHAR, sourcelang VARCHAR, targetlang VARCHAR, terminologyname VARCHAR) RETURNS VARCHAR
 
 Returns the translated string, in the target language specified. Source language can be explicitly specified, or use 'auto'
-to detect source language automatically (the Translate service calls Comprehend behind the scenes to detect the source language when you use 'auto'). 
+to detect source language automatically (the Translate service calls Comprehend behind the scenes to detect the source language when you use 'auto').
 Specify a custom terminology name, or NULL if you aren't using custom terminologies.
 ```
-USING FUNCTION translate_text(text_col VARCHAR, sourcelang VARCHAR, targetlang VARCHAR, customterminologyname VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION translate_text(text_col VARCHAR, sourcelang VARCHAR, targetlang VARCHAR, customterminologyname VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT translate_text('It is a beautiful day in the neighborhood', 'auto', 'fr', NULL) as translated_text
 
 translated_text
@@ -91,7 +96,7 @@ C'est une belle journée dans le quartier
 
 Returns string value with dominant language code:
 ```
-USING FUNCTION detect_dominant_language(text_col VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_dominant_language(text_col VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_dominant_language('il fait beau à Orlando') as language
 
 language
@@ -101,7 +106,7 @@ fr
 
 Returns the set of detected languages and scores as a JSON formatted string, which can be further analysed with Athena's `json_extract()` function.
 ```
-USING FUNCTION detect_dominant_language_all(text_col VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_dominant_language_all(text_col VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_dominant_language_all('il fait beau à Orlando') as language_all
 
 language_all
@@ -117,7 +122,7 @@ Input languages supported: en | es | fr | de | it | pt | ar | hi | ja | ko | zh 
 Returns string value with dominant sentiment:
 
 ```
-USING FUNCTION detect_sentiment(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_sentiment(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_sentiment('Joe is very happy', 'en') as sentiment
 
 sentiment
@@ -129,7 +134,7 @@ POSITIVE
 Returns the dominant sentiment and all sentiment scores as a JSON formatted string, which can be further analysed with Athena's `json_extract()` function.
 
 ```
-USING FUNCTION detect_sentiment_all(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_sentiment_all(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_sentiment_all('Joe is very happy', 'en') as sentiment_all
 
 sentiment_all
@@ -147,7 +152,7 @@ Input languages supported: en | es | fr | de | it | pt | ar | hi | ja | ko | zh 
 Returns JSON string value with list of PII types and values:
 
 ```
-USING FUNCTION detect_entities(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_entities(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_entities('His name is Joe, he lives in Richmond VA, he bought an Amazon Echo Show on January 5th, and he loves it', 'en') as entities
 
 entities
@@ -159,7 +164,7 @@ entities
 Returns the detected entity types, scores, values, and offsets as a JSON formatted string, which can be further analysed with Athena's `json_extract()` function.
 
 ```
-USING FUNCTION detect_entities_all(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_entities_all(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_entities_all('His name is Joe, he lives in Richmond VA, he bought an Amazon Echo Show on January 5th, and he loves it', 'en') as entities_all
 
 entities_all
@@ -169,25 +174,25 @@ entities_all
 #### redact\_entities(text_col VARCHAR, lang VARCHAR, type VARCHAR) RETURNS VARCHAR
 
 Redacts specified entity values from the input string.
-Use the `types` argument to specify a list of [PII types](https://docs.aws.amazon.com/comprehend/latest/dg/API_PiiEntity.html#comprehend-Type-PiiEntity-Type) to be redacted.  
+Use the `types` argument to specify a list of [PII types](https://docs.aws.amazon.com/comprehend/latest/dg/API_PiiEntity.html#comprehend-Type-PiiEntity-Type) to be redacted.
 
 ```
 -- redact PERSON
-USING FUNCTION redact_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION redact_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT redact_entities('His name is Joe, he lives in Richmond VA, he bought an Amazon Echo Show on January 5th, and he loves it', 'en', 'PERSON') as entities_redacted
 
 entities_redacted
 His name is [PERSON], he lives in Richmond VA, he bought an Amazon Echo Show on January 5th, and he loves it
 
 -- redact PERSON and DATE
-USING FUNCTION redact_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION redact_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT redact_entities('His name is Joe, he lives in Richmond VA, he bought an Amazon Echo Show on January 5th, and he loves it', 'en', 'PERSON, DATE') as entities_redacted
 
 entities_redacted
 His name is [PERSON], he lives in Richmond VA, he bought an Amazon Echo Show on [DATE], and he loves it
 
 -- redact ALL Entity types
-USING FUNCTION redact_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION redact_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT redact_entities('His name is Joe, he lives in Richmond VA, he bought an Amazon Echo Show on January 5th, and he loves it', 'en', 'ALL') as entities_redacted
 
 entities_redacted
@@ -206,7 +211,7 @@ Input languages supported: 'en' (See [doc](https://docs.aws.amazon.com/comprehen
 Returns JSON string value with list of PII types and values:
 
 ```
-USING FUNCTION detect_pii_entities(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_pii_entities(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_pii_entities('His name is Joe, his username is joe123 and he lives in Richmond VA', 'en') as pii
 
 pii
@@ -218,7 +223,7 @@ pii
 Returns the detected PII types, scores, and offsets as a JSON formatted string, which can be further analysed with Athena's `json_extract()` function.
 
 ```
-USING FUNCTION detect_pii_entities_all(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION detect_pii_entities_all(text_col VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT detect_pii_entities_all('His name is Joe, his username is joe123 and he lives in Richmond VA', 'en') as pii_all
 
 pii_all
@@ -228,25 +233,25 @@ pii_all
 #### redact\_pii\_entities(text_col VARCHAR, lang VARCHAR, type VARCHAR) RETURNS VARCHAR
 
 Redacts specified entity values from the input string.
-Use the `types` argument to specify a list of [PII types](https://docs.aws.amazon.com/comprehend/latest/dg/API_PiiEntity.html#comprehend-Type-PiiEntity-Type) to be redacted.  
+Use the `types` argument to specify a list of [PII types](https://docs.aws.amazon.com/comprehend/latest/dg/API_PiiEntity.html#comprehend-Type-PiiEntity-Type) to be redacted.
 
 ```
 -- redact name
-USING FUNCTION redact_pii_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION redact_pii_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT redact_pii_entities('His name is Joe, his username is joe123 and he lives in Richmond VA', 'en', 'NAME') as pii_redacted
 
 pii_redacted
 His name is [NAME], his username is joe123 and he lives in Richmond VA
 
 -- redact NAME and ADDRESS
-USING FUNCTION redact_pii_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION redact_pii_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT redact_pii_entities('His name is Joe, his username is joe123 and he lives in Richmond VA', 'en', 'NAME,ADDRESS') as pii_redacted
 
 pii_redacted
 His name is [NAME], his username is joe123 and he lives in [ADDRESS]
 
 -- redact ALL PII types
-USING FUNCTION redact_pii_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
+USING FUNCTION redact_pii_entities(text_col VARCHAR, lang VARCHAR, types VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT redact_pii_entities('His name is Joe, his username is joe123 and he lives in Richmond VA', 'en', 'ALL') as pii_redacted
 
 pii_redacted
@@ -258,7 +263,7 @@ His name is [NAME], his username is [USERNAME] and he lives in [ADDRESS]
 
 #### Analyze Amazon Product Reviews - sentiment by language
 
-Dataset: See https://s3.amazonaws.com/amazon-reviews-pds/readme.html 
+Dataset: See https://s3.amazonaws.com/amazon-reviews-pds/readme.html
 
 1. Create external table to access product reviews
 
@@ -266,30 +271,30 @@ a. Create external table
 
 ```
 CREATE EXTERNAL TABLE amazon_reviews_parquet(
-  marketplace string, 
-  customer_id string, 
-  review_id string, 
-  product_id string, 
-  product_parent string, 
-  product_title string, 
-  star_rating int, 
-  helpful_votes int, 
-  total_votes int, 
-  vine string, 
-  verified_purchase string, 
-  review_headline string, 
-  review_body string, 
-  review_date bigint, 
-  year int)
+marketplace string,
+customer_id string,
+review_id string,
+product_id string,
+product_parent string,
+product_title string,
+star_rating int,
+helpful_votes int,
+total_votes int,
+vine string,
+verified_purchase string,
+review_headline string,
+review_body string,
+review_date bigint,
+year int)
 PARTITIONED BY (product_category string)
-ROW FORMAT SERDE 
-  'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
-STORED AS INPUTFORMAT 
-  'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
-OUTPUTFORMAT 
-  'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+ROW FORMAT SERDE
+'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+STORED AS INPUTFORMAT
+'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+OUTPUTFORMAT
+'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
 LOCATION
-  's3://amazon-reviews-pds/parquet/'
+'s3://amazon-reviews-pds/parquet/'
 ```
 b. Add partitions
 ```
@@ -303,30 +308,30 @@ CREATE TABLE amazon_reviews_with_language_and_sentiment_1996
 WITH (format='parquet') AS
 USING FUNCTION detect_sentiment(col1 VARCHAR, lang VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
 SELECT *, detect_sentiment(review_headline, language) AS sentiment
-FROM 
-   (
-   USING FUNCTION detect_dominant_language(col1 VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
-   SELECT *, detect_dominant_language(review_headline) AS language
-   FROM amazon_reviews_parquet
-   WHERE year = 1996
-   )
+FROM
+(
+USING FUNCTION detect_dominant_language(col1 VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
+SELECT *, detect_dominant_language(review_headline) AS language
+FROM amazon_reviews_parquet
+WHERE year = 1996
+)
 WHERE language in ('ar', 'hi', 'ko', 'zh-TW', 'ja', 'zh', 'de', 'pt', 'en', 'it', 'fr', 'es')
 ```
 
-*Notes:  
-(1) Inner query detects the language in which the review was written.  
-(2) Outer query detects the sentiment of the review using the detected language.  
-(3) Year is constrained to 1996 just to limit the scope to around 5000 records, so query will run quickly (~1m)  
-(4) The languages are constrained to the set of languages supported by Comprehend's detectSentiment API.  
+*Notes:
+(1) Inner query detects the language in which the review was written.
+(2) Outer query detects the sentiment of the review using the detected language.
+(3) Year is constrained to 1996 just to limit the scope to around 5000 records, so query will run quickly (~1m)
+(4) The languages are constrained to the set of languages supported by Comprehend's detectSentiment API.
 
 
 3. Explore results
 
 ```
-SELECT sentiment, language, COUNT(*) as review_count 
+SELECT sentiment, language, COUNT(*) as review_count
 FROM amazon_reviews_with_language_and_sentiment_1996
 GROUP BY sentiment, language
-ORDER BY sentiment, language 
+ORDER BY sentiment, language
 ```
 Results show distribution of review by sentiment, for each language
 ```
@@ -393,24 +398,24 @@ Wouk meets Uris meets DeMille in Vietnam.	                    [["NAME","Wouk"],[
 Good look at medical training in US	                          [["ADDRESS","US"]]
 An excellent Story of Swedish Immigrants in Boston	          [["ADDRESS","Boston"]]
 ```
-*Notes:  
-(1) The languages are constrained to the set of languages supported by Comprehend's detectPiiEntities API (currently just en)  
-(2) Runs in about 2 minutes (5000/rows) - a little slower than the others since there is no batch API for pii detection. Service rate limit rate increase may be required for larger record sets.  
+*Notes:
+(1) The languages are constrained to the set of languages supported by Comprehend's detectPiiEntities API (currently just en)
+(2) Runs in about 2 minutes (5000/rows) - a little slower than the others since there is no batch API for pii detection. Service rate limit rate increase may be required for larger record sets.
 
 
 #### Use JSON to extract fields from the Comprehend JSON full response
 
 ```
 CREATE TABLE text_with_languages AS
-USING FUNCTION detect_dominant_language_all(text_field VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf') 
-SELECT text, detect_dominant_language_all(text) AS dominant_languages 
+USING FUNCTION detect_dominant_language_all(text_field VARCHAR) RETURNS VARCHAR TYPE LAMBDA_INVOKE WITH (lambda_name = 'textanalytics-udf')
+SELECT text, detect_dominant_language_all(text) AS dominant_languages
 FROM
 (
-  SELECT * FROM (VALUES
-    ('It is raining in Seattle, mais il fait beau à orlando'),
-    ('It is raining in Seattle'),
-    ('Esta lloviendo en seattle')
-  ) AS t (text)
+SELECT * FROM (VALUES
+	('It is raining in Seattle, mais il fait beau à orlando'),
+	('It is raining in Seattle'),
+	('Esta lloviendo en seattle')
+) AS t (text)
 )
 
 
@@ -433,12 +438,12 @@ Esta lloviendo en seattle	                              {"languageCode":"es","sc
 
 
 -- input text, with dominant (1st) detected language and score selected as separate columns
-SELECT 
-    text, 
-    json_extract(dominant_languages, '$[0].languageCode') AS language, 
-    json_extract(dominant_languages, '$[0].score') AS score 
+SELECT
+	text,
+	json_extract(dominant_languages, '$[0].languageCode') AS language,
+	json_extract(dominant_languages, '$[0].score') AS score
 FROM text_with_languages
-    
+
 text	                                                   language	score
 It is raining in Seattle, mais il fait beau à orlando	  "fr"	    0.7244962
 It is raining in Seattle	                              "en"	    0.9938028
