@@ -5,8 +5,12 @@ This connector extends Amazon Athena's capability by adding UDFs (via Lambda) fo
 ## Quickstart
 
 ```bash
+mvn clean install -Dpublishing=true
+
 sam package --config-env stage
-sam publish --template-file ./packaged.yaml```
+sam publish --template-file ./packaged.yaml
+```
+
 ## Usage
 
 **To enable this Preview feature you need to create an Athena workgroup named AmazonAthenaPreviewFunctionality and run any queries attempting to use a UDF from that workgroup.**
