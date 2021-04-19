@@ -22,6 +22,10 @@ LAMBDA 'aws_athena_udfs_h3',
 EXTERNAL FUNCTION h3kring(h3 BIGINT, k INTEGER)
 RETURNS ARRAY<BIGINT>
 LAMBDA 'aws_athena_udfs_h3',
+EXTERNAL FUNCTION h3area(h3 BIGINT, unit VARCHAR)
+RETURNS DOUBLE
+LAMBDA 'aws_athena_udfs_h3',
+
 EXTERNAL FUNCTION h3addresstogeo(h3address VARCHAR)
 RETURNS VARCHAR
 LAMBDA 'aws_athena_udfs_h3',
@@ -39,6 +43,9 @@ RETURNS VARCHAR
 LAMBDA 'aws_athena_udfs_h3',
 EXTERNAL FUNCTION h3addresskring(h3address VARCHAR, k INTEGER)
 RETURNS ARRAY<VARCHAR>
+LAMBDA 'aws_athena_udfs_h3',
+EXTERNAL FUNCTION h3addressarea(h3address VARCHAR, unit VARCHAR)
+RETURNS DOUBLE
 LAMBDA 'aws_athena_udfs_h3'
 SELECT
   *,
@@ -48,13 +55,15 @@ SELECT
   h3togeo(h3) h3_point,
   h3togeoboundary(h3) h3_polygon,
   h3kring(h3, 3) h3_kring,
+  h3area(h3, 'm2') h3_area,
 
   h3addressisvalid(h3address) h3address_valid,
   h3addressgetbasecell(h3address) h3address_basecell,
   h3addressispentagon(h3address) h3address_pentagon,
   h3addresstogeo(h3address) h3address_point,
   h3addresstogeoboundary(h3address) h3address_polygon,
-  h3addresskring(h3address, 3) h3address_kring
+  h3addresskring(h3address, 3) h3address_kring,
+  h3addressarea(h3address, 'm2') h3address_area
  FROM
   (
   SELECT

@@ -330,7 +330,8 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
      * @param childres Resolution of the child
      * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
      */
-    public String h3addresstocenterchild(String h3address, Integer childres) {
+    public String h3addresstocenterchild(String h3address, Integer childres)
+            throws IllegalArgumentException {
         return h3Core.h3ToCenterChild(h3address, childres);
     }
 
@@ -341,7 +342,7 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
      * @param childres Resolution of the child
      * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
      */
-    public Long h3tocenterchild(Long h3, Integer childres) {
+    public Long h3tocenterchild(Long h3, Integer childres) throws IllegalArgumentException {
         return h3Core.h3ToCenterChild(h3, childres);
     }
 
@@ -388,8 +389,8 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
-    public Double cellarea(String h3address, AreaUnit unit) {
-        return h3Core.cellArea(h3address, unit);
+    public Double h3addressarea(String h3address, String unit) {
+        return h3Core.cellArea(h3address, AreaUnit.valueOf(unit));
     }
 
     /**
@@ -399,8 +400,8 @@ public class H3UDFHandler extends UserDefinedFunctionHandler {
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
-    public Double cellArea(Long h3, AreaUnit unit) {
-        return h3Core.cellArea(h3, unit);
+    public Double h3area(Long h3, String unit) {
+        return h3Core.cellArea(h3, AreaUnit.valueOf(unit));
     }
 
     private String geoCoordToWKSPoint(GeoCoord geoCoord) {
