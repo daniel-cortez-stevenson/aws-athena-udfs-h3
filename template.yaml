@@ -13,6 +13,9 @@ Metadata:
     ReadmeUrl: README.md
     Labels:
       - athena-federation
+      - h3
+      - athena-udfs
+      - geospatial
     HomePageUrl: 'https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3'
     SourceCodeUrl: 'https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3'
 
@@ -30,20 +33,6 @@ Parameters:
     Description: 'Lambda memory in MB (min 128 - 10240 max).'
     Default: 3008
     Type: Number
-  SpillBucket:
-    Description: 'The name of the bucket where this function can spill data.'
-    Type: String
-  DataBucket:
-    Description: 'S3 bucket name, which holds the data to query'
-    Type: String
-  SpillPrefix:
-    Description: 'The prefix within SpillBucket where this function can spill data.'
-    Type: String
-    Default: 'spill/aws-athena-udfs-h3'
-  DisableSpillEncryption:
-    Description: 'WARNING: If set to "true" encryption for spilled data is disabled.'
-    Default: 'true'
-    Type: String
 
 Resources:
   ConnectorConfig:
@@ -56,21 +45,3 @@ Resources:
       Runtime: java8
       Timeout: !Ref LambdaTimeout
       MemorySize: !Ref LambdaMemory
-      Environment:
-        Variables:
-          disable_spill_encryption: !Ref DisableSpillEncryption
-          spill_bucket: !Ref SpillBucket
-          spill_prefix: !Ref SpillPrefix
-          data_bucket: !Ref DataBucket
-      Policies:
-        - Statement:
-            - Action:
-                - athena:GetQueryExecution
-                - s3:ListAllMyBuckets
-              Effect: Allow
-              Resource: '*'
-          Version: '2012-10-17'
-        - S3CrudPolicy:
-            BucketName: !Ref SpillBucket
-        - S3CrudPolicy:
-            BucketName: !Ref DataBucket
