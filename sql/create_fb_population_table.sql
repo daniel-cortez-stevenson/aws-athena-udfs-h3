@@ -14,5 +14,3 @@ CREATE EXTERNAL TABLE IF NOT EXISTS hrsl (
   LINES TERMINATED BY '\n'
 LOCATION 's3://dataforgood-fb-data/csv/'
 TBLPROPERTIES ('has_encrypted_data'='false', 'skip.header.line.count'='1');
-
-MSCK REPAIR TABLE hrsl;
