@@ -30,7 +30,7 @@ sam deploy \
   --capabilities CAPABILITY_IAM # We don't need this, possible bug in aws-sam-cli
 ```
 
-## Option 3: Deploy as an AWS SAM Resource
+### Option 3: Deploy as an AWS SAM Resource
 
 In your AWS SAM `template.yaml` file:
 
@@ -50,6 +50,21 @@ Resources:
       # Maximum Lambda invocation runtime in seconds
       # LambdaTimeout: '300' # Uncomment to override default value
 ```
+
+## Usage
+
+See [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/latest/ug/querying-udf.html)
+
+In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 enabled, select a `UDF_name` (any method of the `H3AthenaUDFHandler`) and implement the function signature like so:
+
+```sql
+USING EXTERNAL FUNCTION UDF_name(variable1 data_type[, variable2 data_type][,...])
+RETURNS data_type
+LAMBDA 'h3-athena-udf-handler'
+SELECT  [...] UDF_name(expression) [...]
+```
+
+See [create_osm_planet_table.sql](./sql/create_osm_planet_table.sql) to create some test data and [test_functions_run.sql](./sql/test_functions_run.sql) to run some of the methods.
 
 ## Contributing
 
@@ -73,18 +88,6 @@ sam publish \
   --template-file ./target/packaged.yaml \
   --semantic-version 0.0.1
 ```
-
-## Usage
-
-See [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/latest/ug/querying-udf.html)
-
-In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 enabled, select a `UDF_name` (any method of the `H3AthenaUDFHandler`) and implement the function signature accordingly:
-
-```sql
-USING EXTERNAL FUNCTION UDF_name(variable1 data_type[, variable2 data_type][,...])
-```
-
-See [create_osm_planet_table.sql](./sql/create_osm_planet_table.sql) to create some test data and [test_functions_run.sql](./sql/test_functions_run.sql) to run some of the methods.
 
 ## More Examples
 
