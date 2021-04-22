@@ -66,12 +66,12 @@ mvn spotless:apply
 mvn spotless:apply clean install -Dpublishing=true
 # package
 sam package \
---resolve-s3 \
---output-template-file ./target/packaged.yaml
+  --resolve-s3 \
+  --output-template-file ./target/packaged.yaml
 # publish
 sam publish \
---template-file ./target/packaged.yaml \
---semantic-version 0.0.1
+  --template-file ./target/packaged.yaml \
+  --semantic-version 0.0.1
 ```
 
 ## Usage
