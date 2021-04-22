@@ -84,7 +84,7 @@ In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 en
 USING EXTERNAL FUNCTION UDF_name(variable1 data_type[, variable2 data_type][,...])
 ```
 
-See [](./sql/create_osm_planet_table.sql) to create some test data and [](./sql/test_functions_run.sql) to run some of the methods.
+See [create_osm_planet_table.sql](./sql/create_osm_planet_table.sql) to create some test data and [test_functions_run.sql](./sql/test_functions_run.sql) to run some of the methods.
 
 ## More Examples
 
