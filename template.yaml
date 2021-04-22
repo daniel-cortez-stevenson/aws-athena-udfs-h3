@@ -1,12 +1,16 @@
-Transform: 'AWS::Serverless-2016-10-31'
-
-Description: This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
-
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected
+  [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's
+  [H3](https://h3geo.org/)
 Metadata:
-  AWS::ServerlessRepo::Application:
+  'AWS::ServerlessRepo::Application':
     Name: aws-athena-udfs-h3
-    Description: Run h3-java functions as AWS Athena UDFs
-    SemanticVersion: 0.0.0
+    Description: >
+      This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected
+      [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's
+      [H3](https://h3geo.org/)
     Author: Daniel Cortez Stevenson
     SpdxLicenseId: Apache-2.0
     LicenseUrl: LICENSE.txt
@@ -16,32 +20,38 @@ Metadata:
       - h3
       - athena-udfs
       - geospatial
-    HomePageUrl: 'https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3'
-    SourceCodeUrl: 'https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3'
-
+    HomePageUrl: https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3
+    SemanticVersion: 0.0.1
+    SourceCodeUrl: https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3
 Parameters:
   LambdaFunctionName:
-    Description: 'The name you will give to Lambda function which executes your UDFs. This name must satisfy the pattern ^[a-z0-9-_]{1,64}$'
     Type: String
-    Default: 'aws_athena_udfs_h3'
+    Description: The name of Lambda function, which calls the H3AthenaUDFHandler
+    Default: h3-athena-udf-handler
     AllowedPattern: ^[a-z0-9-_]{1,64}$
   LambdaTimeout:
-    Description: 'Maximum Lambda invocation runtime in seconds. (min 1 - 900 max)'
+    Type: Number
+    Description: Maximum Lambda invocation runtime in seconds
     Default: 300
-    Type: Number
+    MinValue: 1
+    MaxValue: 900
   LambdaMemory:
-    Description: 'Lambda memory in MB (min 128 - 10240 max).'
-    Default: 3008
     Type: Number
-
+    Description: Lambda memory in MB
+    Default: 3008
+    MinValue: 128
+    MaxValue: 10240
 Resources:
-  H3UDFLambdaFunction:
+  H3AthenaUDFHandler:
     Type: 'AWS::Serverless::Function'
     Properties:
       FunctionName: !Ref LambdaFunctionName
-      Handler: 'io.jyde.athena.connectors.udf.h3.H3UDFHandler'
-      CodeUri: './target/aws-athena-udfs-h3-1.0.jar'
-      Description: This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
+      Handler: io.jyde.aws.athena.connectors.udf.h3.H3AthenaUDFHandler
       Runtime: java8
-      Timeout: !Ref LambdaTimeout
+      CodeUri: ./target/aws-athena-udfs-h3-1.0.jar
+      Description: >
+        This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected
+        [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's
+        [H3](https://h3geo.org/)
       MemorySize: !Ref LambdaMemory
+      Timeout: !Ref LambdaTimeout

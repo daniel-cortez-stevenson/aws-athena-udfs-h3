@@ -1,52 +1,52 @@
 USING EXTERNAL FUNCTION geotoh3(lat DOUBLE, lng DOUBLE, res INTEGER)
 RETURNS BIGINT
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION geotoh3address(lat DOUBLE, lng DOUBLE, res INTEGER)
 RETURNS VARCHAR
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3togeo(h3 BIGINT)
 RETURNS VARCHAR
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3isvalid(h3 BIGINT)
 RETURNS BOOLEAN
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3getbasecell(h3 BIGINT)
 RETURNS INTEGER
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3ispentagon(h3 BIGINT)
 RETURNS BOOLEAN
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3togeoboundary(h3 BIGINT)
 RETURNS VARCHAR
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3kring(h3 BIGINT, k INTEGER)
 RETURNS ARRAY<BIGINT>
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3area(h3 BIGINT, unit VARCHAR)
 RETURNS DOUBLE
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 
 EXTERNAL FUNCTION h3addresstogeo(h3address VARCHAR)
 RETURNS VARCHAR
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3addressisvalid(h3address VARCHAR)
 RETURNS BOOLEAN
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3addressgetbasecell(h3address VARCHAR)
 RETURNS INTEGER
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3addressispentagon(h3address VARCHAR)
 RETURNS BOOLEAN
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3addresstogeoboundary(h3address VARCHAR)
 RETURNS VARCHAR
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3addresskring(h3address VARCHAR, k INTEGER)
 RETURNS ARRAY<VARCHAR>
-LAMBDA 'aws_athena_udfs_h3',
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3addressarea(h3address VARCHAR, unit VARCHAR)
 RETURNS DOUBLE
-LAMBDA 'aws_athena_udfs_h3'
+LAMBDA 'h3-athena-udf-handler'
 SELECT
   *,
   h3isvalid(h3) h3_valid,

@@ -1,5 +1,5 @@
 /* (C)2021 Daniel Cortez Stevenson*/
-package io.jyde.athena.connectors.udf.h3;
+package io.jyde.aws.athena.connectors.udf.h3;
 
 import com.amazonaws.athena.connector.lambda.handlers.UserDefinedFunctionHandler;
 import com.google.common.annotations.VisibleForTesting;
@@ -15,18 +15,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class H3UDFHandler extends UserDefinedFunctionHandler {
-    private static final String SOURCE_TYPE = "jyde";
+public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
+    private static final String SOURCE_TYPE = "io.jyde.aws";
 
     private final H3Core h3Core;
 
-    public H3UDFHandler() throws IOException {
+    public H3AthenaUDFHandler() throws IOException {
         super(SOURCE_TYPE);
         this.h3Core = H3Core.newInstance();
     }
 
     @VisibleForTesting
-    H3UDFHandler(H3Core h3Core) {
+    H3AthenaUDFHandler(H3Core h3Core) {
         super(SOURCE_TYPE);
         this.h3Core = h3Core;
     }
