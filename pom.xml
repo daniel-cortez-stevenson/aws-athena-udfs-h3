@@ -7,12 +7,12 @@
     <groupId>io.jyde</groupId>
     <artifactId>aws-athena-udfs-h3</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws-athena-federation-sdk.version>2021.6.1</aws-athena-federation-sdk.version>
+        <aws-athena-query-federation.version>2021.14.1</aws-athena-query-federation.version>
         <h3.version>3.7.0</h3.version>
         <log4j2.version>2.13.3</log4j2.version>
         <mockito.version>1.10.19</mockito.version>
@@ -36,7 +36,14 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
+    <repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -59,9 +66,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.amazonaws</groupId>
+            <groupId>com.github.awslabs.aws-athena-query-federation</groupId>
             <artifactId>aws-athena-federation-sdk</artifactId>
-            <version>${aws-athena-federation-sdk.version}</version>
+            <version>${aws-athena-query-federation.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -208,14 +215,13 @@
                     <formats>
                     <format>
                         <includes>
-                        <include>*.md</include>
-                        <include>.gitignore</include>
+                            <include>.gitignore</include>
                         </includes>
                         <trimTrailingWhitespace/>
                         <endWithNewline/>
                         <indent>
-                        <tabs>true</tabs>
-                        <spacesPerTab>4</spacesPerTab>
+                            <tabs>true</tabs>
+                            <spacesPerTab>4</spacesPerTab>
                         </indent>
                     </format>
                     </formats>
