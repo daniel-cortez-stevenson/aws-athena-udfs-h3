@@ -18,16 +18,12 @@ mvn spotless:apply clean install -Dpublishing=true
 sam package \
   --resolve-s3 \
   --output-template-file ./target/packaged.yaml
-# publish
-sam publish \
-  --template-file ./target/packaged.yaml \
-  --semantic-version 0.0.1
 # deploy
 sam deploy \
   --resolve-s3 \
   --stack-name aws-athena-udfs-h3-stack \
   --template-file ./target/packaged.yaml \
-  --capabilities CAPABILITY_IAM # We don't need this, possible bug in aws-sam-cli
+  --capabilities CAPABILITY_IAM
 ```
 
 ### Option 3: Deploy as an AWS SAM Resource
@@ -37,18 +33,18 @@ In your AWS SAM `template.yaml` file:
 ```yaml
 Resources:
   AwsAthenaUdfsH3:
-    Type: AWS::Serverless::Application
-    Properties:
-    Location:
-      ApplicationId: arn:aws:serverlessrepo:us-east-1:922535613973:applications/aws-athena-udfs-h3
-      SemanticVersion: 0.0.1
-    Parameters:
-      # The name of Lambda function, which calls the H3AthenaUDFHandler
-      # LambdaFunctionName: 'h3-athena-udf-handler' # Uncomment to override default value
-      # Lambda memory in MB
-      # LambdaMemory: '3008' # Uncomment to override default value
-      # Maximum Lambda invocation runtime in seconds
-      # LambdaTimeout: '300' # Uncomment to override default value
+  Type: AWS::Serverless::Application
+  Properties:
+  Location:
+  ApplicationId: arn:aws:serverlessrepo:us-east-1:922535613973:applications/aws-athena-udfs-h3
+  SemanticVersion: 0.0.1
+  Parameters:
+  # The name of Lambda function, which calls the H3AthenaUDFHandler
+  # LambdaFunctionName: 'h3-athena-udf-handler' # Uncomment to override default value
+  # Lambda memory in MB
+  # LambdaMemory: '3008' # Uncomment to override default value
+  # Maximum Lambda invocation runtime in seconds
+  # LambdaTimeout: '300' # Uncomment to override default value
 ```
 
 ## Usage
@@ -72,7 +68,7 @@ In the Athena console, run the query in [create_osm_planet_table.sql](./sql/crea
 
 ### Facebook High Resolution Population Density Estimates
 
-In the Athena console, run the query in [create_osm_planet_table.sql](./sql/create_fb_population_table.sql) and then run the query in [repair_fb_population_table.sql](./sql/repair_fb_population_table.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset. You'll have to write your own Athena SQL queries for this data source.
+In the Athena console, run the query in [create_fb_population_table.sql](./sql/create_fb_population_table.sql) and then run the query in [repair_fb_population_table.sql](./sql/repair_fb_population_table.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset. You'll have to write your own Athena SQL queries for this data source.
 
 ## Contributing
 
