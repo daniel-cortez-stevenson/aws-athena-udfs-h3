@@ -307,7 +307,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param childres Resolution of the children
      * @throws IllegalArgumentException Invalid resolution
      */
-    public List<String> h3tochildren(String h3address, int childres)
+    public List<String> h3addresstochildren(String h3address, int childres)
             throws IllegalArgumentException {
         return h3Core.h3ToChildren(h3address, childres);
     }
