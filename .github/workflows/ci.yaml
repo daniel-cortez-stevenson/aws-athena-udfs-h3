@@ -21,7 +21,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn -B package --file pom.xml
       - name: Copy JARs
         run: mkdir artifacts && cp target/*.jar artifacts
       - name: Upload JARs
@@ -30,7 +30,7 @@ jobs:
           name: Package
           path: artifacts
       - name: Build Maven Site
-        run: mvn --batch-mode -Preporting site site:stage
+        run: mvn -B site site:stage
       - name: Configure Git user
         uses: fregante/setup-git-user@v1
       - name: Publish Maven Site
