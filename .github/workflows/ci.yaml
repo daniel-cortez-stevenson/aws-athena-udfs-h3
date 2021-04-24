@@ -39,4 +39,4 @@ jobs:
       - name: Publish Maven Site
         run: mvn --batch-mode site:stage scm-publish:publish-scm
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
