@@ -72,13 +72,35 @@ In the Athena console, run the query in [create_fb_population_table.sql](./src/r
 
 ## Contributing
 
-Format your Java contributions with the _spotless_ Maven plugin
+### Formatting
+
+Format your Java contributions with the [spotless Maven plugin](https://github.com/diffplug/spotless/blob/main/plugin-maven/README.md). This is done automatically when running `mvn verify` or `mvn install`. Modify [pom.xml](./pom.xml) to change formatting rules.
 
 ```bash
 mvn spotless:apply
 ```
 
-## Publishing to the AWS Serverless Application Repository
+### GitHub Pages Site
+
+The [GitHub Pages Site](https://daniel-cortez-stevenson.github.io/aws-athena-udfs-h3/) is built with `mvn site` and published with GitHub Actions. Change the contents of the site by modifying [pom.xml](./pom.xml) and [site.xml](site.xml).
+
+Build the site locally.
+
+```bash
+mvn site
+# Open the built site in your browser
+open ./target/site/index.html
+```
+
+Publish the site to GitHub Pages.
+
+```bash
+mvn site:stage scm-publish:publish-scm
+```
+
+### Publishing the UDFs to the AWS Serverless Application Repository
+
+Publishing this code the the AWS Serverless Application Repository is done manually. New semantic versions should be published for new tagged commits in the `main` branch of this repository.
 
 ```bash
 # build
