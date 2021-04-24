@@ -32,9 +32,7 @@ jobs:
       - name: Build Maven Site
         run: mvn --batch-mode -Preporting site site:stage
       - name: Configure Git user
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+        uses: fregante/setup-git-user@v1
       - name: Publish Maven Site
         run: mvn --batch-mode scm-publish:publish-scm
         env:
