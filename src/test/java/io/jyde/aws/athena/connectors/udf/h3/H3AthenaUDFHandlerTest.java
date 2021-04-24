@@ -1,4 +1,4 @@
-/* (C)2021 Daniel Cortez Stevenson*/
+/* Licensed under Apache-2.0 2021. */
 package io.jyde.aws.athena.connectors.udf.h3;
 
 import static org.junit.Assert.assertEquals;
