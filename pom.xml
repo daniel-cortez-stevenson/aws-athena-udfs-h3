@@ -50,7 +50,7 @@
     <distributionManagement>
         <site>
             <id>github</id>
-            <url>scm:git:git@github.com:daniel-cortez-stevenson/aws-athena-udfs-h3.git</url>
+            <url>scm:git:https://www.github.com/daniel-cortez-stevenson/aws-athena-udfs-h3.git</url>
         </site>
     </distributionManagement>
 
@@ -141,7 +141,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-scm-publish-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <scmBranch>gh-pages</scmBranch>
                     </configuration>
@@ -300,6 +300,7 @@
                 <configuration>
                     <failOnError>true</failOnError>
                     <notimestamp>false</notimestamp>
+                    <detectLinks/>
                 </configuration>
             </plugin>
         </plugins>

@@ -87,7 +87,7 @@ The [GitHub Pages Site](https://daniel-cortez-stevenson.github.io/aws-athena-udf
 Build the site locally.
 
 ```bash
-mvn site
+mvn -Preporting site site:stage
 # Open the built site in your browser
 open ./target/site/index.html
 ```
@@ -95,7 +95,7 @@ open ./target/site/index.html
 Publish the site to GitHub Pages.
 
 ```bash
-mvn site:stage scm-publish:publish-scm
+mvn scm-publish:publish-scm
 ```
 
 ### Publishing the UDFs to the AWS Serverless Application Repository
