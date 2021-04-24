@@ -14,7 +14,6 @@ jobs:
         with:
           java-version: '8'
           distribution: 'adopt'
-          server-password: ${{ secrets.SSH_KEY }}
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
@@ -32,9 +31,3 @@ jobs:
           path: artifacts
       - name: Build Maven Site
         run: mvn -B site site:stage
-      - name: Configure Git user
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-      - name: Publish Maven Site
-        run: mvn -B scm-publish:publish-scm

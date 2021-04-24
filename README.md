@@ -82,7 +82,7 @@ mvn spotless:apply
 
 ### GitHub Pages Site
 
-The [GitHub Pages Site](https://daniel-cortez-stevenson.github.io/aws-athena-udfs-h3/) is built with `mvn site` and published with GitHub Actions. Change the contents of the site by modifying [pom.xml](./pom.xml) and [site.xml](site.xml).
+The [GitHub Pages Site](https://daniel-cortez-stevenson.github.io/aws-athena-udfs-h3/) is built with `mvn site` and is published manually. Change the contents of the site by modifying [pom.xml](./pom.xml) and [site.xml](site.xml).
 
 Build the site locally.
 
