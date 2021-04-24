@@ -14,7 +14,6 @@ jobs:
         with:
           java-version: '8'
           distribution: 'adopt'
-          server-id: github
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
@@ -39,4 +38,4 @@ jobs:
       - name: Publish Maven Site
         run: mvn --batch-mode site:stage scm-publish:publish-scm
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
