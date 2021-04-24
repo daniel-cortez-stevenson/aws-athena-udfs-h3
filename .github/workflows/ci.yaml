@@ -14,6 +14,7 @@ jobs:
         with:
           java-version: '8'
           distribution: 'adopt'
+          server-password: ${{ secrets.SSH_KEY }}
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
@@ -37,5 +38,3 @@ jobs:
           git config --global user.name "GitHub Actions"
       - name: Publish Maven Site
         run: mvn -B scm-publish:publish-scm
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
