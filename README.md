@@ -64,15 +64,15 @@ SELECT  [...] UDF_name(expression) [...]
 
 ### Open Street Maps
 
-In the Athena console, run the query in [create_osm_planet_table.sql](./sql/create_osm_planet_table.sql) to create some test data from the current [Open Street Maps](https://registry.opendata.aws/osm/) database and then run the query [test_functions_run.sql](./sql/test_functions_run.sql) to test drive some of the H3 functions available via this application.
+In the Athena console, run the query in [create_osm_planet_table.sql](./src/resources/sql/create_osm_planet_table.sql) to create some test data from the current [Open Street Maps](https://registry.opendata.aws/osm/) database and then run the query [test_functions_run.sql](./src/resources/sql/est_udfs_osm_planet.sql) to test drive some of the H3 functions available via this application.
 
 ### Facebook High Resolution Population Density Estimates
 
-In the Athena console, run the query in [create_fb_population_table.sql](./sql/create_fb_population_table.sql) and then run the query in [repair_fb_population_table.sql](./sql/repair_fb_population_table.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset. You'll have to write your own Athena SQL queries for this data source.
+In the Athena console, run the query in [create_fb_population_table.sql](./src/resources/sql/create_fb_population_table.sql) and then run the query in [repair_fb_population_table.sql](./src/resources/sql/repair_fb_population_table.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset. You'll have to write your own Athena SQL queries for this data source.
 
 ## Contributing
 
-Format your Java contributions with the *spotless* Maven plugin
+Format your Java contributions with the _spotless_ Maven plugin
 
 ```bash
 mvn spotless:apply

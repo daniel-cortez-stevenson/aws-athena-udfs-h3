@@ -12,6 +12,9 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
+        <maven.project.info.reports.plugin>3.1.1</maven.project.info.reports.plugin>
+        <maven.site.plugin.version>3.9.1</maven.site.plugin.version>
         <aws-athena-query-federation.version>2021.14.1</aws-athena-query-federation.version>
         <h3.version>3.7.0</h3.version>
         <log4j2.version>2.13.3</log4j2.version>
@@ -27,6 +30,13 @@
         <url>https://jyde.io</url>
     </organization>
 
+    <developers>
+        <developer>
+            <name>Daniel Cortez Stevenson</name>
+            <email>daniel@jyde.io</email>
+        </developer>
+    </developers>
+
     <inceptionYear>2021</inceptionYear>
 
     <licenses>
@@ -36,6 +46,13 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <url>scm:git:git@github.com:daniel-cortez-stevenson/aws-athena-udfs-h3.git</url>
+        </site>
+    </distributionManagement>
 
     <repositories>
 		<repository>
@@ -119,6 +136,19 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-publish-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <scmBranch>gh-pages</scmBranch>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -151,12 +181,8 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <failOnError>false</failOnError>
-                    <notimestamp>true</notimestamp>
-                </configuration>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven.site.plugin.version}</version>
             </plugin>
 
             <plugin>
@@ -177,7 +203,7 @@
                     </filters>
                     <transformers>
                         <transformer
-                                implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
+                            implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
                         </transformer>
                     </transformers>
                 </configuration>
@@ -211,31 +237,71 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <ratchetFrom>origin/main</ratchetFrom>
+                    <!-- <ratchetFrom>origin/main</ratchetFrom> -->
                     <formats>
-                    <format>
-                        <includes>
-                            <include>.gitignore</include>
-                        </includes>
-                        <trimTrailingWhitespace/>
-                        <endWithNewline/>
-                        <indent>
-                            <tabs>true</tabs>
-                            <spacesPerTab>4</spacesPerTab>
-                        </indent>
-                    </format>
+                        <format>
+                            <includes>
+                                <include>.gitignore</include>
+                                <include>*.md</include>
+                            </includes>
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                            <indent>
+                                <spaces>true</spaces>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                            <prettier>
+                                <prettierVersion>2.0.5</prettierVersion>
+                            </prettier>
+                        </format>
                     </formats>
+                    <sql>
+                        <includes>
+                            <include>*.sql</include>
+                        </includes>
+                        <dbeaver/>
+                    </sql>
                     <java>
-                    <googleJavaFormat>
-                        <version>1.7</version>
-                        <style>AOSP</style>
-                    </googleJavaFormat>
-                    <licenseHeader>
-                        <content>/* (C)$YEAR Daniel Cortez Stevenson*/</content>  <!-- or <file>${basedir}/license-header</file> -->
-                    </licenseHeader>
+                        <googleJavaFormat>
+                            <version>1.7</version>
+                            <style>AOSP</style>
+                        </googleJavaFormat>
+                        <!-- <prettier>
+                            <devDependencies>
+                                <prettier>2.0.5</prettier>
+                                <prettier-plugin-java>0.8.0</prettier-plugin-java>
+                            </devDependencies>
+                            <config>
+                                <tabWidth>4</tabWidth>
+                                <parser>java</parser>
+                            </config>
+                        </prettier> -->
+                        <licenseHeader>
+                            <content>/* Licensed under Apache-2.0 $YEAR. */</content>  <!-- or <file>${basedir}/license-header</file> -->
+                        </licenseHeader>
                     </java>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven.project.info.reports.plugin}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <failOnError>true</failOnError>
+                    <notimestamp>false</notimestamp>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
