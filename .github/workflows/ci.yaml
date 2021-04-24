@@ -31,10 +31,6 @@ jobs:
           path: artifacts
       - name: Build Maven Site
         run: mvn --batch-mode clean site
-      - name: Configure Git user
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
       - name: Publish Maven Site
         run: mvn --batch-mode site:stage scm-publish:publish-scm
         env:
