@@ -1,6 +1,6 @@
 # aws-athena-udfs-h3
 
-This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/)
+This connector extends Amazon Athena's capability by adding UDFs (via Lambda) for selected [h3-java](https://github.com/uber/h3-java) Java functions to support geospatial indexing and queries with Uber's [H3](https://h3geo.org/). A Maven Site hosted on GitHub Pages holds the [API documentation for this repository](https://daniel-cortez-stevenson.github.io/aws-athena-udfs-h3/).
 
 ## Deploy
 
