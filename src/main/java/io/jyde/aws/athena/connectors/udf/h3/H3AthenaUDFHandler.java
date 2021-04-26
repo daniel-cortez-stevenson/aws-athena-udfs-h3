@@ -303,6 +303,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Provides the children of the index at the given resolution.
      *
+     * @param h3 H3 index.
+     * @param childres Resolution of the children
+     * @throws IllegalArgumentException Invalid resolution
+     */
+    public List<Long> h3tochildren(Long h3, Integer childres) throws IllegalArgumentException {
+        return h3Core.h3ToChildren(h3, childres);
+    }
+
+    /**
+     * Provides the children of the index at the given resolution.
+     *
      * @param h3address H3 index.
      * @param childres Resolution of the children
      * @throws IllegalArgumentException Invalid resolution
@@ -310,17 +321,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     public List<String> h3addresstochildren(String h3address, int childres)
             throws IllegalArgumentException {
         return h3Core.h3ToChildren(h3address, childres);
-    }
-
-    /**
-     * Provides the children of the index at the given resolution.
-     *
-     * @param h3 H3 index.
-     * @param childres Resolution of the children
-     * @throws IllegalArgumentException Invalid resolution
-     */
-    public List<Long> h3tochildren(Long h3, Integer childres) throws IllegalArgumentException {
-        return h3Core.h3ToChildren(h3, childres);
     }
 
     /**
@@ -346,15 +346,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.h3ToCenterChild(h3, childres);
     }
 
-    /**
-     * Determines if an index is Class III or Class II.
-     *
-     * @param h3address H3 index address
-     * @return <code>true</code> if the index is Class III
-     */
-    public Boolean h3addressisresclassiii(String h3address) {
-        return h3Core.h3IsResClassIII(h3address);
-    }
 
     /**
      * Determines if an index is Class III or Class II.
@@ -364,6 +355,16 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public Boolean h3isresclassiii(Long h3) {
         return h3Core.h3IsResClassIII(h3);
+    }
+
+    /**
+     * Determines if an index is Class III or Class II.
+     *
+     * @param h3address H3 index address
+     * @return <code>true</code> if the index is Class III
+     */
+    public Boolean h3addressisresclassiii(String h3address) {
+        return h3Core.h3IsResClassIII(h3address);
     }
 
     /**
