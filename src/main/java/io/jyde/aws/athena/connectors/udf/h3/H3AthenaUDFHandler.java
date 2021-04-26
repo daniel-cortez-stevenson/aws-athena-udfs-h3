@@ -386,23 +386,23 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Calculates the area of the given H3 cell.
      *
-     * @param h3address Cell to find the area of.
-     * @param unit Unit to calculate the area in.
-     * @return Cell area in the given units.
-     */
-    public Double h3addressarea(String h3address, String unit) {
-        return h3Core.cellArea(h3address, AreaUnit.valueOf(unit));
-    }
-
-    /**
-     * Calculates the area of the given H3 cell.
-     *
      * @param h3 Cell to find the area of.
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
     public Double h3area(Long h3, String unit) {
         return h3Core.cellArea(h3, AreaUnit.valueOf(unit));
+    }
+
+    /**
+     * Calculates the area of the given H3 cell.
+     *
+     * @param h3address Cell to find the area of.
+     * @param unit Unit to calculate the area in.
+     * @return Cell area in the given units.
+     */
+    public Double h3addressarea(String h3address, String unit) {
+        return h3Core.cellArea(h3address, AreaUnit.valueOf(unit));
     }
 
     private String geoCoordToWKSPoint(GeoCoord geoCoord) {

@@ -3,7 +3,9 @@ package io.jyde.aws.athena.connectors.udf.h3;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import com.uber.h3core.AreaUnit;
 import com.uber.h3core.H3Core;
 import java.io.IOException;
 import org.junit.Before;
@@ -16,6 +18,7 @@ public class H3AthenaUDFHandlerTest {
     private static final Long h3 = 628064021095030783L;
     private static final String h3address = "8b754e649929fff";
     private static final Integer k = 3;
+    private static final String unit = "m2";
 
     private H3AthenaUDFHandler handler;
     private H3Core h3Core;
@@ -152,5 +155,19 @@ public class H3AthenaUDFHandlerTest {
     @Test
     public void stringtoh3() {
         assertEquals(handler.stringtoh3(h3address).longValue(), h3Core.stringToH3(h3address));
+    }
+
+    @Test
+    public void h3area() {
+        assertTrue(almostEqual(handler.h3area(h3, unit).doubleValue(), h3Core.cellArea(h3, AreaUnit.valueOf(unit)), 1e-8));
+    }
+
+    @Test
+    public void h3addressarea() {
+        assertTrue(almostEqual(handler.h3addressarea(h3address, unit).doubleValue(), h3Core.cellArea(h3address, AreaUnit.valueOf(unit)), 1e-8));
+    }
+
+    private static boolean almostEqual(double a, double b, double eps){
+        return Math.abs(a-b)<eps;
     }
 }
