@@ -41,9 +41,7 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3getbasecell() {
-        assertEquals(
-                handler.h3getbasecell(h3).intValue(),
-                h3Core.h3GetBaseCell(h3));
+        assertEquals(handler.h3getbasecell(h3).intValue(), h3Core.h3GetBaseCell(h3));
     }
 
     @Test
@@ -85,9 +83,7 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3getresolution() {
-        assertEquals(
-                handler.h3getresolution(h3).intValue(),
-                h3Core.h3GetResolution(h3));
+        assertEquals(handler.h3getresolution(h3).intValue(), h3Core.h3GetResolution(h3));
     }
 
     @Test
@@ -99,9 +95,7 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3toparent() {
-        assertEquals(
-                handler.h3toparent(h3, res).longValue(),
-                h3Core.h3ToParent(h3, res));
+        assertEquals(handler.h3toparent(h3, res).longValue(), h3Core.h3ToParent(h3, res));
     }
 
     @Test
@@ -125,9 +119,7 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3tocenterchild() {
-        assertEquals(
-                handler.h3tocenterchild(h3, res).longValue(),
-                h3Core.h3ToCenterChild(h3, res));
+        assertEquals(handler.h3tocenterchild(h3, res).longValue(), h3Core.h3ToCenterChild(h3, res));
     }
 
     @Test
@@ -159,15 +151,23 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3area() {
-        assertTrue(almostEqual(handler.h3area(h3, unit).doubleValue(), h3Core.cellArea(h3, AreaUnit.valueOf(unit)), 1e-8));
+        assertTrue(
+                almostEqual(
+                        handler.h3area(h3, unit).doubleValue(),
+                        h3Core.cellArea(h3, AreaUnit.valueOf(unit)),
+                        1e-8));
     }
 
     @Test
     public void h3addressarea() {
-        assertTrue(almostEqual(handler.h3addressarea(h3address, unit).doubleValue(), h3Core.cellArea(h3address, AreaUnit.valueOf(unit)), 1e-8));
+        assertTrue(
+                almostEqual(
+                        handler.h3addressarea(h3address, unit).doubleValue(),
+                        h3Core.cellArea(h3address, AreaUnit.valueOf(unit)),
+                        1e-8));
     }
 
-    private static boolean almostEqual(double a, double b, double eps){
-        return Math.abs(a-b)<eps;
+    private static boolean almostEqual(double a, double b, double eps) {
+        return Math.abs(a - b) < eps;
     }
 }
