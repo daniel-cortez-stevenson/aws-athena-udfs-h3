@@ -90,17 +90,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
     public String h3togeo(Long h3) {
-        return geoCoordToWKSPoint(h3Core.h3ToGeo(h3));
+        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3));
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
     public String h3addresstogeo(String h3address) throws IllegalArgumentException {
-        return geoCoordToWKSPoint(h3Core.h3ToGeo(h3address));
+        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3address));
     }
 
     /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
     public String h3togeoboundary(Long h3) throws IllegalArgumentException {
-        return geoCoordsToWKSPolygon(h3Core.h3ToGeoBoundary(h3));
+        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3));
     }
 
     /**
@@ -110,7 +110,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public String h3addresstogeoboundary(String h3address) throws IllegalArgumentException {
-        return geoCoordsToWKSPolygon(h3Core.h3ToGeoBoundary(h3address));
+        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3address));
     }
 
     /**
@@ -242,10 +242,10 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<String> polyfillh3address(String polygon, List<String> polygonholes, Integer res)
             throws IllegalArgumentException {
-        List<GeoCoord> points = geoCoordsFromWKSPolygon(polygon);
+        List<GeoCoord> points = geoCoordsFromWKTPolygon(polygon);
         List<List<GeoCoord>> holes =
                 polygonholes.stream()
-                        .map(this::geoCoordsFromWKSPolygon)
+                        .map(this::geoCoordsFromWKTPolygon)
                         .collect(Collectors.toList());
         return h3Core.polyfillAddress(points, holes, res);
     }
@@ -260,10 +260,10 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<Long> polyfillh3(String polygon, List<String> polygonholes, Integer res)
             throws IllegalArgumentException {
-        List<GeoCoord> points = geoCoordsFromWKSPolygon(polygon);
+        List<GeoCoord> points = geoCoordsFromWKTPolygon(polygon);
         List<List<GeoCoord>> holes =
                 polygonholes.stream()
-                        .map(this::geoCoordsFromWKSPolygon)
+                        .map(this::geoCoordsFromWKTPolygon)
                         .collect(Collectors.toList());
         return h3Core.polyfill(points, holes, res);
     }
@@ -405,11 +405,11 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.cellArea(h3address, AreaUnit.valueOf(unit));
     }
 
-    private String geoCoordToWKSPoint(GeoCoord geoCoord) {
+    private String geoCoordToWKTPoint(GeoCoord geoCoord) {
         return String.format("POINT (%f %f)", geoCoord.lng, geoCoord.lat);
     }
 
-    private String geoCoordsToWKSPolygon(List<GeoCoord> geoCoords) {
+    private String geoCoordsToWKTPolygon(List<GeoCoord> geoCoords) {
         return geoCoords.stream()
                 .map(geoCoord -> String.format("%f %f", geoCoord.lng, geoCoord.lat))
                 .collect(Collectors.joining(", ", "POLYGON ((", "))"));
@@ -418,12 +418,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * https://stackoverflow.com/a/5011958
      *
-     * @param wksPoint A String representation of a WKS Point in AWS Athena
+     * @param WKTPoint A String representation of a WKT Point in AWS Athena
      * @return An H3Core.util.GeoCoord object
      */
-    private GeoCoord geoCoordFromWKSPoint(String wksPoint) {
+    private GeoCoord geoCoordFromWKTPoint(String WKTPoint) {
         Pattern p = Pattern.compile("\\d+(\\.\\d+)?");
-        Matcher m = p.matcher(wksPoint);
+        Matcher m = p.matcher(WKTPoint);
         m.find();
         double lng = Double.parseDouble(m.group());
         m.find();
@@ -434,12 +434,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * https://stackoverflow.com/a/5011958
      *
-     * @param wksPolygon A String representation of a WKS Polygon in AWS Athena
+     * @param WKTPolygon A String representation of a WKT Polygon in AWS Athena
      * @return An H3Core.util.GeoCoord object
      */
-    private List<GeoCoord> geoCoordsFromWKSPolygon(String wksPolygon) {
+    private List<GeoCoord> geoCoordsFromWKTPolygon(String WKTPolygon) {
         Pattern p = Pattern.compile("\\d+(\\.\\d+)?");
-        Matcher m = p.matcher(wksPolygon);
+        Matcher m = p.matcher(WKTPolygon);
         List<GeoCoord> geoCoords = new ArrayList<GeoCoord>();
         while (m.find()) {
             double lng = Double.parseDouble(m.group());
