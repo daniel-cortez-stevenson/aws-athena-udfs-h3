@@ -346,7 +346,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.h3ToCenterChild(h3, childres);
     }
 
-
     /**
      * Determines if an index is Class III or Class II.
      *
