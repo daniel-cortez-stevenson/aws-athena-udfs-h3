@@ -152,7 +152,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance between the two in grid cells
      * @throws DistanceUndefinedException H3 cannot compute the distance.
      */
-    public Integer h3addressdistance(String a, String b) throws DistanceUndefinedException {
+    public Integer h3distance(Long a, Long b) throws DistanceUndefinedException {
         return h3Core.h3Distance(a, b);
     }
 
@@ -174,8 +174,35 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance between the two in grid cells
      * @throws DistanceUndefinedException H3 cannot compute the distance.
      */
-    public Integer h3distance(Long a, Long b) throws DistanceUndefinedException {
+    public Integer h3addressdistance(String a, String b) throws DistanceUndefinedException {
         return h3Core.h3Distance(a, b);
+    }
+
+    /**
+     * Given two H3 indexes, return the line of indexes between them (inclusive of endpoints).
+     *
+     * <p>This function may fail to find the line between two indexes, for example if they are very
+     * far apart. It may also fail when finding distances for indexes on opposite sides of a
+     * pentagon.
+     *
+     * <p>Notes:
+     *
+     * <ul>
+     *   <li>The specific output of this function should not be considered stable across library
+     *       versions. The only guarantees the library provides are that the line length will be
+     *       `h3Distance(start, end) + 1` and that every index in the line will be a neighbor of the
+     *       preceding index.
+     *   <li>Lines are drawn in grid space, and may not correspond exactly to either Cartesian lines
+     *       or great arcs.
+     * </ul>
+     *
+     * @param start Start index of the line
+     * @param end End index of the line
+     * @return Indexes making up the line.
+     * @throws LineUndefinedException The line could not be computed.
+     */
+    public List<Long> h3line(Long start, Long end) throws LineUndefinedException {
+        return h3Core.h3Line(start, end);
     }
 
     /**
@@ -204,33 +231,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     public List<String> h3addressline(String startaddress, String endaddress)
             throws LineUndefinedException {
         return h3Core.h3Line(startaddress, endaddress);
-    }
-
-    /**
-     * Given two H3 indexes, return the line of indexes between them (inclusive of endpoints).
-     *
-     * <p>This function may fail to find the line between two indexes, for example if they are very
-     * far apart. It may also fail when finding distances for indexes on opposite sides of a
-     * pentagon.
-     *
-     * <p>Notes:
-     *
-     * <ul>
-     *   <li>The specific output of this function should not be considered stable across library
-     *       versions. The only guarantees the library provides are that the line length will be
-     *       `h3Distance(start, end) + 1` and that every index in the line will be a neighbor of the
-     *       preceding index.
-     *   <li>Lines are drawn in grid space, and may not correspond exactly to either Cartesian lines
-     *       or great arcs.
-     * </ul>
-     *
-     * @param start Start index of the line
-     * @param end End index of the line
-     * @return Indexes making up the line.
-     * @throws LineUndefinedException The line could not be computed.
-     */
-    public List<Long> h3line(Long start, Long end) throws LineUndefinedException {
-        return h3Core.h3Line(start, end);
     }
 
     /**
