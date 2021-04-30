@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.uber.h3core.AreaUnit;
 import com.uber.h3core.H3Core;
+import com.uber.h3core.exceptions.DistanceUndefinedException;
+import com.uber.h3core.exceptions.LineUndefinedException;
 import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +18,9 @@ public class H3AthenaUDFHandlerTest {
     private static final Double lng = 0.;
     private static final Integer res = 11;
     private static final Long h3 = 628064021095030783L;
+    private static final Long secondH3 = 628064007838769151L;
     private static final String h3address = "8b754e649929fff";
+    private static final String secondH3Address = "8b754e333701fff";
     private static final Integer k = 3;
     private static final String unit = "m2";
 
@@ -79,6 +83,31 @@ public class H3AthenaUDFHandlerTest {
     @Test
     public void h3addresskring() {
         assertEquals(handler.h3addresskring(h3address, k), h3Core.kRing(h3address, k));
+    }
+
+    @Test
+    public void h3distance() throws DistanceUndefinedException {
+        assertEquals(handler.h3distance(h3, secondH3).intValue(), h3Core.h3Distance(h3, secondH3));
+    }
+
+    @Test
+    public void h3addressdistance() throws DistanceUndefinedException {
+        assertEquals(
+                handler.h3addressdistance(h3address, secondH3Address).intValue(),
+                h3Core.h3Distance(h3address, secondH3Address));
+    }
+
+    @Test
+    public void h3line() throws DistanceUndefinedException, LineUndefinedException {
+        assertArrayEquals(
+                handler.h3line(h3, secondH3).toArray(), h3Core.h3Line(h3, secondH3).toArray());
+    }
+
+    @Test
+    public void h3addressline() throws DistanceUndefinedException, LineUndefinedException {
+        assertArrayEquals(
+                handler.h3addressline(h3address, secondH3Address).toArray(),
+                h3Core.h3Line(h3address, secondH3Address).toArray());
     }
 
     @Test
