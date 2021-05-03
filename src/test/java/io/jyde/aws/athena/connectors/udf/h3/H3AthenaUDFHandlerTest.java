@@ -4,6 +4,7 @@ package io.jyde.aws.athena.connectors.udf.h3;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.uber.h3core.AreaUnit;
@@ -28,10 +29,20 @@ public class H3AthenaUDFHandlerTest {
     private H3AthenaUDFHandler handler;
     private H3Core h3Core;
 
+    private Long nearbyH3WithDifferentResolution;
+    private String nearbyH3AddressWithDifferentResolution;
+    private Long tooFarAwayH3;
+    private String tooFarAwayH3Address;
+
     @Before
     public void setup() throws IOException {
         this.handler = new H3AthenaUDFHandler();
         this.h3Core = H3Core.newInstance();
+
+        this.nearbyH3WithDifferentResolution = h3Core.geoToH3(lat + 0.0001, lng + 0.0001, res - 1);
+        this.nearbyH3AddressWithDifferentResolution = h3Core.geoToH3Address(lat + 0.0001, lng + 0.0001, res - 1);
+        this.tooFarAwayH3 = h3Core.geoToH3(lat + 45., lng + 45., res);
+        this.tooFarAwayH3Address = h3Core.geoToH3Address(lat + 45., lng + 45., res);
     }
 
     @Test
@@ -92,9 +103,20 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3distance_withnullreturnsnull() {
+    public void h3distanceWithNullInputReturnsNull() {
         assertNull(handler.h3distance(h3, null));
     }
+
+    @Test
+    public void h3distanceTooFarApartReturnsNegativeOne() {
+        assertEquals(Integer.valueOf(-1), handler.h3distance(h3, tooFarAwayH3));
+    }
+
+    @Test
+    public void h3distanceResolutionMismatchThrowsRuntimeException() {
+        assertThrows(RuntimeException.class, () -> handler.h3distance(h3, nearbyH3WithDifferentResolution));
+    }
+
 
     @Test
     public void h3addressdistance() throws DistanceUndefinedException {
@@ -104,8 +126,18 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3daddressdistance_withnullreturnsnull() {
+    public void h3daddressdistanceWithNullReturnsNull() {
         assertNull(handler.h3addressdistance(h3address, null));
+    }
+
+    @Test
+    public void h3daddressdistanceTooFarApartReturnsNegativeOne() {
+        assertEquals(Integer.valueOf(-1), handler.h3addressdistance(h3address, tooFarAwayH3Address));
+    }
+
+    @Test
+    public void h3daddressdistanceResolutionMismatchThrowsRuntimeException() {
+        assertThrows(RuntimeException.class, () -> handler.h3addressdistance(h3address, nearbyH3AddressWithDifferentResolution));
     }
 
     @Test
