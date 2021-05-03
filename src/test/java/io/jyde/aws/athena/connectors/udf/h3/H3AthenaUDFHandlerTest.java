@@ -40,7 +40,8 @@ public class H3AthenaUDFHandlerTest {
         this.h3Core = H3Core.newInstance();
 
         this.nearbyH3WithDifferentResolution = h3Core.geoToH3(lat + 0.0001, lng + 0.0001, res - 1);
-        this.nearbyH3AddressWithDifferentResolution = h3Core.geoToH3Address(lat + 0.0001, lng + 0.0001, res - 1);
+        this.nearbyH3AddressWithDifferentResolution =
+                h3Core.geoToH3Address(lat + 0.0001, lng + 0.0001, res - 1);
         this.tooFarAwayH3 = h3Core.geoToH3(lat + 45., lng + 45., res);
         this.tooFarAwayH3Address = h3Core.geoToH3Address(lat + 45., lng + 45., res);
     }
@@ -114,9 +115,10 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3distanceResolutionMismatchThrowsRuntimeException() {
-        assertThrows(RuntimeException.class, () -> handler.h3distance(h3, nearbyH3WithDifferentResolution));
+        assertThrows(
+                RuntimeException.class,
+                () -> handler.h3distance(h3, nearbyH3WithDifferentResolution));
     }
-
 
     @Test
     public void h3addressdistance() throws DistanceUndefinedException {
@@ -132,12 +134,15 @@ public class H3AthenaUDFHandlerTest {
 
     @Test
     public void h3daddressdistanceTooFarApartReturnsNegativeOne() {
-        assertEquals(Integer.valueOf(-1), handler.h3addressdistance(h3address, tooFarAwayH3Address));
+        assertEquals(
+                Integer.valueOf(-1), handler.h3addressdistance(h3address, tooFarAwayH3Address));
     }
 
     @Test
     public void h3daddressdistanceResolutionMismatchThrowsRuntimeException() {
-        assertThrows(RuntimeException.class, () -> handler.h3addressdistance(h3address, nearbyH3AddressWithDifferentResolution));
+        assertThrows(
+                RuntimeException.class,
+                () -> handler.h3addressdistance(h3address, nearbyH3AddressWithDifferentResolution));
     }
 
     @Test
