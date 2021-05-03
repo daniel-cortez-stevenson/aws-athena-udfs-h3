@@ -92,7 +92,7 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3distance_withnullreturnsnull() throws DistanceUndefinedException {
+    public void h3distance_withnullreturnsnull() {
         assertNull(handler.h3distance(h3, null));
     }
 
@@ -104,7 +104,7 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3daddressdistance_withnullreturnsnull() throws DistanceUndefinedException {
+    public void h3daddressdistance_withnullreturnsnull() {
         assertNull(handler.h3addressdistance(h3address, null));
     }
 
