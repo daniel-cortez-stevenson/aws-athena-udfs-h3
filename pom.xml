@@ -339,7 +339,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven.javadoc.plugin.version}</version>
                 <configuration>
-                    <failOnError>true</failOnError>
+                    <failOnError>false</failOnError>
                     <notimestamp>false</notimestamp>
                     <detectLinks/>
                 </configuration>
