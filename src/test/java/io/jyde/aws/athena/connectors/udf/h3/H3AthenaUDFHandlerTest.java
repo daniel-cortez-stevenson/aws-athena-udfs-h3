@@ -3,6 +3,7 @@ package io.jyde.aws.athena.connectors.udf.h3;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.uber.h3core.AreaUnit;
@@ -91,10 +92,20 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
+    public void h3distance_withnullreturnsnull() throws DistanceUndefinedException {
+        assertNull(handler.h3distance(h3, null));
+    }
+
+    @Test
     public void h3addressdistance() throws DistanceUndefinedException {
         assertEquals(
                 handler.h3addressdistance(h3address, secondH3Address).intValue(),
                 h3Core.h3Distance(h3address, secondH3Address));
+    }
+
+    @Test
+    public void h3daddressdistance_withnullreturnsnull() throws DistanceUndefinedException {
+        assertNull(handler.h3addressdistance(h3address, null));
     }
 
     @Test

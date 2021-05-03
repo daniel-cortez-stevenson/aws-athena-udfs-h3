@@ -153,7 +153,24 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws DistanceUndefinedException H3 cannot compute the distance.
      */
     public Integer h3distance(Long a, Long b) throws DistanceUndefinedException {
-        return h3Core.h3Distance(a, b);
+        if (a == null || b == null) {
+            return null;
+        }
+        try {
+            return h3Core.h3Distance(a, b);
+        } catch (DistanceUndefinedException e) {
+            if (h3Core.h3IsPentagon(a) || h3Core.h3IsPentagon(b)) {
+                throw new RuntimeException(
+                        "The H3 library does not support finding the distance between the two cells with pentagonal distortion.",
+                        e);
+            }
+            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {
+                throw new RuntimeException(
+                        "The H3 library does not support finding the distance between the two cells with different resolutions.",
+                        e);
+            }
+            return -1;
+        }
     }
 
     /**
@@ -175,7 +192,24 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws DistanceUndefinedException H3 cannot compute the distance.
      */
     public Integer h3addressdistance(String a, String b) throws DistanceUndefinedException {
-        return h3Core.h3Distance(a, b);
+        if (a == null || b == null) {
+            return null;
+        }
+        try {
+            return h3Core.h3Distance(a, b);
+        } catch (DistanceUndefinedException e) {
+            if (h3Core.h3IsPentagon(a) || h3Core.h3IsPentagon(b)) {
+                throw new RuntimeException(
+                        "The H3 library does not support finding the distance between the two cells with pentagonal distortion.",
+                        e);
+            }
+            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {
+                throw new RuntimeException(
+                        "The H3 library does not support finding the distance between the two cells with different resolutions.",
+                        e);
+            }
+            return -1;
+        }
     }
 
     /**
