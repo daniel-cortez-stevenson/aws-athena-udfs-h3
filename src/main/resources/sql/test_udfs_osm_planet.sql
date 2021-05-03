@@ -70,8 +70,6 @@ with tbl1 AS
 tbl2 AS
   (
     SELECT
-      h3distance(h3, lag(h3) over ()) h3_distance,
-      h3addressdistance(h3address, lag(h3address) over ()) h3address_distance,
       *,
       h3isvalid(h3) h3_valid,
       h3getbasecell(h3) h3_basecell,
@@ -80,6 +78,7 @@ tbl2 AS
       h3togeoboundary(h3) h3_polygon,
       h3kring(h3, 3) h3_kring,
       h3area(h3, 'm2') h3_area,
+      h3distance(h3, lag(h3) over ()) h3_distance,
 
       h3addressisvalid(h3address) h3address_valid,
       h3addressgetbasecell(h3address) h3address_basecell,
@@ -87,7 +86,8 @@ tbl2 AS
       h3addresstogeo(h3address) h3address_point,
       h3addresstogeoboundary(h3address) h3address_polygon,
       h3addresskring(h3address, 3) h3address_kring,
-      h3addressarea(h3address, 'm2') h3address_area
+      h3addressarea(h3address, 'm2') h3address_area,
+      h3addressdistance(h3address, lag(h3address) over ()) h3address_distance
     FROM tbl1
   )
 
