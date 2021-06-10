@@ -47,199 +47,195 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3isvalid() {
-        assertEquals(handler.h3isvalid(h3), h3Core.h3IsValid(h3));
+    public void h3_is_valid() {
+        assertEquals(handler.h3_is_valid(h3), h3Core.h3IsValid(h3));
     }
 
     @Test
-    public void h3addressisvalid() {
-        assertEquals(handler.h3addressisvalid(h3address), h3Core.h3IsValid(h3address));
+    public void h3_address_is_valid() {
+        assertEquals(handler.h3_is_valid(h3address), h3Core.h3IsValid(h3address));
     }
 
     @Test
-    public void h3getbasecell() {
-        assertEquals(handler.h3getbasecell(h3).intValue(), h3Core.h3GetBaseCell(h3));
+    public void h3_get_base_cell() {
+        assertEquals(handler.h3_get_base_cell(h3).intValue(), h3Core.h3GetBaseCell(h3));
     }
 
     @Test
-    public void h3addressgetbasecell() {
+    public void h3_address_get_base_cell() {
         assertEquals(
-                handler.h3addressgetbasecell(h3address).intValue(),
-                h3Core.h3GetBaseCell(h3address));
+                handler.h3_get_base_cell(h3address).intValue(), h3Core.h3GetBaseCell(h3address));
     }
 
     @Test
-    public void h3ispentagon() {
-        assertEquals(handler.h3ispentagon(h3), h3Core.h3IsPentagon(h3));
+    public void h3_is_pentagon() {
+        assertEquals(handler.h3_is_pentagon(h3), h3Core.h3IsPentagon(h3));
     }
 
     @Test
-    public void h3addressispentagon() {
-        assertEquals(handler.h3addressispentagon(h3address), h3Core.h3IsPentagon(h3address));
+    public void h3_address_is_pentagon() {
+        assertEquals(handler.h3_is_pentagon(h3address), h3Core.h3IsPentagon(h3address));
     }
 
     @Test
-    public void geotoh3() {
-        assertEquals(handler.geotoh3(lat, lng, res).longValue(), h3Core.geoToH3(lat, lng, res));
+    public void geo_to_h3() {
+        assertEquals(handler.geo_to_h3(lat, lng, res).longValue(), h3Core.geoToH3(lat, lng, res));
     }
 
     @Test
-    public void geotoh3address() {
-        assertEquals(handler.geotoh3address(lat, lng, res), h3Core.geoToH3Address(lat, lng, res));
+    public void geo_to_h3_address() {
+        assertEquals(
+                handler.geo_to_h3_address(lat, lng, res), h3Core.geoToH3Address(lat, lng, res));
     }
 
     @Test
-    public void h3kring() {
-        assertEquals(handler.h3kring(h3, k), h3Core.kRing(h3, k));
+    public void k_ring() {
+        assertEquals(handler.k_ring(h3, k), h3Core.kRing(h3, k));
     }
 
     @Test
-    public void h3addresskring() {
-        assertEquals(handler.h3addresskring(h3address, k), h3Core.kRing(h3address, k));
+    public void address_k_ring() {
+        assertEquals(handler.k_ring(h3address, k), h3Core.kRing(h3address, k));
     }
 
     @Test
-    public void h3distance() throws DistanceUndefinedException {
-        assertEquals(handler.h3distance(h3, secondH3).intValue(), h3Core.h3Distance(h3, secondH3));
+    public void h3_distance() throws DistanceUndefinedException {
+        assertEquals(handler.h3_distance(h3, secondH3).intValue(), h3Core.h3Distance(h3, secondH3));
     }
 
     @Test
-    public void h3distanceWithNullInputReturnsNull() {
-        assertNull(handler.h3distance(h3, null));
+    public void h3_distance_WithNullInputReturnsNull() {
+        assertNull(handler.h3_distance(h3, null));
     }
 
     @Test
-    public void h3distanceTooFarApartReturnsNegativeOne() {
-        assertEquals(Integer.valueOf(-1), handler.h3distance(h3, tooFarAwayH3));
+    public void h3_distance_TooFarApartReturnsNegativeOne() {
+        assertEquals(Integer.valueOf(-1), handler.h3_distance(h3, tooFarAwayH3));
     }
 
     @Test
-    public void h3distanceResolutionMismatchThrowsRuntimeException() {
+    public void h3_distance_ResolutionMismatchThrowsRuntimeException() {
         assertThrows(
                 RuntimeException.class,
-                () -> handler.h3distance(h3, nearbyH3WithDifferentResolution));
+                () -> handler.h3_distance(h3, nearbyH3WithDifferentResolution));
     }
 
     @Test
-    public void h3addressdistance() throws DistanceUndefinedException {
+    public void h3_address_distance() throws DistanceUndefinedException {
         assertEquals(
-                handler.h3addressdistance(h3address, secondH3Address).intValue(),
+                handler.h3_distance(h3address, secondH3Address).intValue(),
                 h3Core.h3Distance(h3address, secondH3Address));
     }
 
     @Test
-    public void h3daddressdistanceWithNullReturnsNull() {
-        assertNull(handler.h3addressdistance(h3address, null));
+    public void h3_address_distance_WithNullReturnsNull() {
+        assertNull(handler.h3_distance(h3address, null));
     }
 
     @Test
-    public void h3daddressdistanceTooFarApartReturnsNegativeOne() {
-        assertEquals(
-                Integer.valueOf(-1), handler.h3addressdistance(h3address, tooFarAwayH3Address));
+    public void h3_address_distance_TooFarApartReturnsNegativeOne() {
+        assertEquals(Integer.valueOf(-1), handler.h3_distance(h3address, tooFarAwayH3Address));
     }
 
     @Test
-    public void h3daddressdistanceResolutionMismatchThrowsRuntimeException() {
+    public void h3_address_distance_ResolutionMismatchThrowsRuntimeException() {
         assertThrows(
                 RuntimeException.class,
-                () -> handler.h3addressdistance(h3address, nearbyH3AddressWithDifferentResolution));
+                () -> handler.h3_distance(h3address, nearbyH3AddressWithDifferentResolution));
     }
 
     @Test
-    public void h3line() throws DistanceUndefinedException, LineUndefinedException {
+    public void h3_line() throws DistanceUndefinedException, LineUndefinedException {
         assertArrayEquals(
-                handler.h3line(h3, secondH3).toArray(), h3Core.h3Line(h3, secondH3).toArray());
+                handler.h3_line(h3, secondH3).toArray(), h3Core.h3Line(h3, secondH3).toArray());
     }
 
     @Test
-    public void h3addressline() throws DistanceUndefinedException, LineUndefinedException {
+    public void h3_address_line() throws DistanceUndefinedException, LineUndefinedException {
         assertArrayEquals(
-                handler.h3addressline(h3address, secondH3Address).toArray(),
+                handler.h3_line(h3address, secondH3Address).toArray(),
                 h3Core.h3Line(h3address, secondH3Address).toArray());
     }
 
     @Test
-    public void h3getresolution() {
-        assertEquals(handler.h3getresolution(h3).intValue(), h3Core.h3GetResolution(h3));
+    public void h3_get_resolution() {
+        assertEquals(handler.h3_get_resolution(h3).intValue(), h3Core.h3GetResolution(h3));
     }
 
     @Test
-    public void h3addressgetresolution() {
+    public void h3_address_get_resolution() {
         assertEquals(
-                handler.h3addressgetresolution(h3address).intValue(),
-                h3Core.h3GetResolution(h3address));
+                handler.h3_get_resolution(h3address).intValue(), h3Core.h3GetResolution(h3address));
     }
 
     @Test
-    public void h3toparent() {
-        assertEquals(handler.h3toparent(h3, res).longValue(), h3Core.h3ToParent(h3, res));
+    public void h3_to_parent() {
+        assertEquals(handler.h3_to_parent(h3, res).longValue(), h3Core.h3ToParent(h3, res));
     }
 
     @Test
-    public void h3addresstoparent() {
+    public void h3_address_to_parent() {
         assertEquals(
-                handler.h3addresstoparent(h3address, res),
-                h3Core.h3ToParentAddress(h3address, res));
+                handler.h3_to_parent(h3address, res), h3Core.h3ToParentAddress(h3address, res));
     }
 
     @Test
-    public void h3tochildren() {
+    public void h3_to_children() {
         assertArrayEquals(
-                handler.h3tochildren(h3, res).toArray(), h3Core.h3ToChildren(h3, res).toArray());
+                handler.h3_to_children(h3, res).toArray(), h3Core.h3ToChildren(h3, res).toArray());
     }
 
     @Test
-    public void h3addresstochildren() {
+    public void h3_address_to_children() {
+        assertEquals(handler.h3_to_children(h3address, res), h3Core.h3ToChildren(h3address, res));
+    }
+
+    @Test
+    public void h3_to_center_child() {
         assertEquals(
-                handler.h3addresstochildren(h3address, res), h3Core.h3ToChildren(h3address, res));
+                handler.h3_to_center_child(h3, res).longValue(), h3Core.h3ToCenterChild(h3, res));
     }
 
     @Test
-    public void h3tocenterchild() {
-        assertEquals(handler.h3tocenterchild(h3, res).longValue(), h3Core.h3ToCenterChild(h3, res));
-    }
-
-    @Test
-    public void h3addresstocenterchild() {
+    public void h3_address_to_center_child() {
         assertEquals(
-                handler.h3addresstocenterchild(h3address, res),
-                h3Core.h3ToCenterChild(h3address, res));
+                handler.h3_to_center_child(h3address, res), h3Core.h3ToCenterChild(h3address, res));
     }
 
     @Test
-    public void h3isresclassiii() {
-        assertEquals(handler.h3isresclassiii(h3), h3Core.h3IsResClassIII(h3));
+    public void h3_is_res_class_iii() {
+        assertEquals(handler.h3_is_res_class_iii(h3), h3Core.h3IsResClassIII(h3));
     }
 
     @Test
-    public void h3addressisresclassiii() {
-        assertEquals(handler.h3addressisresclassiii(h3address), h3Core.h3IsResClassIII(h3address));
+    public void h3_address_is_res_class_iii() {
+        assertEquals(handler.h3_is_res_class_iii(h3address), h3Core.h3IsResClassIII(h3address));
     }
 
     @Test
-    public void h3tostring() {
-        assertEquals(handler.h3tostring(h3), h3Core.h3ToString(h3));
+    public void h3_to_string() {
+        assertEquals(handler.h3_to_string(h3), h3Core.h3ToString(h3));
     }
 
     @Test
-    public void stringtoh3() {
-        assertEquals(handler.stringtoh3(h3address).longValue(), h3Core.stringToH3(h3address));
+    public void string_to_h3() {
+        assertEquals(handler.string_to_h3(h3address).longValue(), h3Core.stringToH3(h3address));
     }
 
     @Test
-    public void h3area() {
+    public void h3_area() {
         assertTrue(
                 almostEqual(
-                        handler.h3area(h3, unit).doubleValue(),
+                        handler.h3_area(h3, unit).doubleValue(),
                         h3Core.cellArea(h3, AreaUnit.valueOf(unit)),
                         1e-8));
     }
 
     @Test
-    public void h3addressarea() {
+    public void h3_address_area() {
         assertTrue(
                 almostEqual(
-                        handler.h3addressarea(h3address, unit).doubleValue(),
+                        handler.h3_area(h3address, unit).doubleValue(),
                         h3Core.cellArea(h3address, AreaUnit.valueOf(unit)),
                         1e-8));
     }
