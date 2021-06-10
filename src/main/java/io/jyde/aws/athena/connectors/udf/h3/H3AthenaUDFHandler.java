@@ -32,33 +32,33 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns true if this is a valid H3 index. */
-    public Boolean h3isvalid(Long h3) {
+    public Boolean h3_is_valid(Long h3) {
         return h3Core.h3IsValid(h3);
     }
 
     /** Returns true if this is a valid H3 index. */
-    public Boolean h3addressisvalid(String h3address) {
-        return h3Core.h3IsValid(h3address);
+    public Boolean h3_is_valid(String h3_address) {
+        return h3Core.h3IsValid(h3_address);
     }
 
     /** Returns the base cell number for this index. */
-    public Integer h3getbasecell(Long h3) {
+    public Integer h3_get_base_cell(Long h3) {
         return h3Core.h3GetBaseCell(h3);
     }
 
     /** Returns the base cell number for this index. */
-    public Integer h3addressgetbasecell(String h3address) {
-        return h3Core.h3GetBaseCell(h3address);
+    public Integer h3_get_base_cell(String h3_address) {
+        return h3Core.h3GetBaseCell(h3_address);
     }
 
     /** Returns <code>true</code> if this index is one of twelve pentagons per resolution. */
-    public Boolean h3ispentagon(Long h3) {
+    public Boolean h3_is_pentagon(Long h3) {
         return h3Core.h3IsPentagon(h3);
     }
 
     /** Returns <code>true</code> if this index is one of twelve pentagons per resolution. */
-    public Boolean h3addressispentagon(String h3address) {
-        return h3Core.h3IsPentagon(h3address);
+    public Boolean h3_is_pentagon(String h3_address) {
+        return h3Core.h3IsPentagon(h3_address);
     }
 
     /**
@@ -70,7 +70,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return The H3 index.
      * @throws IllegalArgumentException latitude, longitude, or resolution are out of range.
      */
-    public Long geotoh3(Double lat, Double lng, Integer res) throws IllegalArgumentException {
+    public Long geo_to_h3(Double lat, Double lng, Integer res) throws IllegalArgumentException {
         return h3Core.geoToH3(lat, lng, res);
     }
 
@@ -83,23 +83,23 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return The H3 index.
      * @throws IllegalArgumentException Latitude, longitude, or resolution is out of range.
      */
-    public String geotoh3address(Double lat, Double lng, Integer res)
+    public String geo_to_h3_address(Double lat, Double lng, Integer res)
             throws IllegalArgumentException {
         return h3Core.geoToH3Address(lat, lng, res);
     }
 
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
-    public String h3togeo(Long h3) {
+    public String h3_to_geo(Long h3) {
         return geoCoordToWKTPoint(h3Core.h3ToGeo(h3));
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
-    public String h3addresstogeo(String h3address) throws IllegalArgumentException {
-        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3address));
+    public String h3_to_geo(String h3_address) throws IllegalArgumentException {
+        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3_address));
     }
 
     /** Find the cell boundary in latitude, longitude (degrees) coordinates for the cell */
-    public String h3togeoboundary(Long h3) throws IllegalArgumentException {
+    public String h3_to_geo_boundary(Long h3) throws IllegalArgumentException {
         return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3));
     }
 
@@ -109,8 +109,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3address h3 address
      * @throws IllegalArgumentException
      */
-    public String h3addresstogeoboundary(String h3address) throws IllegalArgumentException {
-        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3address));
+    public String h3_to_geo_boundary(String h3_address) throws IllegalArgumentException {
+        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3_address));
     }
 
     /**
@@ -119,7 +119,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3 Origin index
      * @param k Number of rings around the origin
      */
-    public List<Long> h3kring(Long h3, Integer k) throws IllegalArgumentException {
+    public List<Long> k_ring(Long h3, Integer k) throws IllegalArgumentException {
         return h3Core.kRing(h3, k);
     }
 
@@ -129,9 +129,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3address Origin address
      * @param k Number of rings around the origin
      */
-    public List<String> h3addresskring(String h3address, Integer k)
-            throws IllegalArgumentException {
-        return h3Core.kRing(h3address, k);
+    public List<String> k_ring(String h3_address, Integer k) throws IllegalArgumentException {
+        return h3Core.kRing(h3_address, k);
     }
 
     /**
@@ -152,7 +151,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance between the two in grid cells
      * @throws DistanceUndefinedException H3 cannot compute the distance.
      */
-    public Integer h3distance(Long a, Long b) {
+    public Integer h3_distance(Long a, Long b) {
         if (a == null || b == null) {
             return null;
         }
@@ -186,7 +185,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance between the two in grid cells
      * @throws DistanceUndefinedException H3 cannot compute the distance.
      */
-    public Integer h3addressdistance(String a, String b) {
+    public Integer h3_distance(String a, String b) {
         if (a == null || b == null) {
             return null;
         }
@@ -225,7 +224,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Indexes making up the line.
      * @throws LineUndefinedException The line could not be computed.
      */
-    public List<Long> h3line(Long start, Long end) throws LineUndefinedException {
+    public List<Long> h3_line(Long start, Long end) throws LineUndefinedException {
         return h3Core.h3Line(start, end);
     }
 
@@ -247,58 +246,54 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      *       or great arcs.
      * </ul>
      *
-     * @param startaddress Start index of the line
-     * @param endaddress End index of the line
+     * @param start_address Start index of the line
+     * @param end_address End index of the line
      * @return Indexes making up the line.
      * @throws LineUndefinedException The line could not be computed.
      */
-    public List<String> h3addressline(String startaddress, String endaddress)
+    public List<String> h3_line(String start_address, String end_address)
             throws LineUndefinedException {
-        return h3Core.h3Line(startaddress, endaddress);
+        return h3Core.h3Line(start_address, end_address);
     }
 
     /**
      * Finds indexes within the given geofence.
      *
-     * @param polygon Outline geofence
-     * @param polygonholes Geofences of any internal holes
+     * @param points Outline geofence
+     * @param holes Geofences of any internal holes
      * @param res Resolution of the desired indexes
      */
-    public List<String> polyfillh3address(String polygon, List<String> polygonholes, Integer res)
+    public List<String> polyfill_address(String points, List<String> holes, Integer res)
             throws IllegalArgumentException {
-        List<GeoCoord> points = geoCoordsFromWKTPolygon(polygon);
-        List<List<GeoCoord>> holes =
-                polygonholes.stream()
-                        .map(this::geoCoordsFromWKTPolygon)
-                        .collect(Collectors.toList());
-        return h3Core.polyfillAddress(points, holes, res);
+        List<GeoCoord> geoCoordPoints = geoCoordsFromWKTPolygon(points);
+        List<List<GeoCoord>> geoCoordHoles =
+                holes.stream().map(this::geoCoordsFromWKTPolygon).collect(Collectors.toList());
+        return h3Core.polyfillAddress(geoCoordPoints, geoCoordHoles, res);
     }
 
     /**
      * Finds indexes within the given geofence.
      *
-     * @param polygon Outline geofence
-     * @param polygonholes Geofences of any internal holes
+     * @param points Outline geofence
+     * @param holes Geofences of any internal holes
      * @param res Resolution of the desired indexes
      * @throws IllegalArgumentException Invalid resolution
      */
-    public List<Long> polyfillh3(String polygon, List<String> polygonholes, Integer res)
+    public List<Long> polyfill(String points, List<String> holes, Integer res)
             throws IllegalArgumentException {
-        List<GeoCoord> points = geoCoordsFromWKTPolygon(polygon);
-        List<List<GeoCoord>> holes =
-                polygonholes.stream()
-                        .map(this::geoCoordsFromWKTPolygon)
-                        .collect(Collectors.toList());
-        return h3Core.polyfill(points, holes, res);
+        List<GeoCoord> geoCoordPoints = geoCoordsFromWKTPolygon(points);
+        List<List<GeoCoord>> geoCoordHoles =
+                holes.stream().map(this::geoCoordsFromWKTPolygon).collect(Collectors.toList());
+        return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);
     }
 
     /** Returns the resolution of the provided index */
-    public Integer h3addressgetresolution(String h3Address) {
-        return h3Core.h3GetResolution(h3Address);
+    public Integer h3_get_resolution(String h3_address) {
+        return h3Core.h3GetResolution(h3_address);
     }
 
     /** Returns the resolution of the provided index */
-    public Integer h3getresolution(Long h3) {
+    public Integer h3_get_resolution(Long h3) {
         return h3Core.h3GetResolution(h3);
     }
 
@@ -309,65 +304,64 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param res Resolution of the parent, <code>0 &lt;= res &lt;= h3GetResolution(h3)</code>
      * @throws IllegalArgumentException Invalid resolution
      */
-    public Long h3toparent(Long h3, Integer res) {
+    public Long h3_to_parent(Long h3, Integer res) {
         return h3Core.h3ToParent(h3, res);
     }
 
     /**
      * Returns the parent of the index at the given resolution.
      *
-     * @param h3address H3 index.
+     * @param h3 H3 index.
      * @param res Resolution of the parent, <code>0 &lt;= res &lt;= h3GetResolution(h3)</code>
      * @throws IllegalArgumentException Invalid resolution
      */
-    public String h3addresstoparent(String h3address, Integer res) {
-        return h3Core.h3ToParentAddress(h3address, res);
+    public String h3_to_parent(String h3_address, Integer res) {
+        return h3Core.h3ToParentAddress(h3_address, res);
     }
 
     /**
      * Provides the children of the index at the given resolution.
      *
      * @param h3 H3 index.
-     * @param childres Resolution of the children
+     * @param child_res Resolution of the children
      * @throws IllegalArgumentException Invalid resolution
      */
-    public List<Long> h3tochildren(Long h3, Integer childres) throws IllegalArgumentException {
-        return h3Core.h3ToChildren(h3, childres);
+    public List<Long> h3_to_children(Long h3, Integer child_res) throws IllegalArgumentException {
+        return h3Core.h3ToChildren(h3, child_res);
     }
 
     /**
      * Provides the children of the index at the given resolution.
      *
-     * @param h3address H3 index.
-     * @param childres Resolution of the children
+     * @param h3_address H3 index.
+     * @param child_res Resolution of the children
      * @throws IllegalArgumentException Invalid resolution
      */
-    public List<String> h3addresstochildren(String h3address, int childres)
+    public List<String> h3_to_children(String h3_address, int child_res)
             throws IllegalArgumentException {
-        return h3Core.h3ToChildren(h3address, childres);
+        return h3Core.h3ToChildren(h3_address, child_res);
     }
 
     /**
      * Returns the center child at the given resolution.
      *
      * @param h3address Parent H3 index address
-     * @param childres Resolution of the child
+     * @param child_res Resolution of the child
      * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
      */
-    public String h3addresstocenterchild(String h3address, Integer childres)
-            throws IllegalArgumentException {
-        return h3Core.h3ToCenterChild(h3address, childres);
+    public String h3_to_center_child(String h3, Integer child_res) throws IllegalArgumentException {
+        return h3Core.h3ToCenterChild(h3, child_res);
     }
 
     /**
      * Returns the center child at the given resolution.
      *
      * @param h3 Parent H3 index
-     * @param childres Resolution of the child
+     * @param child_res Resolution of the child
      * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
      */
-    public Long h3tocenterchild(Long h3, Integer childres) throws IllegalArgumentException {
-        return h3Core.h3ToCenterChild(h3, childres);
+    public Long h3_to_center_child(Long h3, Integer child_res) throws IllegalArgumentException {
+        return h3Core.h3ToCenterChild(h3, child_res);
     }
 
     /**
@@ -376,34 +370,40 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3 H3 index
      * @return <code>true</code> if the index is Class III
      */
-    public Boolean h3isresclassiii(Long h3) {
+    public Boolean h3_is_res_class_iii(Long h3) {
         return h3Core.h3IsResClassIII(h3);
     }
 
     /**
      * Determines if an index is Class III or Class II.
      *
-     * @param h3address H3 index address
+     * @param h3_address H3 index address
      * @return <code>true</code> if the index is Class III
      */
-    public Boolean h3addressisresclassiii(String h3address) {
-        return h3Core.h3IsResClassIII(h3address);
+    public Boolean h3_is_res_class_iii(String h3_address) {
+        return h3Core.h3IsResClassIII(h3_address);
     }
 
     /**
      * Converts from <code>long</code> representation of an index to <code>String</code>
      * representation.
+     *
+     * @param h3 H3 index
+     * @return H3 index address
      */
-    public String h3tostring(Long h3) {
+    public String h3_to_string(Long h3) {
         return h3Core.h3ToString(h3);
     }
 
     /**
      * Converts from <code>String</code> representation of an index to <code>long</code>
      * representation.
+     *
+     * @param h3_address H3 index address
+     * @return H3 index
      */
-    public Long stringtoh3(String h3address) {
-        return h3Core.stringToH3(h3address);
+    public Long string_to_h3(String h3_address) {
+        return h3Core.stringToH3(h3_address);
     }
 
     /**
@@ -413,19 +413,19 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
-    public Double h3area(Long h3, String unit) {
+    public Double h3_area(Long h3, String unit) {
         return h3Core.cellArea(h3, AreaUnit.valueOf(unit));
     }
 
     /**
      * Calculates the area of the given H3 cell.
      *
-     * @param h3address Cell to find the area of.
+     * @param h3_address Cell to find the area of.
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
-    public Double h3addressarea(String h3address, String unit) {
-        return h3Core.cellArea(h3address, AreaUnit.valueOf(unit));
+    public Double h3_area(String h3_address, String unit) {
+        return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));
     }
 
     private String geoCoordToWKTPoint(GeoCoord geoCoord) {
