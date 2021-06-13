@@ -1,4 +1,4 @@
-USING
+USING 
 EXTERNAL FUNCTION geo_to_h3(lat DOUBLE, lng DOUBLE, res INTEGER)
 RETURNS BIGINT
 LAMBDA 'h3-athena-udf-handler',
@@ -67,6 +67,30 @@ RETURNS ARRAY<BIGINT>
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION polyfill_address(points VARCHAR, holes ARRAY<VARCHAR>, res INTEGER)
 RETURNS ARRAY<VARCHAR>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_get_resolution(h3 BIGINT)
+RETURNS INTEGER
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_get_resolution(h3_address VARCHAR)
+RETURNS INTEGER
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_parent(h3 BIGINT, res INTEGER)
+RETURNS BIGINT
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_parent(h3_address VARCHAR, res INTEGER)
+RETURNS VARCHAR
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_children(h3 BIGINT, child_res INTEGER)
+RETURNS ARRAY<BIGINT>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_children(h3_address VARCHAR, child_res INTEGER)
+RETURNS ARRAY<VARCHAR>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_center_child(h3 BIGINT, child_res INTEGER)
+RETURNS BIGINT
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_center_child(h3 VARCHAR, child_res INTEGER)
+RETURNS VARCHAR
 LAMBDA 'h3-athena-udf-handler'
 
 with tbl1 AS
@@ -97,6 +121,10 @@ tbl2 AS
       cell_area(h3, 'm2') h3_area,
       h3_distance(h3, lag(h3) over ()) h3_distance,
       h3_line(h3, lag(h3, 1) over ()) h3_line,
+	    h3_get_resolution(h3) h3_resolution,
+	    h3_to_parent(h3, 7) h3_parent,
+  	  h3_to_children(h3, 9) h3_children,
+  	  h3_to_center_child(h3, 9) h3_center_child,
 
       h3_is_valid(h3_address) h3_address_valid,
       h3_get_base_cell(h3_address) h3_address_basecell,
@@ -107,7 +135,12 @@ tbl2 AS
       k_ring(h3_address, 3) h3_address_kring,
       cell_area(h3_address, 'm2') h3_address_area,
       h3_distance(h3_address, lag(h3_address) over ()) h3_address_distance,
-      h3_line(h3_address, lag(h3_address, 1) over ()) h3_line
+      h3_line(h3_address, lag(h3_address, 1) over ()) h3_line,
+  	  h3_get_resolution(h3_address) h3_address_resolution,
+	    h3_to_parent(h3_address, 7) h3_address_parent,
+	    h3_to_children(h3_address, 9) h3_address_children,
+      h3_to_center_child(h3_address, 9) h3_address_center_child,
+
     FROM tbl1
   )
 
