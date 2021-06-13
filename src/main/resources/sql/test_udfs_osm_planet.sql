@@ -1,4 +1,5 @@
-USING EXTERNAL FUNCTION geo_to_h3(lat DOUBLE, lng DOUBLE, res INTEGER)
+USING
+EXTERNAL FUNCTION geo_to_h3(lat DOUBLE, lng DOUBLE, res INTEGER)
 RETURNS BIGINT
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_geo(h3 BIGINT)
@@ -19,7 +20,7 @@ LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION k_ring(h3 BIGINT, k INTEGER)
 RETURNS ARRAY<BIGINT>
 LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_area(h3 BIGINT, unit VARCHAR)
+EXTERNAL FUNCTION cell_area(h3 BIGINT, unit VARCHAR)
 RETURNS DOUBLE
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_distance(a BIGINT, b BIGINT)
@@ -48,11 +49,24 @@ LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION k_ring(h3_address VARCHAR, k INTEGER)
 RETURNS ARRAY<VARCHAR>
 LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_area(h3 VARCHAR, unit VARCHAR)
+EXTERNAL FUNCTION cell_area(h3 VARCHAR, unit VARCHAR)
 RETURNS DOUBLE
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_distance(a VARCHAR, b VARCHAR)
 RETURNS INTEGER
+LAMBDA 'h3-athena-udf-handler',
+
+EXTERNAL FUNCTION h3_line("start" BIGINT, "end" BIGINT)
+RETURNS ARRAY<BIGINT>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_line(start_address VARCHAR, end_address VARCHAR)
+RETURNS ARRAY<VARCHAR>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION polyfill(points VARCHAR, holes ARRAY<VARCHAR>, res INTEGER)
+RETURNS ARRAY<BIGINT>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION polyfill_address(points VARCHAR, holes ARRAY<VARCHAR>, res INTEGER)
+RETURNS ARRAY<VARCHAR>
 LAMBDA 'h3-athena-udf-handler'
 
 with tbl1 AS
@@ -60,8 +74,10 @@ with tbl1 AS
   SELECT
     lat lat,
     lon lng,
-    geo_to_h3(lat, lon, 13) h3,
-    geo_to_h3_address(lat, lon, 13) h3_address
+    geo_to_h3(lat, lon, 8) h3,
+    geo_to_h3(lat, lon, 14) h3_sm,
+    geo_to_h3_address(lat, lon, 8) h3_address,
+    geo_to_h3_address(lat, lon, 14) h3_address_sm
   FROM
     planet
   LIMIT 100
@@ -76,22 +92,28 @@ tbl2 AS
       h3_is_pentagon(h3) h3_pentagon,
       h3_to_geo(h3) h3_point,
       h3_to_geo_boundary(h3) h3_polygon,
+      h3_to_geo_boundary(h3_sm) h3_polygon_sm,
       k_ring(h3, 3) h3_kring,
-      h3_area(h3, 'm2') h3_area,
+      cell_area(h3, 'm2') h3_area,
       h3_distance(h3, lag(h3) over ()) h3_distance,
+      h3_line(h3, lag(h3, 1) over ()) h3_line,
 
       h3_is_valid(h3_address) h3_address_valid,
       h3_get_base_cell(h3_address) h3_address_basecell,
       h3_is_pentagon(h3_address) h3_address_pentagon,
       h3_to_geo(h3_address) h3_address_point,
       h3_to_geo_boundary(h3_address) h3_address_polygon,
+      h3_to_geo_boundary(h3_address_sm) h3_address_polygon_sm,
       k_ring(h3_address, 3) h3_address_kring,
-      h3_area(h3_address, 'm2') h3_string_area,
-      h3_distance(h3_address, lag(h3_address) over ()) h3_address_distance
+      cell_area(h3_address, 'm2') h3_address_area,
+      h3_distance(h3_address, lag(h3_address) over ()) h3_address_distance,
+      h3_line(h3_address, lag(h3_address, 1) over ()) h3_line
     FROM tbl1
   )
 
 SELECT
-  *
+  *,
+  polyfill(h3_polygon, ARRAY[h3_polygon_sm], 10) polyfill,
+  polyfill_address(h3_polygon, ARRAY[h3_polygon_sm], 10) polyfill_address
 FROM tbl2
 ;

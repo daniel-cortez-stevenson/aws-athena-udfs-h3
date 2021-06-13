@@ -104,17 +104,17 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3_distance_WithNullInputReturnsNull() {
+    public void h3_distance_WithNullInput() {
         assertNull(handler.h3_distance(h3, null));
     }
 
     @Test
-    public void h3_distance_TooFarApartReturnsNegativeOne() {
-        assertEquals(Integer.valueOf(-1), handler.h3_distance(h3, tooFarAwayH3));
+    public void h3_distance_TooFarApart() {
+        assertNull(handler.h3_distance(h3, tooFarAwayH3));
     }
 
     @Test
-    public void h3_distance_ResolutionMismatchThrowsRuntimeException() {
+    public void h3_distance_ResolutionMismatch() {
         assertThrows(
                 RuntimeException.class,
                 () -> handler.h3_distance(h3, nearbyH3WithDifferentResolution));
@@ -128,17 +128,17 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3_address_distance_WithNullReturnsNull() {
+    public void h3_address_distance_WithNullInput() {
         assertNull(handler.h3_distance(h3address, null));
     }
 
     @Test
-    public void h3_address_distance_TooFarApartReturnsNegativeOne() {
-        assertEquals(Integer.valueOf(-1), handler.h3_distance(h3address, tooFarAwayH3Address));
+    public void h3_address_distance_TooFarApart() {
+        assertNull(handler.h3_distance(h3address, tooFarAwayH3Address));
     }
 
     @Test
-    public void h3_address_distance_ResolutionMismatchThrowsRuntimeException() {
+    public void h3_address_distance_ResolutionMismatch() {
         assertThrows(
                 RuntimeException.class,
                 () -> handler.h3_distance(h3address, nearbyH3AddressWithDifferentResolution));
@@ -223,19 +223,19 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3_area() {
+    public void cell_area() {
         assertTrue(
                 almostEqual(
-                        handler.h3_area(h3, unit).doubleValue(),
+                        handler.cell_area(h3, unit).doubleValue(),
                         h3Core.cellArea(h3, AreaUnit.valueOf(unit)),
                         1e-8));
     }
 
     @Test
-    public void h3_address_area() {
+    public void cell_address_area() {
         assertTrue(
                 almostEqual(
-                        handler.h3_area(h3address, unit).doubleValue(),
+                        handler.cell_area(h3address, unit).doubleValue(),
                         h3Core.cellArea(h3address, AreaUnit.valueOf(unit)),
                         1e-8));
     }

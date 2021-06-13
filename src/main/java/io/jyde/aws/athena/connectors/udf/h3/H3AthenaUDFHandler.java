@@ -163,7 +163,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
                         "The H3 library does not support finding the distance between the two cells with different resolutions.",
                         e);
             }
-            return -1;
+            return null;
         }
     }
 
@@ -197,7 +197,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
                         "The H3 library does not support finding the distance between the two cells with different resolutions.",
                         e);
             }
-            return -1;
+            return null;
         }
     }
 
@@ -224,8 +224,15 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Indexes making up the line.
      * @throws LineUndefinedException The line could not be computed.
      */
-    public List<Long> h3_line(Long start, Long end) throws LineUndefinedException {
-        return h3Core.h3Line(start, end);
+    public List<Long> h3_line(Long start, Long end) {
+        if (start == null || end == null) {
+            return null;
+        }
+        try {
+            return h3Core.h3Line(start, end);
+        } catch (LineUndefinedException e) {
+            return null;
+        }
     }
 
     /**
@@ -251,9 +258,15 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Indexes making up the line.
      * @throws LineUndefinedException The line could not be computed.
      */
-    public List<String> h3_line(String start_address, String end_address)
-            throws LineUndefinedException {
-        return h3Core.h3Line(start_address, end_address);
+    public List<String> h3_line(String start_address, String end_address) {
+        if (start_address == null || end_address == null) {
+            return null;
+        }
+        try {
+            return h3Core.h3Line(start_address, end_address);
+        } catch (LineUndefinedException e) {
+            return null;
+        }
     }
 
     /**
@@ -287,12 +300,18 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);
     }
 
-    /** Returns the resolution of the provided index */
+    /** Returns the resolution of the provided index 
+     * 
+     * @param h3_address H3 index.
+    */
     public Integer h3_get_resolution(String h3_address) {
         return h3Core.h3GetResolution(h3_address);
     }
 
-    /** Returns the resolution of the provided index */
+    /** Returns the resolution of the provided index 
+     * 
+     * @param h3 H3 index.
+    */
     public Integer h3_get_resolution(Long h3) {
         return h3Core.h3GetResolution(h3);
     }
@@ -311,7 +330,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Returns the parent of the index at the given resolution.
      *
-     * @param h3 H3 index.
+     * @param h3_address H3 index.
      * @param res Resolution of the parent, <code>0 &lt;= res &lt;= h3GetResolution(h3)</code>
      * @throws IllegalArgumentException Invalid resolution
      */
@@ -413,7 +432,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
-    public Double h3_area(Long h3, String unit) {
+    public Double cell_area(Long h3, String unit) {
         return h3Core.cellArea(h3, AreaUnit.valueOf(unit));
     }
 
@@ -424,7 +443,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param unit Unit to calculate the area in.
      * @return Cell area in the given units.
      */
-    public Double h3_area(String h3_address, String unit) {
+    public Double cell_area(String h3_address, String unit) {
         return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));
     }
 
