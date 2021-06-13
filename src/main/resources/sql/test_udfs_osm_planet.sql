@@ -95,7 +95,7 @@ LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_is_res_class_iii(h3 BIGINT)
 RETURNS BOOLEAN
 LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_is_res_class_iii(h3_address BIGINT)
+EXTERNAL FUNCTION h3_is_res_class_iii(h3_address VARCHAR)
 RETURNS BOOLEAN
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_string(h3 BIGINT)
