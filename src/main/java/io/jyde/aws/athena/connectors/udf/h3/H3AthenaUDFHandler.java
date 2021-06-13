@@ -300,20 +300,22 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);
     }
 
-    /** Returns the resolution of the provided index 
-     * 
-     * @param h3_address H3 index.
-    */
-    public Integer h3_get_resolution(String h3_address) {
-        return h3Core.h3GetResolution(h3_address);
-    }
-
-    /** Returns the resolution of the provided index 
-     * 
+    /**
+     * Returns the resolution of the provided index
+     *
      * @param h3 H3 index.
-    */
+     */
     public Integer h3_get_resolution(Long h3) {
         return h3Core.h3GetResolution(h3);
+    }
+
+    /**
+     * Returns the resolution of the provided index
+     *
+     * @param h3_address H3 index.
+     */
+    public Integer h3_get_resolution(String h3_address) {
+        return h3Core.h3GetResolution(h3_address);
     }
 
     /**
@@ -323,7 +325,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param res Resolution of the parent, <code>0 &lt;= res &lt;= h3GetResolution(h3)</code>
      * @throws IllegalArgumentException Invalid resolution
      */
-    public Long h3_to_parent(Long h3, Integer res) {
+    public Long h3_to_parent(Long h3, Integer res) throws IllegalArgumentException {
         return h3Core.h3ToParent(h3, res);
     }
 
@@ -334,7 +336,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param res Resolution of the parent, <code>0 &lt;= res &lt;= h3GetResolution(h3)</code>
      * @throws IllegalArgumentException Invalid resolution
      */
-    public String h3_to_parent(String h3_address, Integer res) {
+    public String h3_to_parent(String h3_address, Integer res) throws IllegalArgumentException {
         return h3Core.h3ToParentAddress(h3_address, res);
     }
 
@@ -356,7 +358,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param child_res Resolution of the children
      * @throws IllegalArgumentException Invalid resolution
      */
-    public List<String> h3_to_children(String h3_address, int child_res)
+    public List<String> h3_to_children(String h3_address, Integer child_res)
             throws IllegalArgumentException {
         return h3Core.h3ToChildren(h3_address, child_res);
     }
