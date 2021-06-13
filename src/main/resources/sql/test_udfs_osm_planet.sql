@@ -91,6 +91,18 @@ RETURNS BIGINT
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_center_child(h3 VARCHAR, child_res INTEGER)
 RETURNS VARCHAR
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_is_res_class_iii(h3 BIGINT)
+RETURNS BOOLEAN
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_is_res_class_iii(h3_address BIGINT)
+RETURNS BOOLEAN
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_string(h3 BIGINT)
+RETURNS VARCHAR
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION string_to_h3(h3_address VARCHAR)
+RETURNS BIGINT
 LAMBDA 'h3-athena-udf-handler'
 
 with tbl1 AS
@@ -125,6 +137,8 @@ tbl2 AS
 	    h3_to_parent(h3, 7) h3_parent,
   	  h3_to_children(h3, 9) h3_children,
   	  h3_to_center_child(h3, 9) h3_center_child,
+      h3_is_res_class_iii(h3) h3_is_res_class_iii,
+      h3_to_string(h3) h3_address_from_h3,
 
       h3_is_valid(h3_address) h3_address_valid,
       h3_get_base_cell(h3_address) h3_address_basecell,
@@ -140,6 +154,8 @@ tbl2 AS
 	    h3_to_parent(h3_address, 7) h3_address_parent,
 	    h3_to_children(h3_address, 9) h3_address_children,
       h3_to_center_child(h3_address, 9) h3_address_center_child,
+      h3_is_res_class_iii(h3_address) h3_address_is_res_class_iii,
+      string_to_h3(h3_address) h3_from_h3_address
 
     FROM tbl1
   )
