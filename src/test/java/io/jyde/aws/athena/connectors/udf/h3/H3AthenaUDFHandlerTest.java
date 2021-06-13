@@ -174,9 +174,10 @@ public class H3AthenaUDFHandlerTest {
     }
 
     @Test
-    public void h3_address_to_parent() {
+    public void h3_to_parent_address() {
         assertEquals(
-                handler.h3_to_parent(h3address, res), h3Core.h3ToParentAddress(h3address, res));
+                handler.h3_to_parent_address(h3address, res),
+                h3Core.h3ToParentAddress(h3address, res));
     }
 
     @Test

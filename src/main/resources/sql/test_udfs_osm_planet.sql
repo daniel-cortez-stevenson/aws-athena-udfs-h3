@@ -15,6 +15,9 @@ EXTERNAL FUNCTION h3_is_pentagon(h3 BIGINT)
 RETURNS BOOLEAN
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_geo_boundary(h3 BIGINT)
+RETURNS ARRAY<VARCHAR>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_geo_polygon(h3 BIGINT)
 RETURNS VARCHAR
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION k_ring(h3 BIGINT, k INTEGER)
@@ -44,6 +47,9 @@ EXTERNAL FUNCTION h3_is_pentagon(h3_address VARCHAR)
 RETURNS BOOLEAN
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_geo_boundary(h3_address VARCHAR)
+RETURNS ARRAY<VARCHAR>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_to_geo_polygon(h3_address VARCHAR)
 RETURNS VARCHAR
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION k_ring(h3_address VARCHAR, k INTEGER)
@@ -65,7 +71,13 @@ LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION polyfill(points VARCHAR, holes ARRAY<VARCHAR>, res INTEGER)
 RETURNS ARRAY<BIGINT>
 LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION polyfill(points ARRAY<VARCHAR>, holes ARRAY<ARRAY<VARCHAR>>, res INTEGER)
+RETURNS ARRAY<BIGINT>
+LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION polyfill_address(points VARCHAR, holes ARRAY<VARCHAR>, res INTEGER)
+RETURNS ARRAY<VARCHAR>
+LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION polyfill_address(points ARRAY<VARCHAR>, holes ARRAY<ARRAY<VARCHAR>>, res INTEGER)
 RETURNS ARRAY<VARCHAR>
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_get_resolution(h3 BIGINT)
@@ -77,7 +89,7 @@ LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_parent(h3 BIGINT, res INTEGER)
 RETURNS BIGINT
 LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_to_parent(h3_address VARCHAR, res INTEGER)
+EXTERNAL FUNCTION h3_to_parent_address(h3_address VARCHAR, res INTEGER)
 RETURNS VARCHAR
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_children(h3 BIGINT, child_res INTEGER)
@@ -89,7 +101,7 @@ LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_center_child(h3 BIGINT, child_res INTEGER)
 RETURNS BIGINT
 LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_to_center_child(h3 VARCHAR, child_res INTEGER)
+EXTERNAL FUNCTION h3_to_center_child(h3_address VARCHAR, child_res INTEGER)
 RETURNS VARCHAR
 LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_is_res_class_iii(h3 BIGINT)
@@ -127,8 +139,10 @@ tbl2 AS
       h3_get_base_cell(h3) h3_basecell,
       h3_is_pentagon(h3) h3_pentagon,
       h3_to_geo(h3) h3_point,
-      h3_to_geo_boundary(h3) h3_polygon,
-      h3_to_geo_boundary(h3_sm) h3_polygon_sm,
+      h3_to_geo_boundary(h3) h3_boundary,
+      h3_to_geo_boundary(h3_sm) h3_boundary_sm,
+      h3_to_geo_polygon(h3) h3_polygon,
+      h3_to_geo_polygon(h3_sm) h3_polygon_sm,
       k_ring(h3, 3) h3_kring,
       cell_area(h3, 'm2') h3_area,
       h3_distance(h3, lag(h3) over ()) h3_distance,
@@ -144,14 +158,16 @@ tbl2 AS
       h3_get_base_cell(h3_address) h3_address_basecell,
       h3_is_pentagon(h3_address) h3_address_pentagon,
       h3_to_geo(h3_address) h3_address_point,
-      h3_to_geo_boundary(h3_address) h3_address_polygon,
-      h3_to_geo_boundary(h3_address_sm) h3_address_polygon_sm,
+      h3_to_geo_boundary(h3_address) h3_address_boundary,
+      h3_to_geo_boundary(h3_address_sm) h3_address_boundary_sm,
+      h3_to_geo_polygon(h3) h3_address_polygon,
+      h3_to_geo_polygon(h3_sm) h3_address_polygon_sm,
       k_ring(h3_address, 3) h3_address_kring,
       cell_area(h3_address, 'm2') h3_address_area,
       h3_distance(h3_address, lag(h3_address) over ()) h3_address_distance,
       h3_line(h3_address, lag(h3_address, 1) over ()) h3_line,
   	  h3_get_resolution(h3_address) h3_address_resolution,
-	    h3_to_parent(h3_address, 7) h3_address_parent,
+	    h3_to_parent_address(h3_address, 7) h3_address_parent,
 	    h3_to_children(h3_address, 9) h3_address_children,
       h3_to_center_child(h3_address, 9) h3_address_center_child,
       h3_is_res_class_iii(h3_address) h3_address_is_res_class_iii,
@@ -162,7 +178,9 @@ tbl2 AS
 
 SELECT
   *,
-  polyfill(h3_polygon, ARRAY[h3_polygon_sm], 10) polyfill,
-  polyfill_address(h3_polygon, ARRAY[h3_polygon_sm], 10) polyfill_address
+  polyfill(h3_polygon, ARRAY[h3_polygon_sm], 10) polyfill_polygon,
+  polyfill(h3_boundary, ARRAY[h3_boundary_sm], 10) polyfill_boundary,
+  polyfill_address(h3_address_polygon, ARRAY[h3_address_polygon_sm], 10) polyfill_address,
+  polyfill(h3_address_boundary, ARRAY[h3_address_boundary_sm], 10) polyfill_address_boundary
 FROM tbl2
 ;
