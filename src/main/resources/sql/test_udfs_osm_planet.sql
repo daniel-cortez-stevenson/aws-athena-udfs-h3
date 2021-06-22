@@ -116,9 +116,9 @@ tbl2 AS
       h3_is_res_class_iii(h3) h3_is_res_class_iii,
       h3_is_res_class_iii(h3_address) h3_address_is_res_class_iii,
       h3_to_string(h3) h3_address_from_h3,
-      string_to_h3(h3_address) h3_from_h3_address
+      string_to_h3(h3_address) h3_from_h3_address,
       cell_area(h3, 'm2') h3_area,
-      cell_area(h3_address, 'm2') h3_address_area,
+      cell_area(h3_address, 'm2') h3_address_area
       -- point_dist
       -- exact_edge_length
       -- hex_area
