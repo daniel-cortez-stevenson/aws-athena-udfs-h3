@@ -151,8 +151,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Neighboring indexes in all directions.
      *
-     * @param h3 Origin index
-     * @param k Number of rings around the origin
+     * @param h3 Origin index.
+     * @param k Number of rings around the origin.
      * @return A list of H3 indexes forming a ring k cells away from the origin.
      * @throws IllegalArgumentException
      */
@@ -163,8 +163,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Neighboring addresses in all directions.
      *
-     * @param h3address Origin address
-     * @param k Number of rings around the origin
+     * @param h3_address Origin index address.
+     * @param k Number of rings around the origin.
      * @return A list of H3 index addresses forming a ring k cells away from the origin.
      * @throws IllegalArgumentException
      */
@@ -598,8 +598,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Determines if an index is Class III or Class II.
      *
-     * @param h3_address H3 index address
-     * @return <code>true</code> if the index is Class III
+     * @param h3_address H3 index address.
+     * @return <code>true</code> if the index is Class III.
      */
     public Boolean h3_is_res_class_iii(String h3_address) {
         return h3Core.h3IsResClassIII(h3_address);
@@ -609,8 +609,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * Converts from <code>long</code> representation of an index to <code>String</code>
      * representation.
      *
-     * @param h3 H3 index
-     * @return H3 index address
+     * @param h3 H3 index.
+     * @return H3 index address.
      */
     public String h3_to_string(Long h3) {
         return h3Core.h3ToString(h3);
@@ -620,8 +620,8 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * Converts from <code>String</code> representation of an index to <code>long</code>
      * representation.
      *
-     * @param h3_address H3 index address
-     * @return H3 index
+     * @param h3_address H3 index address.
+     * @return H3 index.
      */
     public Long string_to_h3(String h3_address) {
         return h3Core.stringToH3(h3_address);
