@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>H3AthenaUDFHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aws-athena-udfs-h3</a> &gt; <a href="index.source.html" class="el_package">io.jyde.aws.athena.connectors.udf.h3</a> &gt; <span class="el_source">H3AthenaUDFHandler.java</span></div><h1>H3AthenaUDFHandler.java</h1><pre class="source lang-java linenums">/* Licensed under Apache-2.0 2021. */
+package io.jyde.aws.athena.connectors.udf.h3;
+
+import com.amazonaws.athena.connector.lambda.handlers.UserDefinedFunctionHandler;
+import com.google.common.annotations.VisibleForTesting;
+import com.uber.h3core.AreaUnit;
+import com.uber.h3core.H3Core;
+import com.uber.h3core.LengthUnit;
+import com.uber.h3core.exceptions.DistanceUndefinedException;
+import com.uber.h3core.exceptions.LineUndefinedException;
+import com.uber.h3core.exceptions.PentagonEncounteredException;
+import com.uber.h3core.util.GeoCoord;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
+    private static final String SOURCE_TYPE = &quot;io.jyde.aws&quot;;
+
+    private final H3Core h3Core;
+
+    public H3AthenaUDFHandler() throws IOException {
+<span class="fc" id="L26">        super(SOURCE_TYPE);</span>
+<span class="fc" id="L27">        this.h3Core = H3Core.newInstance();</span>
+<span class="fc" id="L28">    }</span>
+
+    @VisibleForTesting
+    H3AthenaUDFHandler(H3Core h3Core) {
+<span class="nc" id="L32">        super(SOURCE_TYPE);</span>
+<span class="nc" id="L33">        this.h3Core = h3Core;</span>
+<span class="nc" id="L34">    }</span>
+
+    /** Returns true if this is a valid H3 index. */
+    public Boolean h3_is_valid(Long h3) {
+<span class="fc" id="L38">        return h3Core.h3IsValid(h3);</span>
+    }
+
+    /** Returns true if this is a valid H3 index. */
+    public Boolean h3_is_valid(String h3_address) {
+<span class="fc" id="L43">        return h3Core.h3IsValid(h3_address);</span>
+    }
+
+    /** Returns the base cell number for this index. */
+    public Integer h3_get_base_cell(Long h3) {
+<span class="fc" id="L48">        return h3Core.h3GetBaseCell(h3);</span>
+    }
+
+    /** Returns the base cell number for this index. */
+    public Integer h3_get_base_cell(String h3_address) {
+<span class="fc" id="L53">        return h3Core.h3GetBaseCell(h3_address);</span>
+    }
+
+    /** Returns &lt;code&gt;true&lt;/code&gt; if this index is one of twelve pentagons per resolution. */
+    public Boolean h3_is_pentagon(Long h3) {
+<span class="fc" id="L58">        return h3Core.h3IsPentagon(h3);</span>
+    }
+
+    /** Returns &lt;code&gt;true&lt;/code&gt; if this index is one of twelve pentagons per resolution. */
+    public Boolean h3_is_pentagon(String h3_address) {
+<span class="fc" id="L63">        return h3Core.h3IsPentagon(h3_address);</span>
+    }
+
+    /**
+     * Find the H3 index of the resolution &lt;code&gt;res&lt;/code&gt; cell containing the lat/lon (in degrees)
+     *
+     * @param lat Latitude in degrees.
+     * @param lng Longitude in degrees.
+     * @param res Resolution, 0 &amp;lt;= res &amp;lt;= 15
+     * @return The H3 index.
+     * @throws IllegalArgumentException latitude, longitude, or resolution are out of range.
+     */
+    public Long geo_to_h3(Double lat, Double lng, Integer res) throws IllegalArgumentException {
+<span class="fc" id="L76">        return h3Core.geoToH3(lat, lng, res);</span>
+    }
+
+    /**
+     * Find the H3 index of the resolution &lt;code&gt;res&lt;/code&gt; cell containing the lat/lon (in degrees)
+     *
+     * @param lat Latitude in degrees.
+     * @param lng Longitude in degrees.
+     * @param res Resolution, 0 &amp;lt;= res &amp;lt;= 15
+     * @return The H3 index.
+     * @throws IllegalArgumentException Latitude, longitude, or resolution is out of range.
+     */
+    public String geo_to_h3_address(Double lat, Double lng, Integer res)
+            throws IllegalArgumentException {
+<span class="fc" id="L90">        return h3Core.geoToH3Address(lat, lng, res);</span>
+    }
+
+    /** Find the latitude, longitude (both in degrees) center point of the cell. */
+    public String h3_to_geo(Long h3) {
+<span class="nc" id="L95">        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3));</span>
+    }
+
+    /** Find the latitude, longitude (degrees) center point of the cell. */
+    public String h3_to_geo(String h3_address) throws IllegalArgumentException {
+<span class="nc" id="L100">        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3_address));</span>
+    }
+
+    /**
+     * Find the cell boundary in latitude, longitude (degrees) coordinates for the cell
+     *
+     * @param h3 H3 index.
+     * @return A list of WKT Point strings.
+     * @throws IllegalArgumentException
+     */
+    public List&lt;String&gt; h3_to_geo_boundary(Long h3) throws IllegalArgumentException {
+<span class="nc" id="L111">        return h3Core.h3ToGeoBoundary(h3).stream()</span>
+<span class="nc" id="L112">                .map(this::geoCoordToWKTPoint)</span>
+<span class="nc" id="L113">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Find the cell boundary in latitude, longitude (degrees) coordinates for the cell
+     *
+     * @param h3_address H3 index address.
+     * @return A list of WKT Point strings.
+     * @throws IllegalArgumentException
+     */
+    public List&lt;String&gt; h3_to_geo_boundary(String h3_address) throws IllegalArgumentException {
+<span class="nc" id="L124">        return h3Core.h3ToGeoBoundary(h3_address).stream()</span>
+<span class="nc" id="L125">                .map(this::geoCoordToWKTPoint)</span>
+<span class="nc" id="L126">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Find the cell boundary in latitude, longitude (degrees) coordinates for the cell
+     *
+     * @param h3 H3 index.
+     * @return A WKT Polygon string.
+     * @throws IllegalArgumentException
+     */
+    public String h3_to_geo_polygon(Long h3) throws IllegalArgumentException {
+<span class="nc" id="L137">        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3));</span>
+    }
+
+    /**
+     * Find the cell boundary in latitude, longitude (degrees) coordinates for the cell
+     *
+     * @param h3_address H3 index address.
+     * @return A WKT Polygon string.
+     * @throws IllegalArgumentException
+     */
+    public String h3_to_geo_polygon(String h3_address) throws IllegalArgumentException {
+<span class="nc" id="L148">        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3_address));</span>
+    }
+
+    /**
+     * Neighboring indexes in all directions.
+     *
+     * @param h3 Origin index.
+     * @param k Number of rings around the origin.
+     * @return A list of H3 indexes forming a ring k cells away from the origin.
+     * @throws IllegalArgumentException
+     */
+    public List&lt;Long&gt; k_ring(Long h3, Integer k) throws IllegalArgumentException {
+<span class="fc" id="L160">        return h3Core.kRing(h3, k);</span>
+    }
+
+    /**
+     * Neighboring addresses in all directions.
+     *
+     * @param h3_address Origin index address.
+     * @param k Number of rings around the origin.
+     * @return A list of H3 index addresses forming a ring k cells away from the origin.
+     * @throws IllegalArgumentException
+     */
+    public List&lt;String&gt; k_ring(String h3_address, Integer k) throws IllegalArgumentException {
+<span class="fc" id="L172">        return h3Core.kRing(h3_address, k);</span>
+    }
+
+    /**
+     * Neighboring indexes in all directions.
+     *
+     * @param h3 Origin index.
+     * @param k Number of rings around the origin
+     * @return List of {@link #kRing(String, int)} results.
+     */
+    public List&lt;List&lt;Long&gt;&gt; k_rings(Long h3, Integer k) {
+<span class="nc" id="L183">        List&lt;List&lt;String&gt;&gt; h3Addresses = h3Core.kRings(h3Core.h3ToString(h3), k);</span>
+<span class="nc" id="L184">        return h3Addresses.stream()</span>
+<span class="nc" id="L185">                .map(</span>
+                        x -&gt;
+<span class="nc" id="L187">                                x.stream()</span>
+<span class="nc" id="L188">                                        .map(address -&gt; h3Core.stringToH3(address))</span>
+<span class="nc" id="L189">                                        .collect(Collectors.toList()))</span>
+<span class="nc" id="L190">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Neighboring indexes in all directions.
+     *
+     * @param h3_address Origin index address.
+     * @param k Number of rings around the origin
+     * @return List of {@link #kRing(String, int)} results.
+     */
+    public List&lt;List&lt;String&gt;&gt; k_rings(String h3_address, Integer k) {
+<span class="nc" id="L201">        return h3Core.kRings(h3_address, k);</span>
+    }
+
+    /**
+     * Neighboring indexes in all directions, ordered by distance from the origin index.
+     *
+     * @param h3 Origin index.
+     * @param k Number of rings around the origin.
+     * @return A list of rings, each of which is a list of addresses. The rings are in order from
+     *     closest to origin to farthest.
+     */
+    public List&lt;List&lt;Long&gt;&gt; k_ring_distances(Long h3, Integer k) {
+<span class="nc" id="L213">        return h3Core.kRingDistances(h3, k);</span>
+    }
+
+    /**
+     * Neighboring indexes in all directions, ordered by distance from the origin index.
+     *
+     * @param h3_address Origin index address.
+     * @param k Number of rings around the origin.
+     * @return A list of rings, each of which is a list of addresses. The rings are in order from
+     *     closest to origin to farthest.
+     */
+    public List&lt;List&lt;String&gt;&gt; k_ring_distances(String h3_address, Integer k) {
+<span class="nc" id="L225">        return h3Core.kRingDistances(h3_address, k);</span>
+    }
+
+    /**
+     * Returns in order neighbor traversal.
+     *
+     * @param h3 Origin hexagon index.
+     * @param k Number of rings around the origin.
+     * @return A list of rings, each of which is a list of addresses. The rings are in order from
+     *     closest to origin to farthest.
+     * @throws PentagonEncounteredException A pentagon was encountered while iterating the rings
+     */
+    public List&lt;List&lt;Long&gt;&gt; hex_range(Long h3, Integer k) throws PentagonEncounteredException {
+<span class="nc" id="L238">        return h3Core.hexRange(h3, k);</span>
+    }
+
+    /**
+     * Returns in order neighbor traversal.
+     *
+     * @param h3_address Origin hexagon index address.
+     * @param k Number of rings around the origin
+     * @return A list of rings, each of which is a list of addresses. The rings are in order from
+     *     closest to origin to farthest.
+     * @throws PentagonEncounteredException A pentagon was encountered while iterating the rings
+     */
+    public List&lt;List&lt;String&gt;&gt; hex_range(String h3_address, Integer k)
+            throws PentagonEncounteredException {
+<span class="nc" id="L252">        return h3Core.hexRange(h3_address, k);</span>
+    }
+
+    /**
+     * Returns in order neighbor traversal, of indexes with distance of &lt;code&gt;k&lt;/code&gt;.
+     *
+     * @param h3 Origin index.
+     * @param k Number of rings around the origin.
+     * @return All indexes &lt;code&gt;k&lt;/code&gt; away from the origin.
+     * @throws PentagonEncounteredException A pentagon or pentagonal distortion was encountered.
+     */
+    public List&lt;Long&gt; hex_ring(Long h3, Integer k) throws PentagonEncounteredException {
+<span class="nc" id="L264">        return h3Core.hexRing(h3, k);</span>
+    }
+
+    /**
+     * Returns in order neighbor traversal, of indexes with distance of &lt;code&gt;k&lt;/code&gt;.
+     *
+     * @param h3_address Origin index address.
+     * @param k Number of rings around the origin.
+     * @return All indexes &lt;code&gt;k&lt;/code&gt; away from the origin.
+     * @throws PentagonEncounteredException A pentagon or pentagonal distortion was encountered.
+     */
+    public List&lt;String&gt; hex_ring(String h3_address, Integer k) throws PentagonEncounteredException {
+<span class="nc" id="L276">        return h3Core.hexRing(h3_address, k);</span>
+    }
+
+    /**
+     * Returns the distance between &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt;. This is the grid distance, or
+     * distance expressed in number of H3 cells.
+     *
+     * &lt;p&gt;In some cases H3 cannot compute the distance between two indexes. This can happen because:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;The indexes are not comparable (difference resolutions, etc)
+     *   &lt;li&gt;The distance is greater than the H3 core library supports
+     *   &lt;li&gt;The H3 library does not support finding the distance between the two cells, because of
+     *       pentagonal distortion.
+     * &lt;/ul&gt;
+     *
+     * @param a An H3 index.
+     * @param b Another H3 index.
+     * @return Distance between the two in grid cells.
+     * @throws RuntimeException H3 cannot compute the distance because the two cells have different
+     *     resolutions.
+     */
+    public Integer h3_distance(Long a, Long b) {
+<span class="pc bpc" id="L299" title="1 of 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="fc" id="L300">            return null;</span>
+        }
+        try {
+<span class="fc" id="L303">            return h3Core.h3Distance(a, b);</span>
+<span class="fc" id="L304">        } catch (DistanceUndefinedException e) {</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {</span>
+<span class="fc" id="L306">                throw new RuntimeException(</span>
+                        &quot;The H3 library does not support finding the distance between the two cells with different resolutions.&quot;,
+                        e);
+            }
+<span class="fc" id="L310">            return null;</span>
+        }
+    }
+
+    /**
+     * Returns the distance between &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt;. This is the grid distance, or
+     * distance expressed in number of H3 cells.
+     *
+     * &lt;p&gt;In some cases H3 cannot compute the distance between two indexes. This can happen because:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;The indexes are not comparable (difference resolutions, etc)
+     *   &lt;li&gt;The distance is greater than the H3 core library supports
+     *   &lt;li&gt;The H3 library does not support finding the distance between the two cells, because of
+     *       pentagonal distortion.
+     * &lt;/ul&gt;
+     *
+     * @param a An H3 index address.
+     * @param b Another H3 index address.
+     * @return Distance between the two in grid cells.
+     * @throws RuntimeException H3 cannot compute the distance because the two cells have different
+     *     resolutions.
+     */
+    public Integer h3_distance(String a, String b) {
+<span class="pc bpc" id="L334" title="1 of 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="fc" id="L335">            return null;</span>
+        }
+        try {
+<span class="fc" id="L338">            return h3Core.h3Distance(a, b);</span>
+<span class="fc" id="L339">        } catch (DistanceUndefinedException e) {</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {</span>
+<span class="fc" id="L341">                throw new RuntimeException(</span>
+                        &quot;The H3 library does not support finding the distance between the two cells with different resolutions.&quot;,
+                        e);
+            }
+<span class="fc" id="L345">            return null;</span>
+        }
+    }
+
+    /**
+     * Given two H3 indexes, return the line of indexes between them (inclusive of endpoints).
+     *
+     * &lt;p&gt;This function may fail to find the line between two indexes, for example if they are very
+     * far apart. It may also fail when finding distances for indexes on opposite sides of a
+     * pentagon.
+     *
+     * &lt;p&gt;Notes:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;The specific output of this function should not be considered stable across library
+     *       versions. The only guarantees the library provides are that the line length will be
+     *       `h3Distance(start, end) + 1` and that every index in the line will be a neighbor of the
+     *       preceding index.
+     *   &lt;li&gt;Lines are drawn in grid space, and may not correspond exactly to either Cartesian lines
+     *       or great arcs.
+     * &lt;/ul&gt;
+     *
+     * @param start Start index of the line.
+     * @param end End index of the line.
+     * @return Indexes making up the line.
+     * @throws LineUndefinedException The line could not be computed.
+     */
+    public List&lt;Long&gt; h3_line(Long start, Long end) {
+<span class="pc bpc" id="L373" title="2 of 4 branches missed.">        if (start == null || end == null) {</span>
+<span class="nc" id="L374">            return null;</span>
+        }
+        try {
+<span class="fc" id="L377">            return h3Core.h3Line(start, end);</span>
+<span class="nc" id="L378">        } catch (LineUndefinedException e) {</span>
+<span class="nc" id="L379">            return null;</span>
+        }
+    }
+
+    /**
+     * Given two H3 indexes, return the line of indexes between them (inclusive of endpoints).
+     *
+     * &lt;p&gt;This function may fail to find the line between two indexes, for example if they are very
+     * far apart. It may also fail when finding distances for indexes on opposite sides of a
+     * pentagon.
+     *
+     * &lt;p&gt;Notes:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;The specific output of this function should not be considered stable across library
+     *       versions. The only guarantees the library provides are that the line length will be
+     *       `h3Distance(start, end) + 1` and that every index in the line will be a neighbor of the
+     *       preceding index.
+     *   &lt;li&gt;Lines are drawn in grid space, and may not correspond exactly to either Cartesian lines
+     *       or great arcs.
+     * &lt;/ul&gt;
+     *
+     * @param start_address Start index of the line.
+     * @param end_address End index of the line.
+     * @return Index addresses making up the line.
+     * @throws LineUndefinedException The line could not be computed.
+     */
+    public List&lt;String&gt; h3_line(String start_address, String end_address) {
+<span class="pc bpc" id="L407" title="2 of 4 branches missed.">        if (start_address == null || end_address == null) {</span>
+<span class="nc" id="L408">            return null;</span>
+        }
+        try {
+<span class="fc" id="L411">            return h3Core.h3Line(start_address, end_address);</span>
+<span class="nc" id="L412">        } catch (LineUndefinedException e) {</span>
+<span class="nc" id="L413">            return null;</span>
+        }
+    }
+
+    /**
+     * Finds indexes within the given geofence.
+     *
+     * @param points Outline geofence as a WKT Polygon.
+     * @param holes Geofences of any internal holes as a list of WKT Polygons.
+     * @param res Resolution of the desired indexes.
+     * @return Indexes making up the area enclosed by points minus the area enclosed by holes.
+     * @throws IllegalArgumentException Invalid resolution.
+     */
+    public List&lt;Long&gt; polyfill(String points, List&lt;String&gt; holes, Integer res)
+            throws IllegalArgumentException {
+<span class="nc" id="L428">        List&lt;GeoCoord&gt; geoCoordPoints = geoCoordsFromWKTPolygon(points);</span>
+<span class="nc" id="L429">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
+<span class="nc" id="L430">                holes.stream().map(this::geoCoordsFromWKTPolygon).collect(Collectors.toList());</span>
+<span class="nc" id="L431">        return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);</span>
+    }
+
+    /**
+     * Finds indexes within the given geofence.
+     *
+     * @param points Outline geofence as a list of WKT Points.
+     * @param holes Geofences of any internal holes as a list of lists containing WKT Points.
+     * @param res Resolution of the desired indexes.
+     * @return Indexes making up the area enclosed by points minus the area enclosed by holes.
+     * @throws IllegalArgumentException Invalid resolution.
+     */
+    public List&lt;Long&gt; polyfill(List&lt;String&gt; points, List&lt;List&lt;String&gt;&gt; holes, Integer res)
+            throws IllegalArgumentException {
+<span class="nc" id="L445">        List&lt;GeoCoord&gt; geoCoordPoints =</span>
+<span class="nc" id="L446">                points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());</span>
+<span class="nc" id="L447">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
+<span class="nc" id="L448">                holes.stream()</span>
+<span class="nc" id="L449">                        .map(</span>
+                                x -&gt;
+<span class="nc" id="L451">                                        x.stream()</span>
+<span class="nc" id="L452">                                                .map(this::geoCoordFromWKTPoint)</span>
+<span class="nc" id="L453">                                                .collect(Collectors.toList()))</span>
+<span class="nc" id="L454">                        .collect(Collectors.toList());</span>
+<span class="nc" id="L455">        return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);</span>
+    }
+
+    /**
+     * Finds indexes within the given geofence.
+     *
+     * @param points Outline geofence as a WKT Polygon.
+     * @param holes Geofences of any internal holes as a list of WKT Polygons.
+     * @param res Resolution of the desired indexes.
+     * @return Index addresses making up the area enclosed by points minus the area enclosed by
+     *     holes.
+     * @throws IllegalArgumentException Invalid resolution.
+     */
+    public List&lt;String&gt; polyfill_address(String points, List&lt;String&gt; holes, Integer res)
+            throws IllegalArgumentException {
+<span class="nc" id="L470">        List&lt;GeoCoord&gt; geoCoordPoints = geoCoordsFromWKTPolygon(points);</span>
+<span class="nc" id="L471">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
+<span class="nc" id="L472">                holes.stream().map(this::geoCoordsFromWKTPolygon).collect(Collectors.toList());</span>
+<span class="nc" id="L473">        return h3Core.polyfillAddress(geoCoordPoints, geoCoordHoles, res);</span>
+    }
+
+    /**
+     * Finds indexes within the given geofence.
+     *
+     * @param points Outline geofence as a list of WKT Points.
+     * @param holes Geofences of any internal holes as a list of lists containing WKT Points.
+     * @param res Resolution of the desired indexes.
+     * @return Index addresses making up the area enclosed by points minus the area enclosed by
+     *     holes.
+     * @throws IllegalArgumentException Invalid resolution.
+     */
+    public List&lt;String&gt; polyfill_address(List&lt;String&gt; points, List&lt;List&lt;String&gt;&gt; holes, Integer res)
+            throws IllegalArgumentException {
+<span class="nc" id="L488">        List&lt;GeoCoord&gt; geoCoordPoints =</span>
+<span class="nc" id="L489">                points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());</span>
+<span class="nc" id="L490">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
+<span class="nc" id="L491">                holes.stream()</span>
+<span class="nc" id="L492">                        .map(</span>
+                                x -&gt;
+<span class="nc" id="L494">                                        x.stream()</span>
+<span class="nc" id="L495">                                                .map(this::geoCoordFromWKTPoint)</span>
+<span class="nc" id="L496">                                                .collect(Collectors.toList()))</span>
+<span class="nc" id="L497">                        .collect(Collectors.toList());</span>
+<span class="nc" id="L498">        return h3Core.polyfillAddress(geoCoordPoints, geoCoordHoles, res);</span>
+    }
+
+    /**
+     * Returns the resolution of the provided index
+     *
+     * @param h3 H3 index.
+     */
+    public Integer h3_get_resolution(Long h3) {
+<span class="fc" id="L507">        return h3Core.h3GetResolution(h3);</span>
+    }
+
+    /**
+     * Returns the resolution of the provided index
+     *
+     * @param h3_address H3 index address.
+     */
+    public Integer h3_get_resolution(String h3_address) {
+<span class="fc" id="L516">        return h3Core.h3GetResolution(h3_address);</span>
+    }
+
+    /**
+     * Returns the parent of the index at the given resolution.
+     *
+     * @param h3 H3 index.
+     * @param res Resolution of the parent, &lt;code&gt;0 &amp;lt;= res &amp;lt;= h3GetResolution(h3)&lt;/code&gt;
+     * @throws IllegalArgumentException Invalid resolution
+     */
+    public Long h3_to_parent(Long h3, Integer res) throws IllegalArgumentException {
+<span class="fc" id="L527">        return h3Core.h3ToParent(h3, res);</span>
+    }
+
+    /**
+     * Returns the parent of the index at the given resolution.
+     *
+     * @param h3_address H3 index.
+     * @param res Resolution of the parent, &lt;code&gt;0 &amp;lt;= res &amp;lt;= h3GetResolution(h3)&lt;/code&gt;
+     * @throws IllegalArgumentException Invalid resolution
+     */
+    public String h3_to_parent_address(String h3_address, Integer res)
+            throws IllegalArgumentException {
+<span class="fc" id="L539">        return h3Core.h3ToParentAddress(h3_address, res);</span>
+    }
+
+    /**
+     * Provides the children of the index at the given resolution.
+     *
+     * @param h3 H3 index.
+     * @param child_res Resolution of the children
+     * @throws IllegalArgumentException Invalid resolution
+     */
+    public List&lt;Long&gt; h3_to_children(Long h3, Integer child_res) throws IllegalArgumentException {
+<span class="fc" id="L550">        return h3Core.h3ToChildren(h3, child_res);</span>
+    }
+
+    /**
+     * Provides the children of the index at the given resolution.
+     *
+     * @param h3_address H3 index address.
+     * @param child_res Resolution of the children
+     * @throws IllegalArgumentException Invalid resolution
+     */
+    public List&lt;String&gt; h3_to_children(String h3_address, Integer child_res)
+            throws IllegalArgumentException {
+<span class="fc" id="L562">        return h3Core.h3ToChildren(h3_address, child_res);</span>
+    }
+
+    /**
+     * Returns the center child at the given resolution.
+     *
+     * @param h3 Parent H3 index
+     * @param child_res Resolution of the child
+     * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
+     */
+    public Long h3_to_center_child(Long h3, Integer child_res) throws IllegalArgumentException {
+<span class="fc" id="L573">        return h3Core.h3ToCenterChild(h3, child_res);</span>
+    }
+
+    /**
+     * Returns the center child at the given resolution.
+     *
+     * @param h3_address Parent H3 index address
+     * @param child_res Resolution of the child
+     * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
+     */
+    public String h3_to_center_child(String h3_address, Integer child_res)
+            throws IllegalArgumentException {
+<span class="fc" id="L585">        return h3Core.h3ToCenterChild(h3_address, child_res);</span>
+    }
+
+    /**
+     * Determines if an index is Class III or Class II.
+     *
+     * @param h3 H3 index
+     * @return &lt;code&gt;true&lt;/code&gt; if the index is Class III
+     */
+    public Boolean h3_is_res_class_iii(Long h3) {
+<span class="fc" id="L595">        return h3Core.h3IsResClassIII(h3);</span>
+    }
+
+    /**
+     * Determines if an index is Class III or Class II.
+     *
+     * @param h3_address H3 index address.
+     * @return &lt;code&gt;true&lt;/code&gt; if the index is Class III.
+     */
+    public Boolean h3_is_res_class_iii(String h3_address) {
+<span class="fc" id="L605">        return h3Core.h3IsResClassIII(h3_address);</span>
+    }
+
+    /**
+     * Converts from &lt;code&gt;long&lt;/code&gt; representation of an index to &lt;code&gt;String&lt;/code&gt;
+     * representation.
+     *
+     * @param h3 H3 index.
+     * @return H3 index address.
+     */
+    public String h3_to_string(Long h3) {
+<span class="fc" id="L616">        return h3Core.h3ToString(h3);</span>
+    }
+
+    /**
+     * Converts from &lt;code&gt;String&lt;/code&gt; representation of an index to &lt;code&gt;long&lt;/code&gt;
+     * representation.
+     *
+     * @param h3_address H3 index address.
+     * @return H3 index.
+     */
+    public Long string_to_h3(String h3_address) {
+<span class="fc" id="L627">        return h3Core.stringToH3(h3_address);</span>
+    }
+
+    /**
+     * Calculates the area of the given H3 cell.
+     *
+     * @param h3 Cell to find the area of.
+     * @param unit Unit to calculate the area in.
+     * @return Cell area in the given units.
+     */
+    public Double cell_area(Long h3, String unit) {
+<span class="fc" id="L638">        return h3Core.cellArea(h3, AreaUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Calculates the area of the given H3 cell.
+     *
+     * @param h3_address Cell to find the area of.
+     * @param unit Unit to calculate the area in. One of: 'rads2', 'km2', 'm2'.
+     * @return Cell area in the given units.
+     */
+    public Double cell_area(String h3_address, String unit) {
+<span class="fc" id="L649">        return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Return the distance along the sphere between two points.
+     *
+     * @param a First point as a WKT Point string.
+     * @param b Second point as a WKT Point string.
+     * @param unit Unit to return the distance in.
+     * @return Distance from point &lt;code&gt;a&lt;/code&gt; to point &lt;code&gt;b&lt;/code&gt;
+     */
+    public Double point_dist(String a, String b, String unit) {
+<span class="nc" id="L661">        GeoCoord aGeoCoord = geoCoordFromWKTPoint(a);</span>
+<span class="nc" id="L662">        GeoCoord bGeoCoord = geoCoordFromWKTPoint(b);</span>
+<span class="nc" id="L663">        return h3Core.pointDist(aGeoCoord, bGeoCoord, LengthUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Calculate the edge length of the given H3 edge.
+     *
+     * @param edge Edge to find the edge length of.
+     * @param unit Unit of measure to use.
+     * @return Length of the given edge.
+     */
+    public Double exact_edge_length(Long edge, String unit) {
+<span class="nc" id="L674">        return h3Core.exactEdgeLength(edge, LengthUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Calculate the edge length of the given H3 edge.
+     *
+     * @param edge_address Edge address to find the edge length of.
+     * @param unit Unit of measure to use.
+     * @return Length of the given edge.
+     */
+    public Double exact_edge_length(String edge_address, String unit) {
+<span class="nc" id="L685">        return h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Returns the average area in &lt;code&gt;unit&lt;/code&gt; for indexes at resolution &lt;code&gt;res&lt;/code&gt;.
+     *
+     * @throws IllegalArgumentException Invalid parameter value
+     */
+    public Double hex_area(Integer res, String unit) {
+<span class="nc" id="L694">        return h3Core.hexArea(res, AreaUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Returns the average edge length in &lt;code&gt;unit&lt;/code&gt; for indexes at resolution &lt;code&gt;res
+     * &lt;/code&gt;.
+     *
+     * @throws IllegalArgumentException Invalid parameter value
+     */
+    public Double edge_length(Integer res, String unit) {
+<span class="nc" id="L704">        return h3Core.edgeLength(res, LengthUnit.valueOf(unit));</span>
+    }
+
+    /**
+     * Returns the number of unique H3 indexes at resolution &lt;code&gt;res&lt;/code&gt;.
+     *
+     * @throws IllegalArgumentException Invalid resolution
+     */
+    public Long num_hexagons(Integer res) {
+<span class="nc" id="L713">        return h3Core.numHexagons(res);</span>
+    }
+
+    /** Returns a collection of all base cells (H3 indexes are resolution 0). */
+    public List&lt;Long&gt; get_res_0_indexes() {
+<span class="nc" id="L718">        return h3Core.getRes0Indexes().stream().collect(Collectors.toList());</span>
+    }
+
+    /** Returns a collection of all base cells (H3 indexes are resolution 0). */
+    public List&lt;String&gt; get_res_0_indexes_addresses() {
+<span class="nc" id="L723">        return h3Core.getRes0IndexesAddresses().stream().collect(Collectors.toList());</span>
+    }
+
+    /** Returns a collection of all base cells (H3 indexes are resolution 0). */
+    public List&lt;Long&gt; get_pentagon_indexes(Integer res) {
+<span class="nc" id="L728">        return h3Core.getPentagonIndexes(res).stream().collect(Collectors.toList());</span>
+    }
+
+    /** Returns a collection of all base cells (H3 indexes are resolution 0). */
+    public List&lt;String&gt; get_pentagon_indexes_addresses(Integer res) {
+<span class="nc" id="L733">        return h3Core.getPentagonIndexesAddresses(res).stream().collect(Collectors.toList());</span>
+    }
+
+    /** Returns &lt;code&gt;true&lt;/code&gt; if the two indexes are neighbors. */
+    public Boolean h3_indexes_are_neighbors(Long a, Long b) {
+<span class="nc" id="L738">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+    }
+
+    /** Returns &lt;code&gt;true&lt;/code&gt; if the two indexes are neighbors. */
+    public Boolean h3_indexes_are_neighbors(String a, String b) {
+<span class="nc" id="L743">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+    }
+
+    private String geoCoordToWKTPoint(GeoCoord geoCoord) {
+<span class="nc" id="L747">        return String.format(&quot;POINT (%f %f)&quot;, geoCoord.lng, geoCoord.lat);</span>
+    }
+
+    private String geoCoordsToWKTPolygon(List&lt;GeoCoord&gt; geoCoords) {
+<span class="nc" id="L751">        return geoCoords.stream()</span>
+<span class="nc" id="L752">                .map(geoCoord -&gt; String.format(&quot;%f %f&quot;, geoCoord.lng, geoCoord.lat))</span>
+<span class="nc" id="L753">                .collect(Collectors.joining(&quot;, &quot;, &quot;POLYGON ((&quot;, &quot;))&quot;));</span>
+    }
+
+    /**
+     * https://stackoverflow.com/a/5011958
+     *
+     * @param WKTPoint A String representation of a WKT Point in AWS Athena
+     * @return An H3Core.util.GeoCoord object
+     */
+    private GeoCoord geoCoordFromWKTPoint(String WKTPoint) {
+<span class="nc" id="L763">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
+<span class="nc" id="L764">        Matcher m = p.matcher(WKTPoint);</span>
+<span class="nc" id="L765">        m.find();</span>
+<span class="nc" id="L766">        double lng = Double.parseDouble(m.group());</span>
+<span class="nc" id="L767">        m.find();</span>
+<span class="nc" id="L768">        double lat = Double.parseDouble(m.group());</span>
+<span class="nc" id="L769">        return new GeoCoord(lat, lng);</span>
+    }
+
+    /**
+     * https://stackoverflow.com/a/5011958
+     *
+     * @param WKTPolygon A String representation of a WKT Polygon in AWS Athena
+     * @return An H3Core.util.GeoCoord object
+     */
+    private List&lt;GeoCoord&gt; geoCoordsFromWKTPolygon(String WKTPolygon) {
+<span class="nc" id="L779">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
+<span class="nc" id="L780">        Matcher m = p.matcher(WKTPolygon);</span>
+<span class="nc" id="L781">        List&lt;GeoCoord&gt; geoCoords = new ArrayList&lt;GeoCoord&gt;();</span>
+<span class="nc bnc" id="L782" title="All 2 branches missed.">        while (m.find()) {</span>
+<span class="nc" id="L783">            double lng = Double.parseDouble(m.group());</span>
+<span class="nc" id="L784">            m.find();</span>
+<span class="nc" id="L785">            double lat = Double.parseDouble(m.group());</span>
+<span class="nc" id="L786">            geoCoords.add(new GeoCoord(lat, lng));</span>
+<span class="nc" id="L787">        }</span>
+<span class="nc" id="L788">        return geoCoords;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
