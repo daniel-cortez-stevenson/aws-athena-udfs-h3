@@ -29,18 +29,18 @@ In your AWS SAM `template.yaml` file:
 ```yaml
 Resources:
   AwsAthenaUdfsH3:
-  Type: AWS::Serverless::Application
-  Properties:
-  Location:
-  ApplicationId: arn:aws:serverlessrepo:us-east-1:922535613973:applications/aws-athena-udfs-h3
-  SemanticVersion: 1.0.0-rc1
-  Parameters:
-  # The name of Lambda function, which calls the H3AthenaUDFHandler
-  # LambdaFunctionName: 'h3-athena-udf-handler' # Uncomment to override default value
-  # Lambda memory in MB
-  # LambdaMemory: '3008' # Uncomment to override default value
-  # Maximum Lambda invocation runtime in seconds
-  # LambdaTimeout: '300' # Uncomment to override default value
+    Type: AWS::Serverless::Application
+    Properties:
+    Location:
+    ApplicationId: arn:aws:serverlessrepo:us-east-1:922535613973:applications/aws-athena-udfs-h3
+    SemanticVersion: 1.0.0-rc1
+    Parameters:
+      # The name of Lambda function, which calls the H3AthenaUDFHandler
+      # LambdaFunctionName: 'h3-athena-udf-handler' # Uncomment to override default value
+      # Lambda memory in MB
+      # LambdaMemory: '3008' # Uncomment to override default value
+      # Maximum Lambda invocation runtime in seconds
+      # LambdaTimeout: '300' # Uncomment to override default value
 ```
 
 ## Usage

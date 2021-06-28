@@ -19,10 +19,10 @@ EXTERNAL FUNCTION k_rings(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> LAM
 EXTERNAL FUNCTION k_rings(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION k_ring_distances(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION k_ring_distances(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> LAMBDA 'h3-athena-udf-handler',
--- hex_range
--- hex_range
--- hex_ring
--- hex_ring
+EXTERNAL FUNCTION hex_range(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION hex_range(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION hex_ring(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION hex_ring(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_distance(a BIGINT, b BIGINT) RETURNS INTEGER LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_distance(a VARCHAR, b VARCHAR) RETURNS INTEGER LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_line("start" BIGINT, "end" BIGINT) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
@@ -44,27 +44,28 @@ EXTERNAL FUNCTION h3_is_res_class_iii(h3_address VARCHAR) RETURNS BOOLEAN LAMBDA
 EXTERNAL FUNCTION h3_to_string(h3 BIGINT) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION string_to_h3(h3_address VARCHAR) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION cell_area(h3 BIGINT, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION cell_area(h3_address VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler'
--- point_dist
--- exact_edge_length
--- hex_area
--- edge_length
--- num_hexagons
--- get_res_0_indexes
--- get_res_0_indexes_addresses
--- get_pentagon_indexes
--- get_pentagon_indexes_addresses
--- h3_indexes_are_neighbors
--- h3_indexes_are_neighbors
+EXTERNAL FUNCTION cell_area(h3_address VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION point_dist(a VARCHAR, b VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION hex_area(res INTEGER, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION edge_length(res INTEGER, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION num_hexagons(res INTEGER) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_res_0_indexes() RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_pentagon_indexes(res INTEGER) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_pentagon_indexes_addresses(rest INTEGER) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_indexes_are_neighbors(a BIGINT, b BIGINT) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_indexes_are_neighbors(a VARCHAR, b VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler'
 
 with tbl1 AS
 (
   SELECT
     lat lat,
     lon lng,
-    geo_to_h3(lat, lon, 8) h3,
+    geo_to_h3(lat, lon, 10) h3,
     geo_to_h3(lat, lon, 14) h3_sm,
-    geo_to_h3_address(lat, lon, 8) h3_address,
+    geo_to_h3_address(lat, lon, 10) h3_address,
     geo_to_h3_address(lat, lon, 14) h3_address_sm
   FROM
     planet
@@ -91,16 +92,16 @@ tbl2 AS
       h3_to_geo_polygon(h3_sm) h3_polygon_sm,
       h3_to_geo_polygon(h3) h3_address_polygon,
       h3_to_geo_polygon(h3_sm) h3_address_polygon_sm,
-      k_ring(h3, 3) h3_kring,
-      k_ring(h3_address, 3) h3_address_kring,
-      k_rings(h3, 3) h3_krings,
-      k_rings(h3_address, 3) h3_krings,
-      -- k_ring_distances
-      -- k_ring_distances
-      -- hex_range
-      -- hex_range
-      -- hex_ring
-      -- hex_ring
+      k_ring(h3, 2) h3_kring,
+      k_ring(h3_address, 2) h3_address_kring,
+      -- k_rings(h3, 1) h3_krings,
+      -- k_rings(h3_address, 1) h3_address_krings,
+      -- k_ring_distances(h3, 1) h3_krings_distances,
+      -- k_ring_distances(h3_address, 1) h3_address_kring_distances,
+      -- hex_range(h3, 1) h3_hex_range,
+      -- hex_range(h3_address, 1) h3_address_hex_range,
+      -- hex_ring(h3, 1) h3_hex_ring,
+      -- hex_ring(h3_address, 1) h3_address_hex_ring,
       h3_distance(h3, lag(h3) over ()) h3_distance,
       h3_distance(h3_address, lag(h3_address) over ()) h3_address_distance,
       h3_line(h3, lag(h3, 1) over ()) h3_line,
@@ -109,35 +110,36 @@ tbl2 AS
   	  h3_get_resolution(h3_address) h3_address_resolution,
       h3_to_parent(h3, 7) h3_parent,
 	    h3_to_parent_address(h3_address, 7) h3_address_parent,
-  	  h3_to_children(h3, 9) h3_children,
-	    h3_to_children(h3_address, 9) h3_address_children,
-  	  h3_to_center_child(h3, 9) h3_center_child,
-      h3_to_center_child(h3_address, 9) h3_address_center_child,
+  	  h3_to_children(h3, 13) h3_children,
+	    h3_to_children(h3_address, 13) h3_address_children,
+  	  h3_to_center_child(h3, 13) h3_center_child,
+      h3_to_center_child(h3_address, 13) h3_address_center_child,
       h3_is_res_class_iii(h3) h3_is_res_class_iii,
       h3_is_res_class_iii(h3_address) h3_address_is_res_class_iii,
       h3_to_string(h3) h3_address_from_h3,
       string_to_h3(h3_address) h3_from_h3_address,
-      cell_area(h3, 'm2') h3_area,
-      cell_area(h3_address, 'm2') h3_address_area
-      -- point_dist
-      -- exact_edge_length
-      -- hex_area
-      -- edge_length
-      -- num_hexagons
-      -- get_res_0_indexes
-      -- get_res_0_indexes_addresses
-      -- get_pentagon_indexes
-      -- get_pentagon_indexes_addresses
-      -- h3_indexes_are_neighbors
-      -- h3_indexes_are_neighbors
+      cell_area(h3, 'm2') h3_area_m2,
+      cell_area(h3_address, 'm2') h3_address_area_m2,
+      -- exact_edge_length(h3, 'm') h3_edge_length_meters,
+      -- exact_edge_length(h3_address, 'm') h3_address_edge_length_meters
+      h3_indexes_are_neighbors(h3, lag(h3, 1) over ()) h3_indexes_are_neighbors,
+      h3_indexes_are_neighbors(h3_address, lag(h3_address, 1) over ()) h3_address_indexes_are_neighbors
     FROM tbl1
   )
 
 SELECT
   *,
-  polyfill(h3_polygon, ARRAY[h3_polygon_sm], 10) polyfill_polygon,
-  polyfill(h3_boundary, ARRAY[h3_boundary_sm], 10) polyfill_boundary,
-  polyfill_address(h3_address_polygon, ARRAY[h3_address_polygon_sm], 10) polyfill_address,
-  polyfill_address(h3_address_boundary, ARRAY[h3_address_boundary_sm], 10) polyfill_address_boundary
+  polyfill(h3_polygon, ARRAY[h3_polygon_sm], 14) polyfill_polygon,
+  polyfill(h3_boundary, ARRAY[h3_boundary_sm], 14) polyfill_boundary,
+  polyfill_address(h3_address_polygon, ARRAY[h3_address_polygon_sm], 14) polyfill_address,
+  polyfill_address(h3_address_boundary, ARRAY[h3_address_boundary_sm], 14) polyfill_address_boundary,
+  point_dist(lag(h3_point, 1) over (), h3_point, 'm') h3_point_dist,
+  hex_area(h3_resolution, 'm2') h3_resolution_area_m2,
+  edge_length(h3_resolution, 'm') h3_resolution_length_m,
+  num_hexagons(h3_resolution) h3_resolution_num_hexagons,
+  get_res_0_indexes() res_0_indexes,
+  get_res_0_indexes_addresses() res_0_indexes_addresses,
+  get_pentagon_indexes(h3_resolution) get_pentagon_indexes,
+  get_pentagon_indexes_addresses(h3_resolution) get_pentagon_indexes_addresses
 FROM tbl2
 ;
