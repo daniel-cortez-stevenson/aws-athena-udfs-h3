@@ -658,6 +658,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance from point <code>a</code> to point <code>b</code>
      */
     public Double point_dist(String a, String b, String unit) {
+        if (a == null || b == null) {
+            return null;
+        }
         GeoCoord aGeoCoord = geoCoordFromWKTPoint(a);
         GeoCoord bGeoCoord = geoCoordFromWKTPoint(b);
         return h3Core.pointDist(aGeoCoord, bGeoCoord, LengthUnit.valueOf(unit));
@@ -715,31 +718,37 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List<Long> get_res_0_indexes() {
-        return h3Core.getRes0Indexes().stream().collect(Collectors.toList());
+        return new ArrayList<Long>(h3Core.getRes0Indexes());
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List<String> get_res_0_indexes_addresses() {
-        return h3Core.getRes0IndexesAddresses().stream().collect(Collectors.toList());
+        return new ArrayList<String>(h3Core.getRes0IndexesAddresses());
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List<Long> get_pentagon_indexes(Integer res) {
-        return h3Core.getPentagonIndexes(res).stream().collect(Collectors.toList());
+        return new ArrayList<Long>(h3Core.getPentagonIndexes(res));
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List<String> get_pentagon_indexes_addresses(Integer res) {
-        return h3Core.getPentagonIndexesAddresses(res).stream().collect(Collectors.toList());
+        return new ArrayList<String>(h3Core.getPentagonIndexesAddresses(res));
     }
 
     /** Returns <code>true</code> if the two indexes are neighbors. */
     public Boolean h3_indexes_are_neighbors(Long a, Long b) {
+        if (a == null || b == null) {
+            return null;
+        }
         return h3Core.h3IndexesAreNeighbors(a, b);
     }
 
     /** Returns <code>true</code> if the two indexes are neighbors. */
     public Boolean h3_indexes_are_neighbors(String a, String b) {
+        if (a == null || b == null) {
+            return null;
+        }
         return h3Core.h3IndexesAreNeighbors(a, b);
     }
 
