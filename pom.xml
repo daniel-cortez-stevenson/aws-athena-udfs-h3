@@ -15,7 +15,7 @@
         <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.project.info.reports.plugin>3.1.1</maven.project.info.reports.plugin>
         <maven.site.plugin.version>3.9.1</maven.site.plugin.version>
-        <aws-athena-query-federation.version>2021.14.1</aws-athena-query-federation.version>
+        <aws-athena-query-federation.version>v2021.27.1</aws-athena-query-federation.version>
         <h3.version>3.7.0</h3.version>
         <log4j2.version>2.13.3</log4j2.version>
         <mockito.version>1.10.19</mockito.version>
