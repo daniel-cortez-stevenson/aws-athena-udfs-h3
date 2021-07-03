@@ -50,10 +50,29 @@ See [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/la
 In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 enabled, select a `UDF_name` (any method of the `H3AthenaUDFHandler`) and implement the function signature like so:
 
 ```sql
-USING EXTERNAL FUNCTION UDF_name(variable1 data_type[, variable2 data_type][,...])
+USING EXTERNAL FUNCTION udf_name(variable1 data_type[, variable2 data_type][,...])
 RETURNS data_type
 LAMBDA 'h3-athena-udf-handler'
-SELECT  [...] UDF_name(expression) [...]
+SELECT  [...] udf_name(expression) [...]
+```
+
+## Known Limitations
+
+The following UDFs do not work as expected, and should not be used:
+
+```sql
+k_rings(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
+k_rings(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
+k_ring_distances(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
+k_ring_distances(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
+hex_range(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
+hex_range(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
+hex_ring(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
+hex_ring(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
+exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE -- always returns 0.0
+exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE -- always returns 0.0
+get_res_0_indexes() RETURNS ARRAY<BIGINT> -- always throws NullPointerException
+get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR> -- always throws NullPointerException
 ```
 
 ## Test Data
