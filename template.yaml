@@ -19,7 +19,7 @@ Metadata:
       - athena-udfs
       - geospatial
     HomePageUrl: https://daniel-cortez-stevenson.github.io/aws-athena-udfs-h3
-    SemanticVersion: 1.0.0-rc1
+    SemanticVersion: 1.0.0-rc2
     SourceCodeUrl: https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3/blob/main/aws-athena-udfs-h3
 Parameters:
   LambdaFunctionName:
@@ -46,7 +46,7 @@ Resources:
       FunctionName: !Ref LambdaFunctionName
       Handler: io.jyde.aws.athena.connectors.udf.h3.H3AthenaUDFHandler
       Runtime: java8
-      CodeUri: ./target/aws-athena-udfs-h3-1.0.0-rc1-SNAPSHOT.jar
+      CodeUri: ./target/aws-athena-udfs-h3-1.0.0-rc2-SNAPSHOT.jar
       Description: >
         AWS Athena geospatial UDFs for selected h3-java <https://github.com/uber/h3-java> 
         functions. See the API documentation at <https://daniel-cortez-stevenson.github.io/aws-athena-udfs-h3>
