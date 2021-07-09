@@ -674,11 +674,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Returns <code>true</code> if the given index is a valid unidirectional edge. */
     public Boolean h3_unidirectional_edge_is_valid(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3UnidirectionalEdgeIsValid(h3);
     }
 
     /** Returns <code>true</code> if the given index is a valid unidirectional edge. */
     public Boolean h3_unidirectional_edge_is_valid(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3UnidirectionalEdgeIsValid(h3);
     }
 
