@@ -30,19 +30,19 @@ EXTERNAL FUNCTION h3_to_children(h3 BIGINT, child_res INTEGER) RETURNS ARRAY<BIG
 EXTERNAL FUNCTION h3_to_children(h3_address VARCHAR, child_res INTEGER) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_center_child(h3 BIGINT, child_res INTEGER) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_center_child(h3_address VARCHAR, child_res INTEGER) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_is_res_class_iii(h3 BIGINT) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_is_res_class_iii(h3_address VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION compact(h3 ARRAY<BIGINT>) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION compact_address(h3_addresses ARRAY<VARCHAR>) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION uncompact(h3 ARRAY<BIGINT>, res INTEGER) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION uncompact_address(h3_addresses ARRAY<VARCHAR>, res INTEGER) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_is_res_class_iii(h3 BIGINT) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_is_res_class_iii(h3_address VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_string(h3 BIGINT) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION string_to_h3(h3_address VARCHAR) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION cell_area(h3 BIGINT, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION cell_area(h3_address VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION point_dist(a VARCHAR, b VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
--- EXTERNAL FUNCTION exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
--- EXTERNAL FUNCTION exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION hex_area(res INTEGER, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION edge_length(res INTEGER, unit VARCHAR) RETURNS DOUBLE LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION num_hexagons(res INTEGER) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
@@ -51,8 +51,23 @@ EXTERNAL FUNCTION num_hexagons(res INTEGER) RETURNS BIGINT LAMBDA 'h3-athena-udf
 EXTERNAL FUNCTION get_pentagon_indexes(res INTEGER) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION get_pentagon_indexes_addresses(res INTEGER) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_indexes_are_neighbors(a BIGINT, b BIGINT) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
-EXTERNAL FUNCTION h3_indexes_are_neighbors(a VARCHAR, b VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler'
-
+EXTERNAL FUNCTION h3_indexes_are_neighbors(a VARCHAR, b VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_unidirectional_edge(a BIGINT, b BIGINT) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_unidirectional_edge(a VARCHAR, b VARCHAR) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_unidirectional_edge_is_valid(h3 BIGINT) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_unidirectional_edge_is_valid(h3 VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_origin_h3_index_from_unidirectional_edge(h3 BIGINT) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_origin_h3_index_from_unidirectional_edge(h3 VARCHAR) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_destination_h3_index_from_unidirectional_edge(h3 BIGINT) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_destination_h3_index_from_unidirectional_edge(h3 VARCHAR) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_indexes_from_unidirectional_edge(h3 BIGINT) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_indexes_from_unidirectional_edge(h3 VARCHAR) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_unidirectional_edges_from_hexagon(h3 BIGINT) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_unidirectional_edges_from_hexagon(h3 VARCHAR) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_unidirectional_edge_boundary(h3 BIGINT) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION get_h3_unidirectional_edge_boundary(h3 VARCHAR) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_get_faces(h3 BIGINT) RETURNS ARRAY<INTEGER> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION h3_get_faces(h3 VARCHAR) RETURNS ARRAY<INTEGER> LAMBDA 'h3-athena-udf-handler'
 with tbl1 AS
 (
   SELECT
@@ -106,10 +121,10 @@ tbl2 AS
       string_to_h3(h3_address) h3_from_h3_address,
       cell_area(h3, 'm2') h3_area_m2,
       cell_area(h3_address, 'm2') h3_address_area_m2,
-      -- exact_edge_length(h3, 'm') h3_edge_length_meters,
-      -- exact_edge_length(h3_address, 'm') h3_address_edge_length_meters,
       h3_indexes_are_neighbors(h3, lag(h3, 1) over(PARTITION BY uid ORDER BY lat, lng)) h3_indexes_are_neighbors,
-      h3_indexes_are_neighbors(h3_address, lag(h3_address, 1) over(PARTITION BY uid ORDER BY lat, lng)) h3_address_indexes_are_neighbors
+      h3_indexes_are_neighbors(h3_address, lag(h3_address, 1) over(PARTITION BY uid ORDER BY lat, lng)) h3_address_indexes_are_neighbors,
+      get_h3_unidirectional_edge(h3, lag(h3, 1) over(PARTITION BY uid ORDER BY lat, lng)) get_h3_unidirectional_edge,
+      get_h3_unidirectional_edge(h3_address, lag(h3_address, 1) over(PARTITION BY uid ORDER BY lat, lng)) get_h3_address_unidirectional_edge
     FROM tbl1
   )
 
@@ -122,12 +137,16 @@ SELECT
   polyfill(h3_boundary, ARRAY[h3_boundary_sm], 14) polyfill_boundary,
   polyfill_address(h3_address_boundary, ARRAY[h3_address_boundary_sm], 14) polyfill_address_boundary,
   point_dist(lag(h3_point, 1) over(PARTITION BY uid ORDER BY lat, lng), h3_point, 'm') h3_point_dist,
+  exact_edge_length(get_h3_unidirectional_edge, 'm') h3_exact_edge_length_meters,
+  exact_edge_length(get_h3_address_unidirectional_edge, 'm') h3_address_exact_edge_length_meters,
   hex_area(h3_resolution, 'm2') h3_resolution_area_m2,
   edge_length(h3_resolution, 'm') h3_resolution_length_m,
   num_hexagons(h3_resolution) h3_resolution_num_hexagons,
   -- get_res_0_indexes() res_0_indexes,
   -- get_res_0_indexes_addresses() res_0_indexes_addresses,
   get_pentagon_indexes(h3_resolution) get_pentagon_indexes,
-  get_pentagon_indexes_addresses(h3_resolution) get_pentagon_indexes_addresses
+  get_pentagon_indexes_addresses(h3_resolution) get_pentagon_indexes_addresses,
+  h3_unidirectional_edge_is_valid(get_h3_unidirectional_edge) h3_unidirectional_edge_is_valid,
+  h3_unidirectional_edge_is_valid(get_h3_address_unidirectional_edge) h3_address_unidirectional_edge_is_valid  
 FROM tbl2
 ;
