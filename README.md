@@ -58,22 +58,21 @@ SELECT  [...] udf_name(expression) [...]
 
 ## Known Limitations
 
-The following UDFs do not work as expected, and should not be used:
+Most h3-java API functions have an equivalent, snake-cased method in the `H3AthenaUDFHandler` API. Some do not.
 
-```sql
-k_rings(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
-k_rings(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
-k_ring_distances(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
-k_ring_distances(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
-hex_range(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
-hex_range(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
-hex_ring(h3 BIGINT, k INTEGER) RETURNS ARRAY<ARRAY<BIGINT>> -- always returns NULL
-hex_ring(h3_address VARCHAR, k INTEGER) RETURNS ARRAY<ARRAY<VARCHAR>> -- always returns NULL
-exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE -- always returns 0.0
-exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE -- always returns 0.0
-get_res_0_indexes() RETURNS ARRAY<BIGINT> -- always throws NullPointerException
-get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR> -- always throws NullPointerException
-```
+* Functions returning lists of lists in the h3-java API are not supported. There is a limitation in the `UserDefinedFunctionHandler` that does not allow serialization of complex/nested types. These include:
+  * `kRings`
+  * `kRingDistances`
+  * `hexRange`
+* The following UDFs do not work as expected, and should not be used:
+  * `exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE`
+    * Note: always returns `0.0`
+  * `exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE`
+    * Note: always returns `0.0`
+  * `get_res_0_indexes() RETURNS ARRAY<BIGINT>`
+    * Note: always throws `NullPointerException`
+  * `get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR>`
+    * Note: always throws `NullPointerException`
 
 ## Test Data
 
