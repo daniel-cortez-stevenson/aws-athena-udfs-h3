@@ -15,10 +15,10 @@
 -docencoding
 'UTF-8'
 -doctitle
-'aws-athena-udfs-h3 1.0.0-rc2-SNAPSHOT API'
+'aws-athena-udfs-h3 1.0.0-rc3-SNAPSHOT API'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/Users/daniel_stevenson/github/daniel-cortez-stevenson/aws-athena-udfs-h3/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'aws-athena-udfs-h3 1.0.0-rc2-SNAPSHOT API'
+'aws-athena-udfs-h3 1.0.0-rc3-SNAPSHOT API'
