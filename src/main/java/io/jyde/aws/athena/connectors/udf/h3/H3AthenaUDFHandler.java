@@ -721,14 +721,14 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     }
 
     /** Returns a list of coordinates representing the given edge. */
-    public List<String> getH3UnidirectionalEdgeBoundary(Long h3) {
+    public List<String> get_h3_unidirectional_edge_boundary(Long h3) {
         return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()
                 .map(this::geoCoordToWKTPoint)
                 .collect(Collectors.toList());
     }
 
     /** Returns a list of coordinates representing the given edge. */
-    public List<String> getH3UnidirectionalEdgeBoundary(String h3) {
+    public List<String> get_h3_unidirectional_edge_boundary(String h3) {
         return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()
                 .map(this::geoCoordToWKTPoint)
                 .collect(Collectors.toList());
