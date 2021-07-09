@@ -474,6 +474,34 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     }
 
     /**
+     * Returns a compacted set of indexes, at possibly coarser resolutions.
+     *
+     * @throws IllegalArgumentException Invalid input, such as duplicated indexes.
+     */
+    public List&lt;Long&gt; compact(List&lt;Long&gt; h3) {
+<span class="nc" id="L482">        return h3Core.compact(h3);</span>
+    }
+
+    /** Returns a compacted set of indexes, at possibly coarser resolutions. */
+    public List&lt;String&gt; compact_address(List&lt;String&gt; h3_addresses) {
+<span class="nc" id="L487">        return h3Core.compactAddress(h3_addresses);</span>
+    }
+
+    /**
+     * Uncompacts all the given indexes to resolution &lt;code&gt;res&lt;/code&gt;.
+     *
+     * @throws IllegalArgumentException Invalid input, such as indexes finer than &lt;code&gt;res&lt;/code&gt;.
+     */
+    public List&lt;Long&gt; uncompact(List&lt;Long&gt; h3, Integer res) {
+<span class="nc" id="L496">        return h3Core.uncompact(h3, res);</span>
+    }
+
+    /** Uncompacts all the given indexes to resolution &lt;code&gt;res&lt;/code&gt;. */
+    public List&lt;String&gt; uncompact_address(List&lt;String&gt; h3_addresses, Integer res) {
+<span class="nc" id="L501">        return h3Core.uncompactAddress(h3_addresses, res);</span>
+    }
+
+    /**
      * Converts from &lt;code&gt;long&lt;/code&gt; representation of an index to &lt;code&gt;String&lt;/code&gt;
      * representation.
      *
@@ -481,7 +509,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return H3 index address.
      */
     public String h3_to_string(Long h3) {
-<span class="fc" id="L484">        return h3Core.h3ToString(h3);</span>
+<span class="fc" id="L512">        return h3Core.h3ToString(h3);</span>
     }
 
     /**
@@ -492,7 +520,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return H3 index.
      */
     public Long string_to_h3(String h3_address) {
-<span class="fc" id="L495">        return h3Core.stringToH3(h3_address);</span>
+<span class="fc" id="L523">        return h3Core.stringToH3(h3_address);</span>
     }
 
     /**
@@ -503,7 +531,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Cell area in the given units.
      */
     public Double cell_area(Long h3, String unit) {
-<span class="fc" id="L506">        return h3Core.cellArea(h3, AreaUnit.valueOf(unit));</span>
+<span class="fc" id="L534">        return h3Core.cellArea(h3, AreaUnit.valueOf(unit));</span>
     }
 
     /**
@@ -514,7 +542,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Cell area in the given units.
      */
     public Double cell_area(String h3_address, String unit) {
-<span class="fc" id="L517">        return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));</span>
+<span class="fc" id="L545">        return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));</span>
     }
 
     /**
@@ -526,12 +554,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance from point &lt;code&gt;a&lt;/code&gt; to point &lt;code&gt;b&lt;/code&gt;
      */
     public Double point_dist(String a, String b, String unit) {
-<span class="nc bnc" id="L529" title="All 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="nc" id="L530">            return null;</span>
+<span class="nc bnc" id="L557" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L558">            return null;</span>
         }
-<span class="nc" id="L532">        GeoCoord aGeoCoord = geoCoordFromWKTPoint(a);</span>
-<span class="nc" id="L533">        GeoCoord bGeoCoord = geoCoordFromWKTPoint(b);</span>
-<span class="nc" id="L534">        return h3Core.pointDist(aGeoCoord, bGeoCoord, LengthUnit.valueOf(unit));</span>
+<span class="nc" id="L560">        GeoCoord aGeoCoord = geoCoordFromWKTPoint(a);</span>
+<span class="nc" id="L561">        GeoCoord bGeoCoord = geoCoordFromWKTPoint(b);</span>
+<span class="nc" id="L562">        return h3Core.pointDist(aGeoCoord, bGeoCoord, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -542,7 +570,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Length of the given edge.
      */
     public Double exact_edge_length(Long edge, String unit) {
-<span class="nc" id="L545">        return h3Core.exactEdgeLength(edge, LengthUnit.valueOf(unit));</span>
+<span class="nc" id="L573">        return h3Core.exactEdgeLength(edge, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -553,7 +581,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Length of the given edge.
      */
     public Double exact_edge_length(String edge_address, String unit) {
-<span class="nc" id="L556">        return h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));</span>
+<span class="nc" id="L584">        return h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -562,7 +590,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid parameter value
      */
     public Double hex_area(Integer res, String unit) {
-<span class="nc" id="L565">        return h3Core.hexArea(res, AreaUnit.valueOf(unit));</span>
+<span class="nc" id="L593">        return h3Core.hexArea(res, AreaUnit.valueOf(unit));</span>
     }
 
     /**
@@ -572,7 +600,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid parameter value
      */
     public Double edge_length(Integer res, String unit) {
-<span class="nc" id="L575">        return h3Core.edgeLength(res, LengthUnit.valueOf(unit));</span>
+<span class="nc" id="L603">        return h3Core.edgeLength(res, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -581,53 +609,53 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution
      */
     public Long num_hexagons(Integer res) {
-<span class="nc" id="L584">        return h3Core.numHexagons(res);</span>
+<span class="nc" id="L612">        return h3Core.numHexagons(res);</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;Long&gt; get_res_0_indexes() {
-<span class="nc" id="L589">        return new ArrayList&lt;Long&gt;(h3Core.getRes0Indexes());</span>
+<span class="nc" id="L617">        return new ArrayList&lt;Long&gt;(h3Core.getRes0Indexes());</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;String&gt; get_res_0_indexes_addresses() {
-<span class="nc" id="L594">        return new ArrayList&lt;String&gt;(h3Core.getRes0IndexesAddresses());</span>
+<span class="nc" id="L622">        return new ArrayList&lt;String&gt;(h3Core.getRes0IndexesAddresses());</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;Long&gt; get_pentagon_indexes(Integer res) {
-<span class="nc" id="L599">        return new ArrayList&lt;Long&gt;(h3Core.getPentagonIndexes(res));</span>
+<span class="nc" id="L627">        return new ArrayList&lt;Long&gt;(h3Core.getPentagonIndexes(res));</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;String&gt; get_pentagon_indexes_addresses(Integer res) {
-<span class="nc" id="L604">        return new ArrayList&lt;String&gt;(h3Core.getPentagonIndexesAddresses(res));</span>
+<span class="nc" id="L632">        return new ArrayList&lt;String&gt;(h3Core.getPentagonIndexesAddresses(res));</span>
     }
 
     /** Returns &lt;code&gt;true&lt;/code&gt; if the two indexes are neighbors. */
     public Boolean h3_indexes_are_neighbors(Long a, Long b) {
-<span class="nc bnc" id="L609" title="All 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="nc" id="L610">            return null;</span>
+<span class="nc bnc" id="L637" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L638">            return null;</span>
         }
-<span class="nc" id="L612">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+<span class="nc" id="L640">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
     }
 
     /** Returns &lt;code&gt;true&lt;/code&gt; if the two indexes are neighbors. */
     public Boolean h3_indexes_are_neighbors(String a, String b) {
-<span class="nc bnc" id="L617" title="All 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="nc" id="L618">            return null;</span>
+<span class="nc bnc" id="L645" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L646">            return null;</span>
         }
-<span class="nc" id="L620">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+<span class="nc" id="L648">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
     }
 
     private String geoCoordToWKTPoint(GeoCoord geoCoord) {
-<span class="nc" id="L624">        return String.format(&quot;POINT (%f %f)&quot;, geoCoord.lng, geoCoord.lat);</span>
+<span class="nc" id="L652">        return String.format(&quot;POINT (%f %f)&quot;, geoCoord.lng, geoCoord.lat);</span>
     }
 
     private String geoCoordsToWKTPolygon(List&lt;GeoCoord&gt; geoCoords) {
-<span class="nc" id="L628">        return geoCoords.stream()</span>
-<span class="nc" id="L629">                .map(geoCoord -&gt; String.format(&quot;%f %f&quot;, geoCoord.lng, geoCoord.lat))</span>
-<span class="nc" id="L630">                .collect(Collectors.joining(&quot;, &quot;, &quot;POLYGON ((&quot;, &quot;))&quot;));</span>
+<span class="nc" id="L656">        return geoCoords.stream()</span>
+<span class="nc" id="L657">                .map(geoCoord -&gt; String.format(&quot;%f %f&quot;, geoCoord.lng, geoCoord.lat))</span>
+<span class="nc" id="L658">                .collect(Collectors.joining(&quot;, &quot;, &quot;POLYGON ((&quot;, &quot;))&quot;));</span>
     }
 
     /**
@@ -637,13 +665,13 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return An H3Core.util.GeoCoord object
      */
     private GeoCoord geoCoordFromWKTPoint(String WKTPoint) {
-<span class="nc" id="L640">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
-<span class="nc" id="L641">        Matcher m = p.matcher(WKTPoint);</span>
-<span class="nc" id="L642">        m.find();</span>
-<span class="nc" id="L643">        double lng = Double.parseDouble(m.group());</span>
-<span class="nc" id="L644">        m.find();</span>
-<span class="nc" id="L645">        double lat = Double.parseDouble(m.group());</span>
-<span class="nc" id="L646">        return new GeoCoord(lat, lng);</span>
+<span class="nc" id="L668">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
+<span class="nc" id="L669">        Matcher m = p.matcher(WKTPoint);</span>
+<span class="nc" id="L670">        m.find();</span>
+<span class="nc" id="L671">        double lng = Double.parseDouble(m.group());</span>
+<span class="nc" id="L672">        m.find();</span>
+<span class="nc" id="L673">        double lat = Double.parseDouble(m.group());</span>
+<span class="nc" id="L674">        return new GeoCoord(lat, lng);</span>
     }
 
     /**
@@ -653,16 +681,16 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return An H3Core.util.GeoCoord object
      */
     private List&lt;GeoCoord&gt; geoCoordsFromWKTPolygon(String WKTPolygon) {
-<span class="nc" id="L656">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
-<span class="nc" id="L657">        Matcher m = p.matcher(WKTPolygon);</span>
-<span class="nc" id="L658">        List&lt;GeoCoord&gt; geoCoords = new ArrayList&lt;GeoCoord&gt;();</span>
-<span class="nc bnc" id="L659" title="All 2 branches missed.">        while (m.find()) {</span>
-<span class="nc" id="L660">            double lng = Double.parseDouble(m.group());</span>
-<span class="nc" id="L661">            m.find();</span>
-<span class="nc" id="L662">            double lat = Double.parseDouble(m.group());</span>
-<span class="nc" id="L663">            geoCoords.add(new GeoCoord(lat, lng));</span>
-<span class="nc" id="L664">        }</span>
-<span class="nc" id="L665">        return geoCoords;</span>
+<span class="nc" id="L684">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
+<span class="nc" id="L685">        Matcher m = p.matcher(WKTPolygon);</span>
+<span class="nc" id="L686">        List&lt;GeoCoord&gt; geoCoords = new ArrayList&lt;GeoCoord&gt;();</span>
+<span class="nc bnc" id="L687" title="All 2 branches missed.">        while (m.find()) {</span>
+<span class="nc" id="L688">            double lng = Double.parseDouble(m.group());</span>
+<span class="nc" id="L689">            m.find();</span>
+<span class="nc" id="L690">            double lat = Double.parseDouble(m.group());</span>
+<span class="nc" id="L691">            geoCoords.add(new GeoCoord(lat, lng));</span>
+<span class="nc" id="L692">        }</span>
+<span class="nc" id="L693">        return geoCoords;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
