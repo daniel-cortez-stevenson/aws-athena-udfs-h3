@@ -760,12 +760,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return String.format("POINT (%f %f)", geoCoord.lng, geoCoord.lat);
     }
 
-    private String geoCoordsToWKTPolygon(List<GeoCoord> geoCoords) {
-        return geoCoords.stream()
-                .map(geoCoord -> String.format("%f %f", geoCoord.lng, geoCoord.lat))
-                .collect(Collectors.joining(", ", "POLYGON ((", "))"));
-    }
-
     /**
      * https://stackoverflow.com/a/5011958
      *
@@ -780,24 +774,5 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         m.find();
         double lat = Double.parseDouble(m.group());
         return new GeoCoord(lat, lng);
-    }
-
-    /**
-     * https://stackoverflow.com/a/5011958
-     *
-     * @param WKTPolygon A String representation of a WKT Polygon in AWS Athena
-     * @return An H3Core.util.GeoCoord object
-     */
-    private List<GeoCoord> geoCoordsFromWKTPolygon(String WKTPolygon) {
-        Pattern p = Pattern.compile("\\d+(\\.\\d+)?");
-        Matcher m = p.matcher(WKTPolygon);
-        List<GeoCoord> geoCoords = new ArrayList<GeoCoord>();
-        while (m.find()) {
-            double lng = Double.parseDouble(m.group());
-            m.find();
-            double lat = Double.parseDouble(m.group());
-            geoCoords.add(new GeoCoord(lat, lng));
-        }
-        return geoCoords;
     }
 }
