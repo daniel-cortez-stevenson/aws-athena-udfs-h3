@@ -33,11 +33,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         this.h3Core = h3Core;
     }
 
-    public static void main(String[] args) throws IOException {
-        H3AthenaUDFHandler handler = new H3AthenaUDFHandler();
-        System.out.println(handler.exact_edge_length(622043492084744191L, "m"));
-    }
-
     /** Returns true if this is a valid H3 index. */
     public Boolean h3_is_valid(Long h3) {
         return h3Core.h3IsValid(h3);
