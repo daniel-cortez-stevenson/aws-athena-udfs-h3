@@ -565,6 +565,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Length of the given edge.
      */
     public Double exact_edge_length(Long edge, String unit) {
+        if (edge == null) {
+            return null;
+        }
         return h3Core.exactEdgeLength(edge, LengthUnit.valueOf(unit));
     }
 
@@ -576,6 +579,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Length of the given edge.
      */
     public Double exact_edge_length(String edge_address, String unit) {
+        if (edge_address == null) {
+            return null;
+        }
         return h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));
     }
 
