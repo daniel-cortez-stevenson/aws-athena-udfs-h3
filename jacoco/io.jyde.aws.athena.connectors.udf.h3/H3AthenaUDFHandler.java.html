@@ -33,39 +33,34 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 <span class="nc" id="L33">        this.h3Core = h3Core;</span>
 <span class="nc" id="L34">    }</span>
 
-    public static void main(String[] args) throws IOException {
-<span class="nc" id="L37">        H3AthenaUDFHandler handler = new H3AthenaUDFHandler();</span>
-<span class="nc" id="L38">        System.out.println(handler.exact_edge_length(622043492084744191L, &quot;m&quot;));</span>
-<span class="nc" id="L39">    }</span>
-
     /** Returns true if this is a valid H3 index. */
     public Boolean h3_is_valid(Long h3) {
-<span class="fc" id="L43">        return h3Core.h3IsValid(h3);</span>
+<span class="fc" id="L38">        return h3Core.h3IsValid(h3);</span>
     }
 
     /** Returns true if this is a valid H3 index. */
     public Boolean h3_is_valid(String h3_address) {
-<span class="fc" id="L48">        return h3Core.h3IsValid(h3_address);</span>
+<span class="fc" id="L43">        return h3Core.h3IsValid(h3_address);</span>
     }
 
     /** Returns the base cell number for this index. */
     public Integer h3_get_base_cell(Long h3) {
-<span class="fc" id="L53">        return h3Core.h3GetBaseCell(h3);</span>
+<span class="fc" id="L48">        return h3Core.h3GetBaseCell(h3);</span>
     }
 
     /** Returns the base cell number for this index. */
     public Integer h3_get_base_cell(String h3_address) {
-<span class="fc" id="L58">        return h3Core.h3GetBaseCell(h3_address);</span>
+<span class="fc" id="L53">        return h3Core.h3GetBaseCell(h3_address);</span>
     }
 
     /** Returns &lt;code&gt;true&lt;/code&gt; if this index is one of twelve pentagons per resolution. */
     public Boolean h3_is_pentagon(Long h3) {
-<span class="fc" id="L63">        return h3Core.h3IsPentagon(h3);</span>
+<span class="fc" id="L58">        return h3Core.h3IsPentagon(h3);</span>
     }
 
     /** Returns &lt;code&gt;true&lt;/code&gt; if this index is one of twelve pentagons per resolution. */
     public Boolean h3_is_pentagon(String h3_address) {
-<span class="fc" id="L68">        return h3Core.h3IsPentagon(h3_address);</span>
+<span class="fc" id="L63">        return h3Core.h3IsPentagon(h3_address);</span>
     }
 
     /**
@@ -78,7 +73,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException latitude, longitude, or resolution are out of range.
      */
     public Long geo_to_h3(Double lat, Double lng, Integer res) throws IllegalArgumentException {
-<span class="fc" id="L81">        return h3Core.geoToH3(lat, lng, res);</span>
+<span class="fc" id="L76">        return h3Core.geoToH3(lat, lng, res);</span>
     }
 
     /**
@@ -92,17 +87,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String geo_to_h3_address(Double lat, Double lng, Integer res)
             throws IllegalArgumentException {
-<span class="fc" id="L95">        return h3Core.geoToH3Address(lat, lng, res);</span>
+<span class="fc" id="L90">        return h3Core.geoToH3Address(lat, lng, res);</span>
     }
 
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
     public String h3_to_geo(Long h3) {
-<span class="nc" id="L100">        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3));</span>
+<span class="nc" id="L95">        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3));</span>
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
     public String h3_to_geo(String h3_address) throws IllegalArgumentException {
-<span class="nc" id="L105">        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3_address));</span>
+<span class="nc" id="L100">        return geoCoordToWKTPoint(h3Core.h3ToGeo(h3_address));</span>
     }
 
     /**
@@ -113,9 +108,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List&lt;String&gt; h3_to_geo_boundary(Long h3) throws IllegalArgumentException {
-<span class="nc" id="L116">        return h3Core.h3ToGeoBoundary(h3).stream()</span>
-<span class="nc" id="L117">                .map(this::geoCoordToWKTPoint)</span>
-<span class="nc" id="L118">                .collect(Collectors.toList());</span>
+<span class="nc" id="L111">        return h3Core.h3ToGeoBoundary(h3).stream()</span>
+<span class="nc" id="L112">                .map(this::geoCoordToWKTPoint)</span>
+<span class="nc" id="L113">                .collect(Collectors.toList());</span>
     }
 
     /**
@@ -126,9 +121,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List&lt;String&gt; h3_to_geo_boundary(String h3_address) throws IllegalArgumentException {
-<span class="nc" id="L129">        return h3Core.h3ToGeoBoundary(h3_address).stream()</span>
-<span class="nc" id="L130">                .map(this::geoCoordToWKTPoint)</span>
-<span class="nc" id="L131">                .collect(Collectors.toList());</span>
+<span class="nc" id="L124">        return h3Core.h3ToGeoBoundary(h3_address).stream()</span>
+<span class="nc" id="L125">                .map(this::geoCoordToWKTPoint)</span>
+<span class="nc" id="L126">                .collect(Collectors.toList());</span>
     }
 
     /**
@@ -140,7 +135,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List&lt;Long&gt; k_ring(Long h3, Integer k) throws IllegalArgumentException {
-<span class="fc" id="L143">        return h3Core.kRing(h3, k);</span>
+<span class="fc" id="L138">        return h3Core.kRing(h3, k);</span>
     }
 
     /**
@@ -152,7 +147,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List&lt;String&gt; k_ring(String h3_address, Integer k) throws IllegalArgumentException {
-<span class="fc" id="L155">        return h3Core.kRing(h3_address, k);</span>
+<span class="fc" id="L150">        return h3Core.kRing(h3_address, k);</span>
     }
 
     /**
@@ -164,7 +159,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws PentagonEncounteredException A pentagon or pentagonal distortion was encountered.
      */
     public List&lt;Long&gt; hex_ring(Long h3, Integer k) throws PentagonEncounteredException {
-<span class="nc" id="L167">        return h3Core.hexRing(h3, k);</span>
+<span class="nc" id="L162">        return h3Core.hexRing(h3, k);</span>
     }
 
     /**
@@ -176,7 +171,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws PentagonEncounteredException A pentagon or pentagonal distortion was encountered.
      */
     public List&lt;String&gt; hex_ring(String h3_address, Integer k) throws PentagonEncounteredException {
-<span class="nc" id="L179">        return h3Core.hexRing(h3_address, k);</span>
+<span class="nc" id="L174">        return h3Core.hexRing(h3_address, k);</span>
     }
 
     /**
@@ -199,18 +194,18 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      *     resolutions.
      */
     public Integer h3_distance(Long a, Long b) {
-<span class="pc bpc" id="L202" title="1 of 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="fc" id="L203">            return null;</span>
+<span class="pc bpc" id="L197" title="1 of 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="fc" id="L198">            return null;</span>
         }
         try {
-<span class="fc" id="L206">            return h3Core.h3Distance(a, b);</span>
-<span class="fc" id="L207">        } catch (DistanceUndefinedException e) {</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {</span>
-<span class="fc" id="L209">                throw new RuntimeException(</span>
+<span class="fc" id="L201">            return h3Core.h3Distance(a, b);</span>
+<span class="fc" id="L202">        } catch (DistanceUndefinedException e) {</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {</span>
+<span class="fc" id="L204">                throw new RuntimeException(</span>
                         &quot;The H3 library does not support finding the distance between the two cells with different resolutions.&quot;,
                         e);
             }
-<span class="fc" id="L213">            return null;</span>
+<span class="fc" id="L208">            return null;</span>
         }
     }
 
@@ -234,18 +229,18 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      *     resolutions.
      */
     public Integer h3_distance(String a, String b) {
-<span class="pc bpc" id="L237" title="1 of 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="fc" id="L238">            return null;</span>
+<span class="pc bpc" id="L232" title="1 of 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="fc" id="L233">            return null;</span>
         }
         try {
-<span class="fc" id="L241">            return h3Core.h3Distance(a, b);</span>
-<span class="fc" id="L242">        } catch (DistanceUndefinedException e) {</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {</span>
-<span class="fc" id="L244">                throw new RuntimeException(</span>
+<span class="fc" id="L236">            return h3Core.h3Distance(a, b);</span>
+<span class="fc" id="L237">        } catch (DistanceUndefinedException e) {</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            if (h3Core.h3GetResolution(a) != h3Core.h3GetResolution(b)) {</span>
+<span class="fc" id="L239">                throw new RuntimeException(</span>
                         &quot;The H3 library does not support finding the distance between the two cells with different resolutions.&quot;,
                         e);
             }
-<span class="fc" id="L248">            return null;</span>
+<span class="fc" id="L243">            return null;</span>
         }
     }
 
@@ -273,13 +268,13 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws LineUndefinedException The line could not be computed.
      */
     public List&lt;Long&gt; h3_line(Long start, Long end) {
-<span class="pc bpc" id="L276" title="2 of 4 branches missed.">        if (start == null || end == null) {</span>
-<span class="nc" id="L277">            return null;</span>
+<span class="pc bpc" id="L271" title="2 of 4 branches missed.">        if (start == null || end == null) {</span>
+<span class="nc" id="L272">            return null;</span>
         }
         try {
-<span class="fc" id="L280">            return h3Core.h3Line(start, end);</span>
-<span class="nc" id="L281">        } catch (LineUndefinedException e) {</span>
-<span class="nc" id="L282">            return null;</span>
+<span class="fc" id="L275">            return h3Core.h3Line(start, end);</span>
+<span class="nc" id="L276">        } catch (LineUndefinedException e) {</span>
+<span class="nc" id="L277">            return null;</span>
         }
     }
 
@@ -307,13 +302,13 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws LineUndefinedException The line could not be computed.
      */
     public List&lt;String&gt; h3_line(String start_address, String end_address) {
-<span class="pc bpc" id="L310" title="2 of 4 branches missed.">        if (start_address == null || end_address == null) {</span>
-<span class="nc" id="L311">            return null;</span>
+<span class="pc bpc" id="L305" title="2 of 4 branches missed.">        if (start_address == null || end_address == null) {</span>
+<span class="nc" id="L306">            return null;</span>
         }
         try {
-<span class="fc" id="L314">            return h3Core.h3Line(start_address, end_address);</span>
-<span class="nc" id="L315">        } catch (LineUndefinedException e) {</span>
-<span class="nc" id="L316">            return null;</span>
+<span class="fc" id="L309">            return h3Core.h3Line(start_address, end_address);</span>
+<span class="nc" id="L310">        } catch (LineUndefinedException e) {</span>
+<span class="nc" id="L311">            return null;</span>
         }
     }
 
@@ -328,17 +323,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List&lt;Long&gt; polyfill(List&lt;String&gt; points, List&lt;List&lt;String&gt;&gt; holes, Integer res)
             throws IllegalArgumentException {
-<span class="nc" id="L331">        List&lt;GeoCoord&gt; geoCoordPoints =</span>
-<span class="nc" id="L332">                points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());</span>
-<span class="nc" id="L333">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
-<span class="nc" id="L334">                holes.stream()</span>
-<span class="nc" id="L335">                        .map(</span>
+<span class="nc" id="L326">        List&lt;GeoCoord&gt; geoCoordPoints =</span>
+<span class="nc" id="L327">                points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());</span>
+<span class="nc" id="L328">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
+<span class="nc" id="L329">                holes.stream()</span>
+<span class="nc" id="L330">                        .map(</span>
                                 x -&gt;
-<span class="nc" id="L337">                                        x.stream()</span>
-<span class="nc" id="L338">                                                .map(this::geoCoordFromWKTPoint)</span>
-<span class="nc" id="L339">                                                .collect(Collectors.toList()))</span>
-<span class="nc" id="L340">                        .collect(Collectors.toList());</span>
-<span class="nc" id="L341">        return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);</span>
+<span class="nc" id="L332">                                        x.stream()</span>
+<span class="nc" id="L333">                                                .map(this::geoCoordFromWKTPoint)</span>
+<span class="nc" id="L334">                                                .collect(Collectors.toList()))</span>
+<span class="nc" id="L335">                        .collect(Collectors.toList());</span>
+<span class="nc" id="L336">        return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);</span>
     }
 
     /**
@@ -353,17 +348,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List&lt;String&gt; polyfill_address(List&lt;String&gt; points, List&lt;List&lt;String&gt;&gt; holes, Integer res)
             throws IllegalArgumentException {
-<span class="nc" id="L356">        List&lt;GeoCoord&gt; geoCoordPoints =</span>
-<span class="nc" id="L357">                points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());</span>
-<span class="nc" id="L358">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
-<span class="nc" id="L359">                holes.stream()</span>
-<span class="nc" id="L360">                        .map(</span>
+<span class="nc" id="L351">        List&lt;GeoCoord&gt; geoCoordPoints =</span>
+<span class="nc" id="L352">                points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());</span>
+<span class="nc" id="L353">        List&lt;List&lt;GeoCoord&gt;&gt; geoCoordHoles =</span>
+<span class="nc" id="L354">                holes.stream()</span>
+<span class="nc" id="L355">                        .map(</span>
                                 x -&gt;
-<span class="nc" id="L362">                                        x.stream()</span>
-<span class="nc" id="L363">                                                .map(this::geoCoordFromWKTPoint)</span>
-<span class="nc" id="L364">                                                .collect(Collectors.toList()))</span>
-<span class="nc" id="L365">                        .collect(Collectors.toList());</span>
-<span class="nc" id="L366">        return h3Core.polyfillAddress(geoCoordPoints, geoCoordHoles, res);</span>
+<span class="nc" id="L357">                                        x.stream()</span>
+<span class="nc" id="L358">                                                .map(this::geoCoordFromWKTPoint)</span>
+<span class="nc" id="L359">                                                .collect(Collectors.toList()))</span>
+<span class="nc" id="L360">                        .collect(Collectors.toList());</span>
+<span class="nc" id="L361">        return h3Core.polyfillAddress(geoCoordPoints, geoCoordHoles, res);</span>
     }
 
     /**
@@ -372,7 +367,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3 H3 index.
      */
     public Integer h3_get_resolution(Long h3) {
-<span class="fc" id="L375">        return h3Core.h3GetResolution(h3);</span>
+<span class="fc" id="L370">        return h3Core.h3GetResolution(h3);</span>
     }
 
     /**
@@ -381,7 +376,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3_address H3 index address.
      */
     public Integer h3_get_resolution(String h3_address) {
-<span class="fc" id="L384">        return h3Core.h3GetResolution(h3_address);</span>
+<span class="fc" id="L379">        return h3Core.h3GetResolution(h3_address);</span>
     }
 
     /**
@@ -392,7 +387,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution
      */
     public Long h3_to_parent(Long h3, Integer res) throws IllegalArgumentException {
-<span class="fc" id="L395">        return h3Core.h3ToParent(h3, res);</span>
+<span class="fc" id="L390">        return h3Core.h3ToParent(h3, res);</span>
     }
 
     /**
@@ -404,7 +399,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String h3_to_parent_address(String h3_address, Integer res)
             throws IllegalArgumentException {
-<span class="fc" id="L407">        return h3Core.h3ToParentAddress(h3_address, res);</span>
+<span class="fc" id="L402">        return h3Core.h3ToParentAddress(h3_address, res);</span>
     }
 
     /**
@@ -415,7 +410,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution
      */
     public List&lt;Long&gt; h3_to_children(Long h3, Integer child_res) throws IllegalArgumentException {
-<span class="fc" id="L418">        return h3Core.h3ToChildren(h3, child_res);</span>
+<span class="fc" id="L413">        return h3Core.h3ToChildren(h3, child_res);</span>
     }
 
     /**
@@ -427,7 +422,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List&lt;String&gt; h3_to_children(String h3_address, Integer child_res)
             throws IllegalArgumentException {
-<span class="fc" id="L430">        return h3Core.h3ToChildren(h3_address, child_res);</span>
+<span class="fc" id="L425">        return h3Core.h3ToChildren(h3_address, child_res);</span>
     }
 
     /**
@@ -438,7 +433,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
      */
     public Long h3_to_center_child(Long h3, Integer child_res) throws IllegalArgumentException {
-<span class="fc" id="L441">        return h3Core.h3ToCenterChild(h3, child_res);</span>
+<span class="fc" id="L436">        return h3Core.h3ToCenterChild(h3, child_res);</span>
     }
 
     /**
@@ -450,7 +445,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String h3_to_center_child(String h3_address, Integer child_res)
             throws IllegalArgumentException {
-<span class="fc" id="L453">        return h3Core.h3ToCenterChild(h3_address, child_res);</span>
+<span class="fc" id="L448">        return h3Core.h3ToCenterChild(h3_address, child_res);</span>
     }
 
     /**
@@ -460,7 +455,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return &lt;code&gt;true&lt;/code&gt; if the index is Class III
      */
     public Boolean h3_is_res_class_iii(Long h3) {
-<span class="fc" id="L463">        return h3Core.h3IsResClassIII(h3);</span>
+<span class="fc" id="L458">        return h3Core.h3IsResClassIII(h3);</span>
     }
 
     /**
@@ -470,7 +465,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return &lt;code&gt;true&lt;/code&gt; if the index is Class III.
      */
     public Boolean h3_is_res_class_iii(String h3_address) {
-<span class="fc" id="L473">        return h3Core.h3IsResClassIII(h3_address);</span>
+<span class="fc" id="L468">        return h3Core.h3IsResClassIII(h3_address);</span>
     }
 
     /**
@@ -479,12 +474,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid input, such as duplicated indexes.
      */
     public List&lt;Long&gt; compact(List&lt;Long&gt; h3) {
-<span class="nc" id="L482">        return h3Core.compact(h3);</span>
+<span class="nc" id="L477">        return h3Core.compact(h3);</span>
     }
 
     /** Returns a compacted set of indexes, at possibly coarser resolutions. */
     public List&lt;String&gt; compact_address(List&lt;String&gt; h3_addresses) {
-<span class="nc" id="L487">        return h3Core.compactAddress(h3_addresses);</span>
+<span class="nc" id="L482">        return h3Core.compactAddress(h3_addresses);</span>
     }
 
     /**
@@ -493,12 +488,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid input, such as indexes finer than &lt;code&gt;res&lt;/code&gt;.
      */
     public List&lt;Long&gt; uncompact(List&lt;Long&gt; h3, Integer res) {
-<span class="nc" id="L496">        return h3Core.uncompact(h3, res);</span>
+<span class="nc" id="L491">        return h3Core.uncompact(h3, res);</span>
     }
 
     /** Uncompacts all the given indexes to resolution &lt;code&gt;res&lt;/code&gt;. */
     public List&lt;String&gt; uncompact_address(List&lt;String&gt; h3_addresses, Integer res) {
-<span class="nc" id="L501">        return h3Core.uncompactAddress(h3_addresses, res);</span>
+<span class="nc" id="L496">        return h3Core.uncompactAddress(h3_addresses, res);</span>
     }
 
     /**
@@ -509,7 +504,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return H3 index address.
      */
     public String h3_to_string(Long h3) {
-<span class="fc" id="L512">        return h3Core.h3ToString(h3);</span>
+<span class="fc" id="L507">        return h3Core.h3ToString(h3);</span>
     }
 
     /**
@@ -520,7 +515,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return H3 index.
      */
     public Long string_to_h3(String h3_address) {
-<span class="fc" id="L523">        return h3Core.stringToH3(h3_address);</span>
+<span class="fc" id="L518">        return h3Core.stringToH3(h3_address);</span>
     }
 
     /**
@@ -531,7 +526,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Cell area in the given units.
      */
     public Double cell_area(Long h3, String unit) {
-<span class="fc" id="L534">        return h3Core.cellArea(h3, AreaUnit.valueOf(unit));</span>
+<span class="fc" id="L529">        return h3Core.cellArea(h3, AreaUnit.valueOf(unit));</span>
     }
 
     /**
@@ -542,7 +537,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Cell area in the given units.
      */
     public Double cell_area(String h3_address, String unit) {
-<span class="fc" id="L545">        return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));</span>
+<span class="fc" id="L540">        return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));</span>
     }
 
     /**
@@ -554,12 +549,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Distance from point &lt;code&gt;a&lt;/code&gt; to point &lt;code&gt;b&lt;/code&gt;
      */
     public Double point_dist(String a, String b, String unit) {
-<span class="nc bnc" id="L557" title="All 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="nc" id="L558">            return null;</span>
+<span class="nc bnc" id="L552" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L553">            return null;</span>
         }
-<span class="nc" id="L560">        GeoCoord aGeoCoord = geoCoordFromWKTPoint(a);</span>
-<span class="nc" id="L561">        GeoCoord bGeoCoord = geoCoordFromWKTPoint(b);</span>
-<span class="nc" id="L562">        return h3Core.pointDist(aGeoCoord, bGeoCoord, LengthUnit.valueOf(unit));</span>
+<span class="nc" id="L555">        GeoCoord aGeoCoord = geoCoordFromWKTPoint(a);</span>
+<span class="nc" id="L556">        GeoCoord bGeoCoord = geoCoordFromWKTPoint(b);</span>
+<span class="nc" id="L557">        return h3Core.pointDist(aGeoCoord, bGeoCoord, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -570,7 +565,10 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Length of the given edge.
      */
     public Double exact_edge_length(Long edge, String unit) {
-<span class="nc" id="L573">        return h3Core.exactEdgeLength(edge, LengthUnit.valueOf(unit));</span>
+<span class="nc bnc" id="L568" title="All 2 branches missed.">        if (edge == null) {</span>
+<span class="nc" id="L569">            return null;</span>
+        }
+<span class="nc" id="L571">        return h3Core.exactEdgeLength(edge, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -581,7 +579,10 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Length of the given edge.
      */
     public Double exact_edge_length(String edge_address, String unit) {
-<span class="nc" id="L584">        return h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));</span>
+<span class="nc bnc" id="L582" title="All 2 branches missed.">        if (edge_address == null) {</span>
+<span class="nc" id="L583">            return null;</span>
+        }
+<span class="nc" id="L585">        return h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -590,7 +591,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid parameter value
      */
     public Double hex_area(Integer res, String unit) {
-<span class="nc" id="L593">        return h3Core.hexArea(res, AreaUnit.valueOf(unit));</span>
+<span class="nc" id="L594">        return h3Core.hexArea(res, AreaUnit.valueOf(unit));</span>
     }
 
     /**
@@ -600,7 +601,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid parameter value
      */
     public Double edge_length(Integer res, String unit) {
-<span class="nc" id="L603">        return h3Core.edgeLength(res, LengthUnit.valueOf(unit));</span>
+<span class="nc" id="L604">        return h3Core.edgeLength(res, LengthUnit.valueOf(unit));</span>
     }
 
     /**
@@ -609,53 +610,203 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution
      */
     public Long num_hexagons(Integer res) {
-<span class="nc" id="L612">        return h3Core.numHexagons(res);</span>
+<span class="nc" id="L613">        return h3Core.numHexagons(res);</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;Long&gt; get_res_0_indexes() {
-<span class="nc" id="L617">        return new ArrayList&lt;Long&gt;(h3Core.getRes0Indexes());</span>
+<span class="nc" id="L618">        return new ArrayList&lt;Long&gt;(h3Core.getRes0Indexes());</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;String&gt; get_res_0_indexes_addresses() {
-<span class="nc" id="L622">        return new ArrayList&lt;String&gt;(h3Core.getRes0IndexesAddresses());</span>
+<span class="nc" id="L623">        return new ArrayList&lt;String&gt;(h3Core.getRes0IndexesAddresses());</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;Long&gt; get_pentagon_indexes(Integer res) {
-<span class="nc" id="L627">        return new ArrayList&lt;Long&gt;(h3Core.getPentagonIndexes(res));</span>
+<span class="nc" id="L628">        return new ArrayList&lt;Long&gt;(h3Core.getPentagonIndexes(res));</span>
     }
 
     /** Returns a collection of all base cells (H3 indexes are resolution 0). */
     public List&lt;String&gt; get_pentagon_indexes_addresses(Integer res) {
-<span class="nc" id="L632">        return new ArrayList&lt;String&gt;(h3Core.getPentagonIndexesAddresses(res));</span>
+<span class="nc" id="L633">        return new ArrayList&lt;String&gt;(h3Core.getPentagonIndexesAddresses(res));</span>
     }
 
     /** Returns &lt;code&gt;true&lt;/code&gt; if the two indexes are neighbors. */
     public Boolean h3_indexes_are_neighbors(Long a, Long b) {
-<span class="nc bnc" id="L637" title="All 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="nc" id="L638">            return null;</span>
+<span class="nc bnc" id="L638" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L639">            return null;</span>
         }
-<span class="nc" id="L640">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+<span class="nc" id="L641">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
     }
 
     /** Returns &lt;code&gt;true&lt;/code&gt; if the two indexes are neighbors. */
     public Boolean h3_indexes_are_neighbors(String a, String b) {
-<span class="nc bnc" id="L645" title="All 4 branches missed.">        if (a == null || b == null) {</span>
-<span class="nc" id="L646">            return null;</span>
+<span class="nc bnc" id="L646" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L647">            return null;</span>
         }
-<span class="nc" id="L648">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+<span class="nc" id="L649">        return h3Core.h3IndexesAreNeighbors(a, b);</span>
+    }
+
+    /** Returns a unidirectional edge index representing &lt;code&gt;a&lt;/code&gt; towards &lt;code&gt;b&lt;/code&gt;. */
+    public Long get_h3_unidirectional_edge(Long a, Long b) {
+<span class="nc bnc" id="L654" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L655">            return null;</span>
+        }
+        try {
+<span class="nc" id="L658">            return h3Core.getH3UnidirectionalEdge(a, b);</span>
+<span class="nc" id="L659">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L660">            return null;</span>
+        }
+    }
+
+    /** Returns a unidirectional edge index representing &lt;code&gt;a&lt;/code&gt; towards &lt;code&gt;b&lt;/code&gt;. */
+    public String get_h3_unidirectional_edge(String a, String b) {
+<span class="nc bnc" id="L666" title="All 4 branches missed.">        if (a == null || b == null) {</span>
+<span class="nc" id="L667">            return null;</span>
+        }
+        try {
+<span class="nc" id="L670">            return h3Core.getH3UnidirectionalEdge(a, b);</span>
+<span class="nc" id="L671">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L672">            return null;</span>
+        }
+    }
+
+    /** Returns &lt;code&gt;true&lt;/code&gt; if the given index is a valid unidirectional edge. */
+    public Boolean h3_unidirectional_edge_is_valid(Long h3) {
+<span class="nc bnc" id="L678" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L679">            return null;</span>
+        }
+<span class="nc" id="L681">        return h3Core.h3UnidirectionalEdgeIsValid(h3);</span>
+    }
+
+    /** Returns &lt;code&gt;true&lt;/code&gt; if the given index is a valid unidirectional edge. */
+    public Boolean h3_unidirectional_edge_is_valid(String h3) {
+<span class="nc bnc" id="L686" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L687">            return null;</span>
+        }
+<span class="nc" id="L689">        return h3Core.h3UnidirectionalEdgeIsValid(h3);</span>
+    }
+
+    /** Returns the origin index of the given unidirectional edge. */
+    public Long get_origin_h3_index_from_unidirectional_edge(Long h3) {
+<span class="nc bnc" id="L694" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L695">            return null;</span>
+        }
+<span class="nc" id="L697">        return h3Core.getOriginH3IndexFromUnidirectionalEdge(h3);</span>
+    }
+
+    /** Returns the origin index of the given unidirectional edge. */
+    public String get_origin_h3_index_from_unidirectional_edge(String h3) {
+<span class="nc bnc" id="L702" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L703">            return null;</span>
+        }
+<span class="nc" id="L705">        return h3Core.getOriginH3IndexFromUnidirectionalEdge(h3);</span>
+    }
+
+    /** Returns the destination index of the given unidirectional edge. */
+    public Long get_destination_h3_index_from_unidirectional_edge(Long h3) {
+<span class="nc bnc" id="L710" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L711">            return null;</span>
+        }
+<span class="nc" id="L713">        return h3Core.getDestinationH3IndexFromUnidirectionalEdge(h3);</span>
+    }
+
+    /** Returns the destination index of the given unidirectional edge. */
+    public String get_destination_h3_index_from_unidirectional_edge(String h3) {
+<span class="nc bnc" id="L718" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L719">            return null;</span>
+        }
+<span class="nc" id="L721">        return h3Core.getDestinationH3IndexFromUnidirectionalEdge(h3);</span>
+    }
+
+    /**
+     * Returns the origin and destination indexes (in that order) of the given unidirectional edge.
+     */
+    public List&lt;Long&gt; get_h3_indexes_from_unidirectional_edge(Long h3) {
+<span class="nc bnc" id="L728" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L729">            return null;</span>
+        }
+<span class="nc" id="L731">        return h3Core.getH3IndexesFromUnidirectionalEdge(h3);</span>
+    }
+
+    /**
+     * Returns the origin and destination indexes (in that order) of the given unidirectional edge.
+     */
+    public List&lt;String&gt; get_h3_indexes_from_unidirectional_edge(String h3) {
+<span class="nc bnc" id="L738" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L739">            return null;</span>
+        }
+<span class="nc" id="L741">        return h3Core.getH3IndexesFromUnidirectionalEdge(h3);</span>
+    }
+
+    /** Returns all unidirectional edges originating from the given index. */
+    public List&lt;Long&gt; get_h3_unidirectional_edges_from_hexagon(Long h3) {
+<span class="nc bnc" id="L746" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L747">            return null;</span>
+        }
+<span class="nc" id="L749">        return h3Core.getH3UnidirectionalEdgesFromHexagon(h3);</span>
+    }
+
+    /** Returns all unidirectional edges originating from the given index. */
+    public List&lt;String&gt; get_h3_unidirectional_edges_from_hexagon(String h3) {
+<span class="nc bnc" id="L754" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L755">            return null;</span>
+        }
+<span class="nc" id="L757">        return h3Core.getH3UnidirectionalEdgesFromHexagon(h3);</span>
+    }
+
+    /** Returns a list of coordinates representing the given edge. */
+    public List&lt;String&gt; get_h3_unidirectional_edge_boundary(Long h3) {
+<span class="nc bnc" id="L762" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L763">            return null;</span>
+        }
+<span class="nc" id="L765">        return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()</span>
+<span class="nc" id="L766">                .map(this::geoCoordToWKTPoint)</span>
+<span class="nc" id="L767">                .collect(Collectors.toList());</span>
+    }
+
+    /** Returns a list of coordinates representing the given edge. */
+    public List&lt;String&gt; get_h3_unidirectional_edge_boundary(String h3) {
+<span class="nc bnc" id="L772" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L773">            return null;</span>
+        }
+<span class="nc" id="L775">        return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()</span>
+<span class="nc" id="L776">                .map(this::geoCoordToWKTPoint)</span>
+<span class="nc" id="L777">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Find all icosahedron faces intersected by a given H3 index, represented as integers from
+     * 0-19.
+     *
+     * @param h3 Index to find icosahedron faces for.
+     * @return A collection of faces intersected by the index.
+     */
+    public List&lt;Integer&gt; h3_get_faces(Long h3) {
+<span class="nc bnc" id="L788" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L789">            return null;</span>
+        }
+<span class="nc" id="L791">        return new ArrayList&lt;Integer&gt;(h3Core.h3GetFaces(h3));</span>
+    }
+
+    /**
+     * Find all icosahedron faces intersected by a given H3 index, represented as integers from
+     * 0-19.
+     *
+     * @param h3 Index to find icosahedron faces for.
+     * @return A collection of faces intersected by the index.
+     */
+    public List&lt;Integer&gt; h3_get_faces(String h3) {
+<span class="nc bnc" id="L802" title="All 2 branches missed.">        if (h3 == null) {</span>
+<span class="nc" id="L803">            return null;</span>
+        }
+<span class="nc" id="L805">        return new ArrayList&lt;Integer&gt;(h3Core.h3GetFaces(h3));</span>
     }
 
     private String geoCoordToWKTPoint(GeoCoord geoCoord) {
-<span class="nc" id="L652">        return String.format(&quot;POINT (%f %f)&quot;, geoCoord.lng, geoCoord.lat);</span>
-    }
-
-    private String geoCoordsToWKTPolygon(List&lt;GeoCoord&gt; geoCoords) {
-<span class="nc" id="L656">        return geoCoords.stream()</span>
-<span class="nc" id="L657">                .map(geoCoord -&gt; String.format(&quot;%f %f&quot;, geoCoord.lng, geoCoord.lat))</span>
-<span class="nc" id="L658">                .collect(Collectors.joining(&quot;, &quot;, &quot;POLYGON ((&quot;, &quot;))&quot;));</span>
+<span class="nc" id="L809">        return String.format(&quot;POINT (%f %f)&quot;, geoCoord.lng, geoCoord.lat);</span>
     }
 
     /**
@@ -665,32 +816,13 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return An H3Core.util.GeoCoord object
      */
     private GeoCoord geoCoordFromWKTPoint(String WKTPoint) {
-<span class="nc" id="L668">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
-<span class="nc" id="L669">        Matcher m = p.matcher(WKTPoint);</span>
-<span class="nc" id="L670">        m.find();</span>
-<span class="nc" id="L671">        double lng = Double.parseDouble(m.group());</span>
-<span class="nc" id="L672">        m.find();</span>
-<span class="nc" id="L673">        double lat = Double.parseDouble(m.group());</span>
-<span class="nc" id="L674">        return new GeoCoord(lat, lng);</span>
-    }
-
-    /**
-     * https://stackoverflow.com/a/5011958
-     *
-     * @param WKTPolygon A String representation of a WKT Polygon in AWS Athena
-     * @return An H3Core.util.GeoCoord object
-     */
-    private List&lt;GeoCoord&gt; geoCoordsFromWKTPolygon(String WKTPolygon) {
-<span class="nc" id="L684">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
-<span class="nc" id="L685">        Matcher m = p.matcher(WKTPolygon);</span>
-<span class="nc" id="L686">        List&lt;GeoCoord&gt; geoCoords = new ArrayList&lt;GeoCoord&gt;();</span>
-<span class="nc bnc" id="L687" title="All 2 branches missed.">        while (m.find()) {</span>
-<span class="nc" id="L688">            double lng = Double.parseDouble(m.group());</span>
-<span class="nc" id="L689">            m.find();</span>
-<span class="nc" id="L690">            double lat = Double.parseDouble(m.group());</span>
-<span class="nc" id="L691">            geoCoords.add(new GeoCoord(lat, lng));</span>
-<span class="nc" id="L692">        }</span>
-<span class="nc" id="L693">        return geoCoords;</span>
+<span class="nc" id="L819">        Pattern p = Pattern.compile(&quot;\\d+(\\.\\d+)?&quot;);</span>
+<span class="nc" id="L820">        Matcher m = p.matcher(WKTPoint);</span>
+<span class="nc" id="L821">        m.find();</span>
+<span class="nc" id="L822">        double lng = Double.parseDouble(m.group());</span>
+<span class="nc" id="L823">        m.find();</span>
+<span class="nc" id="L824">        double lat = Double.parseDouble(m.group());</span>
+<span class="nc" id="L825">        return new GeoCoord(lat, lng);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
