@@ -124,7 +124,11 @@ tbl2 AS
       h3_indexes_are_neighbors(h3, lag(h3, 1) over(PARTITION BY uid ORDER BY lat, lng)) h3_indexes_are_neighbors,
       h3_indexes_are_neighbors(h3_address, lag(h3_address, 1) over(PARTITION BY uid ORDER BY lat, lng)) h3_address_indexes_are_neighbors,
       get_h3_unidirectional_edge(h3, lag(h3, 1) over(PARTITION BY uid ORDER BY lat, lng)) get_h3_unidirectional_edge,
-      get_h3_unidirectional_edge(h3_address, lag(h3_address, 1) over(PARTITION BY uid ORDER BY lat, lng)) get_h3_address_unidirectional_edge
+      get_h3_unidirectional_edge(h3_address, lag(h3_address, 1) over(PARTITION BY uid ORDER BY lat, lng)) get_h3_address_unidirectional_edge,
+      get_h3_unidirectional_edges_from_hexagon(h3) get_h3_unidirectional_edges_from_hexagon,
+      get_h3_unidirectional_edges_from_hexagon(h3_address) get_h3_address_unidirectional_edges_from_hexagon,
+      h3_get_faces(h3) h3_get_faces,
+      h3_get_faces(h3_address) h3_address_get_faces
     FROM tbl1
   )
 
@@ -147,6 +151,14 @@ SELECT
   get_pentagon_indexes(h3_resolution) get_pentagon_indexes,
   get_pentagon_indexes_addresses(h3_resolution) get_pentagon_indexes_addresses,
   h3_unidirectional_edge_is_valid(get_h3_unidirectional_edge) h3_unidirectional_edge_is_valid,
-  h3_unidirectional_edge_is_valid(get_h3_address_unidirectional_edge) h3_address_unidirectional_edge_is_valid  
+  h3_unidirectional_edge_is_valid(get_h3_address_unidirectional_edge) h3_address_unidirectional_edge_is_valid,
+  get_origin_h3_index_from_unidirectional_edge(get_h3_unidirectional_edge) get_origin_h3_index_from_unidirectional_edge,
+  get_origin_h3_index_from_unidirectional_edge(get_h3_address_unidirectional_edge) get_origin_h3_address_from_unidirectional_edge,
+  get_destination_h3_index_from_unidirectional_edge(get_h3_unidirectional_edge) get_destination_h3_index_from_unidirectional_edge,
+  get_destination_h3_index_from_unidirectional_edge(get_h3_address_unidirectional_edge) get_destination_h3_address_from_unidirectional_edge,
+  get_h3_indexes_from_unidirectional_edge(get_h3_unidirectional_edge) get_h3_indexes_from_unidirectional_edge,
+  get_h3_indexes_from_unidirectional_edge(get_h3_address_unidirectional_edge) get_h3_addresses_from_unidirectional_edge,
+  get_h3_unidirectional_edge_boundary(get_h3_unidirectional_edge) get_h3_unidirectional_edge_boundary,
+  get_h3_unidirectional_edge_boundary(get_h3_address_unidirectional_edge) get_h3_address_unidirectional_edge_boundary
 FROM tbl2
 ;
