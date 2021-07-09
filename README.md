@@ -60,19 +60,19 @@ SELECT  [...] udf_name(expression) [...]
 
 Most h3-java API functions have an equivalent, snake-cased method in the `H3AthenaUDFHandler` API. Some do not.
 
-* Functions returning lists of lists in the h3-java API are not supported. There is a limitation in the `UserDefinedFunctionHandler` that does not allow serialization of complex/nested types. These include:
-  * `kRings`
-  * `kRingDistances`
-  * `hexRange`
-* The following UDFs do not work as expected, and should not be used:
-  * `exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE`
-    * Note: always returns `0.0`
-  * `exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE`
-    * Note: always returns `0.0`
-  * `get_res_0_indexes() RETURNS ARRAY<BIGINT>`
-    * Note: always throws `NullPointerException`
-  * `get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR>`
-    * Note: always throws `NullPointerException`
+- Functions returning lists of lists in the h3-java API are not supported. There is a limitation in the `UserDefinedFunctionHandler` that does not allow serialization of complex/nested types. These include:
+  - `kRings`
+  - `kRingDistances`
+  - `hexRange`
+- The following UDFs do not work as expected, and should not be used:
+  - `exact_edge_length(edge BIGINT, unit VARCHAR) RETURNS DOUBLE`
+    - Note: always returns `0.0`
+  - `exact_edge_length(edge_address VARCHAR, unit VARCHAR) RETURNS DOUBLE`
+    - Note: always returns `0.0`
+  - `get_res_0_indexes() RETURNS ARRAY<BIGINT>`
+    - Note: always throws `NullPointerException`
+  - `get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR>`
+    - Note: always throws `NullPointerException`
 
 ## Test Data
 
