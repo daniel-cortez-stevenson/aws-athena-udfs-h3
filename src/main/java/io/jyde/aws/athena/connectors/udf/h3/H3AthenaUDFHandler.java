@@ -691,21 +691,33 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Returns the origin index of the given unidirectional edge. */
     public Long get_origin_h3_index_from_unidirectional_edge(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getOriginH3IndexFromUnidirectionalEdge(h3);
     }
 
     /** Returns the origin index of the given unidirectional edge. */
     public String get_origin_h3_index_from_unidirectional_edge(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getOriginH3IndexFromUnidirectionalEdge(h3);
     }
 
     /** Returns the destination index of the given unidirectional edge. */
     public Long get_destination_h3_index_from_unidirectional_edge(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getDestinationH3IndexFromUnidirectionalEdge(h3);
     }
 
     /** Returns the destination index of the given unidirectional edge. */
     public String get_destination_h3_index_from_unidirectional_edge(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getDestinationH3IndexFromUnidirectionalEdge(h3);
     }
 
@@ -713,6 +725,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * Returns the origin and destination indexes (in that order) of the given unidirectional edge.
      */
     public List<Long> get_h3_indexes_from_unidirectional_edge(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getH3IndexesFromUnidirectionalEdge(h3);
     }
 
@@ -720,21 +735,33 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * Returns the origin and destination indexes (in that order) of the given unidirectional edge.
      */
     public List<String> get_h3_indexes_from_unidirectional_edge(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getH3IndexesFromUnidirectionalEdge(h3);
     }
 
     /** Returns all unidirectional edges originating from the given index. */
     public List<Long> get_h3_unidirectional_edges_from_hexagon(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
     }
 
     /** Returns all unidirectional edges originating from the given index. */
     public List<String> get_h3_unidirectional_edges_from_hexagon(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
     }
 
     /** Returns a list of coordinates representing the given edge. */
     public List<String> get_h3_unidirectional_edge_boundary(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()
                 .map(this::geoCoordToWKTPoint)
                 .collect(Collectors.toList());
@@ -742,6 +769,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Returns a list of coordinates representing the given edge. */
     public List<String> get_h3_unidirectional_edge_boundary(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()
                 .map(this::geoCoordToWKTPoint)
                 .collect(Collectors.toList());
@@ -755,6 +785,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return A collection of faces intersected by the index.
      */
     public List<Integer> h3_get_faces(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return new ArrayList<Integer>(h3Core.h3GetFaces(h3));
     }
 
@@ -766,6 +799,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return A collection of faces intersected by the index.
      */
     public List<Integer> h3_get_faces(String h3) {
+        if (h3 == null) {
+            return null;
+        }
         return new ArrayList<Integer>(h3Core.h3GetFaces(h3));
     }
 
