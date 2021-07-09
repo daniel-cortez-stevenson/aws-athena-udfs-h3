@@ -648,22 +648,28 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.h3IndexesAreNeighbors(a, b);
     }
 
-    /**
-     * Returns a unidirectional edge index representing <code>a</code> towards <code>b</code>.
-     *
-     * @throws IllegalArgumentException The indexes are not neighbors.
-     */
+    /** Returns a unidirectional edge index representing <code>a</code> towards <code>b</code>. */
     public Long get_h3_unidirectional_edge(Long a, Long b) {
-        return h3Core.getH3UnidirectionalEdge(a, b);
+        if (a == null || b == null) {
+            return null;
+        }
+        try {
+            return h3Core.getH3UnidirectionalEdge(a, b);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
-    /**
-     * Returns a unidirectional edge index representing <code>a</code> towards <code>b</code>.
-     *
-     * @throws IllegalArgumentException The indexes are not neighbors.
-     */
+    /** Returns a unidirectional edge index representing <code>a</code> towards <code>b</code>. */
     public String get_h3_unidirectional_edge(String a, String b) {
-        return h3Core.getH3UnidirectionalEdge(a, b);
+        if (a == null || b == null) {
+            return null;
+        }
+        try {
+            return h3Core.getH3UnidirectionalEdge(a, b);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     /** Returns <code>true</code> if the given index is a valid unidirectional edge. */
