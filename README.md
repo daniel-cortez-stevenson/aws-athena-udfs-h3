@@ -33,7 +33,7 @@ Resources:
     Properties:
     Location:
     ApplicationId: arn:aws:serverlessrepo:us-east-1:922535613973:applications/aws-athena-udfs-h3
-    SemanticVersion: 1.0.0-rc4
+    SemanticVersion: 1.0.0-rc5
     Parameters:
       # The name of Lambda function, which calls the H3AthenaUDFHandler
       # LambdaFunctionName: 'h3-athena-udf-handler' # Uncomment to override default value
@@ -122,7 +122,7 @@ sam package \
 # publish
 sam publish \
   --template-file ./target/packaged.yaml \
-  --semantic-version 1.0.0-rc4
+  --semantic-version 1.0.0-rc5
 ```
 
 ## More Examples
