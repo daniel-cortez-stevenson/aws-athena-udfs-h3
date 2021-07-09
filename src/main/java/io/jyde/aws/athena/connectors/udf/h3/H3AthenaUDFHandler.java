@@ -33,6 +33,11 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         this.h3Core = h3Core;
     }
 
+    public static void main(String[] args) throws IOException {
+        H3AthenaUDFHandler handler = new H3AthenaUDFHandler();
+        System.out.println(handler.exact_edge_length(622043492084744191L, "m"));
+    }
+
     /** Returns true if this is a valid H3 index. */
     public Boolean h3_is_valid(Long h3) {
         return h3Core.h3IsValid(h3);
@@ -127,28 +132,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     }
 
     /**
-     * Find the cell boundary in latitude, longitude (degrees) coordinates for the cell
-     *
-     * @param h3 H3 index.
-     * @return A WKT Polygon string.
-     * @throws IllegalArgumentException
-     */
-    public String h3_to_geo_polygon(Long h3) throws IllegalArgumentException {
-        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3));
-    }
-
-    /**
-     * Find the cell boundary in latitude, longitude (degrees) coordinates for the cell
-     *
-     * @param h3_address H3 index address.
-     * @return A WKT Polygon string.
-     * @throws IllegalArgumentException
-     */
-    public String h3_to_geo_polygon(String h3_address) throws IllegalArgumentException {
-        return geoCoordsToWKTPolygon(h3Core.h3ToGeoBoundary(h3_address));
-    }
-
-    /**
      * Neighboring indexes in all directions.
      *
      * @param h3 Origin index.
@@ -170,86 +153,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<String> k_ring(String h3_address, Integer k) throws IllegalArgumentException {
         return h3Core.kRing(h3_address, k);
-    }
-
-    /**
-     * Neighboring indexes in all directions.
-     *
-     * @param h3 Origin index.
-     * @param k Number of rings around the origin
-     * @return List of {@link #kRing(String, int)} results.
-     */
-    public List<List<Long>> k_rings(Long h3, Integer k) {
-        List<List<String>> h3Addresses = h3Core.kRings(h3Core.h3ToString(h3), k);
-        return h3Addresses.stream()
-                .map(
-                        x ->
-                                x.stream()
-                                        .map(address -> h3Core.stringToH3(address))
-                                        .collect(Collectors.toList()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Neighboring indexes in all directions.
-     *
-     * @param h3_address Origin index address.
-     * @param k Number of rings around the origin
-     * @return List of {@link #kRing(String, int)} results.
-     */
-    public List<List<String>> k_rings(String h3_address, Integer k) {
-        return h3Core.kRings(h3_address, k);
-    }
-
-    /**
-     * Neighboring indexes in all directions, ordered by distance from the origin index.
-     *
-     * @param h3 Origin index.
-     * @param k Number of rings around the origin.
-     * @return A list of rings, each of which is a list of addresses. The rings are in order from
-     *     closest to origin to farthest.
-     */
-    public List<List<Long>> k_ring_distances(Long h3, Integer k) {
-        return h3Core.kRingDistances(h3, k);
-    }
-
-    /**
-     * Neighboring indexes in all directions, ordered by distance from the origin index.
-     *
-     * @param h3_address Origin index address.
-     * @param k Number of rings around the origin.
-     * @return A list of rings, each of which is a list of addresses. The rings are in order from
-     *     closest to origin to farthest.
-     */
-    public List<List<String>> k_ring_distances(String h3_address, Integer k) {
-        return h3Core.kRingDistances(h3_address, k);
-    }
-
-    /**
-     * Returns in order neighbor traversal.
-     *
-     * @param h3 Origin hexagon index.
-     * @param k Number of rings around the origin.
-     * @return A list of rings, each of which is a list of addresses. The rings are in order from
-     *     closest to origin to farthest.
-     * @throws PentagonEncounteredException A pentagon was encountered while iterating the rings
-     */
-    public List<List<Long>> hex_range(Long h3, Integer k) throws PentagonEncounteredException {
-        return h3Core.hexRange(h3, k);
-    }
-
-    /**
-     * Returns in order neighbor traversal.
-     *
-     * @param h3_address Origin hexagon index address.
-     * @param k Number of rings around the origin
-     * @return A list of rings, each of which is a list of addresses. The rings are in order from
-     *     closest to origin to farthest.
-     * @throws PentagonEncounteredException A pentagon was encountered while iterating the rings
-     */
-    public List<List<String>> hex_range(String h3_address, Integer k)
-            throws PentagonEncounteredException {
-        return h3Core.hexRange(h3_address, k);
     }
 
     /**
@@ -417,23 +320,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     /**
      * Finds indexes within the given geofence.
      *
-     * @param points Outline geofence as a WKT Polygon.
-     * @param holes Geofences of any internal holes as a list of WKT Polygons.
-     * @param res Resolution of the desired indexes.
-     * @return Indexes making up the area enclosed by points minus the area enclosed by holes.
-     * @throws IllegalArgumentException Invalid resolution.
-     */
-    public List<Long> polyfill(String points, List<String> holes, Integer res)
-            throws IllegalArgumentException {
-        List<GeoCoord> geoCoordPoints = geoCoordsFromWKTPolygon(points);
-        List<List<GeoCoord>> geoCoordHoles =
-                holes.stream().map(this::geoCoordsFromWKTPolygon).collect(Collectors.toList());
-        return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);
-    }
-
-    /**
-     * Finds indexes within the given geofence.
-     *
      * @param points Outline geofence as a list of WKT Points.
      * @param holes Geofences of any internal holes as a list of lists containing WKT Points.
      * @param res Resolution of the desired indexes.
@@ -453,24 +339,6 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
                                                 .collect(Collectors.toList()))
                         .collect(Collectors.toList());
         return h3Core.polyfill(geoCoordPoints, geoCoordHoles, res);
-    }
-
-    /**
-     * Finds indexes within the given geofence.
-     *
-     * @param points Outline geofence as a WKT Polygon.
-     * @param holes Geofences of any internal holes as a list of WKT Polygons.
-     * @param res Resolution of the desired indexes.
-     * @return Index addresses making up the area enclosed by points minus the area enclosed by
-     *     holes.
-     * @throws IllegalArgumentException Invalid resolution.
-     */
-    public List<String> polyfill_address(String points, List<String> holes, Integer res)
-            throws IllegalArgumentException {
-        List<GeoCoord> geoCoordPoints = geoCoordsFromWKTPolygon(points);
-        List<List<GeoCoord>> geoCoordHoles =
-                holes.stream().map(this::geoCoordsFromWKTPolygon).collect(Collectors.toList());
-        return h3Core.polyfillAddress(geoCoordPoints, geoCoordHoles, res);
     }
 
     /**
