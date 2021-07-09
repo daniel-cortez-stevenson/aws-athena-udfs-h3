@@ -474,6 +474,34 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
     }
 
     /**
+     * Returns a compacted set of indexes, at possibly coarser resolutions.
+     *
+     * @throws IllegalArgumentException Invalid input, such as duplicated indexes.
+     */
+    public List<Long> compact(List<Long> h3) {
+        return h3Core.compact(h3);
+    }
+
+    /** Returns a compacted set of indexes, at possibly coarser resolutions. */
+    public List<String> compact_address(List<String> h3_addresses) {
+        return h3Core.compactAddress(h3_addresses);
+    }
+
+    /**
+     * Uncompacts all the given indexes to resolution <code>res</code>.
+     *
+     * @throws IllegalArgumentException Invalid input, such as indexes finer than <code>res</code>.
+     */
+    public List<Long> uncompact(List<Long> h3, Integer res) {
+        return h3Core.uncompact(h3, res);
+    }
+
+    /** Uncompacts all the given indexes to resolution <code>res</code>. */
+    public List<String> uncompact_address(List<String> h3_addresses, Integer res) {
+        return h3Core.uncompactAddress(h3_addresses, res);
+    }
+
+    /**
      * Converts from <code>long</code> representation of an index to <code>String</code>
      * representation.
      *

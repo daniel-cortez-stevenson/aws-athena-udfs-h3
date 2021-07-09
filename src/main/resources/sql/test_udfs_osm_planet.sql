@@ -30,6 +30,10 @@ EXTERNAL FUNCTION h3_to_children(h3 BIGINT, child_res INTEGER) RETURNS ARRAY<BIG
 EXTERNAL FUNCTION h3_to_children(h3_address VARCHAR, child_res INTEGER) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_center_child(h3 BIGINT, child_res INTEGER) RETURNS BIGINT LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_center_child(h3_address VARCHAR, child_res INTEGER) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION compact(h3 ARRAY<BIGINT>) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION compact_address(h3_addresses ARRAY<VARCHAR>) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION uncompact(h3 ARRAY<BIGINT>, res INTEGER) RETURNS ARRAY<BIGINT> LAMBDA 'h3-athena-udf-handler',
+EXTERNAL FUNCTION uncompact_address(h3_addresses ARRAY<VARCHAR>, res INTEGER) RETURNS ARRAY<VARCHAR> LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_is_res_class_iii(h3 BIGINT) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_is_res_class_iii(h3_address VARCHAR) RETURNS BOOLEAN LAMBDA 'h3-athena-udf-handler',
 EXTERNAL FUNCTION h3_to_string(h3 BIGINT) RETURNS VARCHAR LAMBDA 'h3-athena-udf-handler',
@@ -111,6 +115,10 @@ tbl2 AS
 
 SELECT
   *,
+  compact(h3_children) compact,
+  compact_address(h3_address_children) compact_address,
+  uncompact(h3_children, 14) uncompact,
+  uncompact_address(h3_address_children, 14) uncompact_address,
   polyfill(h3_boundary, ARRAY[h3_boundary_sm], 14) polyfill_boundary,
   polyfill_address(h3_address_boundary, ARRAY[h3_address_boundary_sm], 14) polyfill_address_boundary,
   point_dist(lag(h3_point, 1) over(PARTITION BY uid ORDER BY lat, lng), h3_point, 'm') h3_point_dist,
