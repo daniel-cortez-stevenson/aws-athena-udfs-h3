@@ -648,6 +648,114 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
         return h3Core.h3IndexesAreNeighbors(a, b);
     }
 
+    /**
+     * Returns a unidirectional edge index representing <code>a</code> towards <code>b</code>.
+     *
+     * @throws IllegalArgumentException The indexes are not neighbors.
+     */
+    public Long get_h3_unidirectional_edge(Long a, Long b) {
+        return h3Core.getH3UnidirectionalEdge(a, b);
+    }
+
+    /**
+     * Returns a unidirectional edge index representing <code>a</code> towards <code>b</code>.
+     *
+     * @throws IllegalArgumentException The indexes are not neighbors.
+     */
+    public String get_h3_unidirectional_edge(String a, String b) {
+        return h3Core.getH3UnidirectionalEdge(a, b);
+    }
+
+    /** Returns <code>true</code> if the given index is a valid unidirectional edge. */
+    public Boolean h3_unidirectional_edge_is_valid(Long h3) {
+        return h3Core.h3UnidirectionalEdgeIsValid(h3);
+    }
+
+    /** Returns <code>true</code> if the given index is a valid unidirectional edge. */
+    public Boolean h3_unidirectional_edge_is_valid(String h3) {
+        return h3Core.h3UnidirectionalEdgeIsValid(h3);
+    }
+
+    /** Returns the origin index of the given unidirectional edge. */
+    public Long get_origin_h3_index_from_unidirectional_edge(Long h3) {
+        return h3Core.getOriginH3IndexFromUnidirectionalEdge(h3);
+    }
+
+    /** Returns the origin index of the given unidirectional edge. */
+    public String get_origin_h3_index_from_unidirectional_edge(String h3) {
+        return h3Core.getOriginH3IndexFromUnidirectionalEdge(h3);
+    }
+
+    /** Returns the destination index of the given unidirectional edge. */
+    public Long get_destination_h3_index_from_unidirectional_edge(Long h3) {
+        return h3Core.getDestinationH3IndexFromUnidirectionalEdge(h3);
+    }
+
+    /** Returns the destination index of the given unidirectional edge. */
+    public String get_destination_h3_index_from_unidirectional_edge(String h3) {
+        return h3Core.getDestinationH3IndexFromUnidirectionalEdge(h3);
+    }
+
+    /**
+     * Returns the origin and destination indexes (in that order) of the given unidirectional edge.
+     */
+    public List<Long> get_h3_indexes_from_unidirectional_edge(Long h3) {
+        return h3Core.getH3IndexesFromUnidirectionalEdge(h3);
+    }
+
+    /**
+     * Returns the origin and destination indexes (in that order) of the given unidirectional edge.
+     */
+    public List<String> get_h3_indexes_from_unidirectional_edge(String h3) {
+        return h3Core.getH3IndexesFromUnidirectionalEdge(h3);
+    }
+
+    /** Returns all unidirectional edges originating from the given index. */
+    public List<Long> get_h3_unidirectional_edges_from_hexagon(Long h3) {
+        return h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
+    }
+
+    /** Returns all unidirectional edges originating from the given index. */
+    public List<String> get_h3_unidirectional_edges_from_hexagon(String h3) {
+        return h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
+    }
+
+    /** Returns a list of coordinates representing the given edge. */
+    public List<String> getH3UnidirectionalEdgeBoundary(Long h3) {
+        return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()
+                .map(this::geoCoordToWKTPoint)
+                .collect(Collectors.toList());
+    }
+
+    /** Returns a list of coordinates representing the given edge. */
+    public List<String> getH3UnidirectionalEdgeBoundary(String h3) {
+        return h3Core.getH3UnidirectionalEdgeBoundary(h3).stream()
+                .map(this::geoCoordToWKTPoint)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Find all icosahedron faces intersected by a given H3 index, represented as integers from
+     * 0-19.
+     *
+     * @param h3 Index to find icosahedron faces for.
+     * @return A collection of faces intersected by the index.
+     */
+    public List<Integer> h3_get_faces(Long h3) {
+        return new ArrayList<Integer>(h3Core.h3GetFaces(h3));
+    }
+
+    /**
+     * Find all icosahedron faces intersected by a given H3 index, represented as integers from
+     * 0-19.
+     *
+     * @param h3 Index to find icosahedron faces for.
+     * @return A collection of faces intersected by the index.
+     */
+    public List<Integer> h3_get_faces(String h3) {
+        return new ArrayList<Integer>(h3Core.h3GetFaces(h3));
+    }
+
     private String geoCoordToWKTPoint(GeoCoord geoCoord) {
         return String.format("POINT (%f %f)", geoCoord.lng, geoCoord.lat);
     }
