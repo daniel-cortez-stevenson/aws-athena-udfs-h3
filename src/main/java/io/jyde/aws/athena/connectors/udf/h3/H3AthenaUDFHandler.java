@@ -35,16 +35,25 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Returns true if this is a valid H3 index. */
     public Boolean h3_is_valid(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3IsValid(h3);
     }
 
     /** Returns true if this is a valid H3 index. */
     public Boolean h3_is_valid(String h3_address) {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3IsValid(h3_address);
     }
 
     /** Returns the base cell number for this index. */
     public Integer h3_get_base_cell(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3GetBaseCell(h3);
     }
 
@@ -55,11 +64,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
 
     /** Returns <code>true</code> if this index is one of twelve pentagons per resolution. */
     public Boolean h3_is_pentagon(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3IsPentagon(h3);
     }
 
     /** Returns <code>true</code> if this index is one of twelve pentagons per resolution. */
     public Boolean h3_is_pentagon(String h3_address) {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3IsPentagon(h3_address);
     }
 
@@ -73,6 +88,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException latitude, longitude, or resolution are out of range.
      */
     public Long geo_to_h3(Double lat, Double lng, Integer res) throws IllegalArgumentException {
+        if (lat == null || lng == null) {
+            return null;
+        }
         return h3Core.geoToH3(lat, lng, res);
     }
 
@@ -87,16 +105,25 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String geo_to_h3_address(Double lat, Double lng, Integer res)
             throws IllegalArgumentException {
+        if (lat == null || lng == null) {
+            return null;
+        }
         return h3Core.geoToH3Address(lat, lng, res);
     }
 
     /** Find the latitude, longitude (both in degrees) center point of the cell. */
     public String h3_to_geo(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return geoCoordToWKTPoint(h3Core.h3ToGeo(h3));
     }
 
     /** Find the latitude, longitude (degrees) center point of the cell. */
     public String h3_to_geo(String h3_address) throws IllegalArgumentException {
+        if (h3_address == null) {
+            return null;
+        }
         return geoCoordToWKTPoint(h3Core.h3ToGeo(h3_address));
     }
 
@@ -108,6 +135,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List<String> h3_to_geo_boundary(Long h3) throws IllegalArgumentException {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3ToGeoBoundary(h3).stream()
                 .map(this::geoCoordToWKTPoint)
                 .collect(Collectors.toList());
@@ -121,6 +151,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List<String> h3_to_geo_boundary(String h3_address) throws IllegalArgumentException {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3ToGeoBoundary(h3_address).stream()
                 .map(this::geoCoordToWKTPoint)
                 .collect(Collectors.toList());
@@ -135,6 +168,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List<Long> k_ring(Long h3, Integer k) throws IllegalArgumentException {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.kRing(h3, k);
     }
 
@@ -147,6 +183,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException
      */
     public List<String> k_ring(String h3_address, Integer k) throws IllegalArgumentException {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.kRing(h3_address, k);
     }
 
@@ -159,6 +198,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws PentagonEncounteredException A pentagon or pentagonal distortion was encountered.
      */
     public List<Long> hex_ring(Long h3, Integer k) throws PentagonEncounteredException {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.hexRing(h3, k);
     }
 
@@ -171,6 +213,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws PentagonEncounteredException A pentagon or pentagonal distortion was encountered.
      */
     public List<String> hex_ring(String h3_address, Integer k) throws PentagonEncounteredException {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.hexRing(h3_address, k);
     }
 
@@ -323,6 +368,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<Long> polyfill(List<String> points, List<List<String>> holes, Integer res)
             throws IllegalArgumentException {
+        if (points == null) {
+            return null;
+        }
+        if (holes == null) {
+            holes = new ArrayList<List<String>>();
+        }
         List<GeoCoord> geoCoordPoints =
                 points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());
         List<List<GeoCoord>> geoCoordHoles =
@@ -348,6 +399,12 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<String> polyfill_address(List<String> points, List<List<String>> holes, Integer res)
             throws IllegalArgumentException {
+        if (points == null) {
+            return null;
+        }
+        if (holes == null) {
+            holes = new ArrayList<List<String>>();
+        }
         List<GeoCoord> geoCoordPoints =
                 points.stream().map(this::geoCoordFromWKTPoint).collect(Collectors.toList());
         List<List<GeoCoord>> geoCoordHoles =
@@ -367,6 +424,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3 H3 index.
      */
     public Integer h3_get_resolution(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3GetResolution(h3);
     }
 
@@ -376,6 +436,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @param h3_address H3 index address.
      */
     public Integer h3_get_resolution(String h3_address) {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3GetResolution(h3_address);
     }
 
@@ -387,6 +450,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution
      */
     public Long h3_to_parent(Long h3, Integer res) throws IllegalArgumentException {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3ToParent(h3, res);
     }
 
@@ -399,6 +465,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String h3_to_parent_address(String h3_address, Integer res)
             throws IllegalArgumentException {
+                if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3ToParentAddress(h3_address, res);
     }
 
@@ -410,6 +479,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution
      */
     public List<Long> h3_to_children(Long h3, Integer child_res) throws IllegalArgumentException {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3ToChildren(h3, child_res);
     }
 
@@ -422,6 +494,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<String> h3_to_children(String h3_address, Integer child_res)
             throws IllegalArgumentException {
+                if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3ToChildren(h3_address, child_res);
     }
 
@@ -433,6 +508,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid resolution (e.g. coarser than the parent)
      */
     public Long h3_to_center_child(Long h3, Integer child_res) throws IllegalArgumentException {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3ToCenterChild(h3, child_res);
     }
 
@@ -445,6 +523,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String h3_to_center_child(String h3_address, Integer child_res)
             throws IllegalArgumentException {
+                if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3ToCenterChild(h3_address, child_res);
     }
 
@@ -455,6 +536,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return <code>true</code> if the index is Class III
      */
     public Boolean h3_is_res_class_iii(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3IsResClassIII(h3);
     }
 
@@ -465,6 +549,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return <code>true</code> if the index is Class III.
      */
     public Boolean h3_is_res_class_iii(String h3_address) {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.h3IsResClassIII(h3_address);
     }
 
@@ -474,11 +561,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid input, such as duplicated indexes.
      */
     public List<Long> compact(List<Long> h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.compact(h3);
     }
 
     /** Returns a compacted set of indexes, at possibly coarser resolutions. */
     public List<String> compact_address(List<String> h3_addresses) {
+        if (h3_addresses == null) {
+            return null;
+        }
         return h3Core.compactAddress(h3_addresses);
     }
 
@@ -488,11 +581,17 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException Invalid input, such as indexes finer than <code>res</code>.
      */
     public List<Long> uncompact(List<Long> h3, Integer res) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.uncompact(h3, res);
     }
 
     /** Uncompacts all the given indexes to resolution <code>res</code>. */
     public List<String> uncompact_address(List<String> h3_addresses, Integer res) {
+        if (h3_addresses == null) {
+            return null;
+        }
         return h3Core.uncompactAddress(h3_addresses, res);
     }
 
@@ -504,6 +603,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return H3 index address.
      */
     public String h3_to_string(Long h3) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.h3ToString(h3);
     }
 
@@ -515,6 +617,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return H3 index.
      */
     public Long string_to_h3(String h3_address) {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.stringToH3(h3_address);
     }
 
@@ -526,6 +631,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Cell area in the given units.
      */
     public Double cell_area(Long h3, String unit) {
+        if (h3 == null) {
+            return null;
+        }
         return h3Core.cellArea(h3, AreaUnit.valueOf(unit));
     }
 
@@ -537,6 +645,9 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      * @return Cell area in the given units.
      */
     public Double cell_area(String h3_address, String unit) {
+        if (h3_address == null) {
+            return null;
+        }
         return h3Core.cellArea(h3_address, AreaUnit.valueOf(unit));
     }
 
