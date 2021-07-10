@@ -45,14 +45,48 @@ Resources:
 
 ## Usage
 
+The API is very similar to the h3-java API.
+
+### Index coordinates
+
+```sql
+USING EXTERNAL FUNCTION geo_to_h3(lat DOUBLE, lng DOUBLE, res INTEGER)
+RETURNS BIGINT
+LAMBDA 'h3-athena-udf-handler'
+SELECT geo_to_h3(52.495999878401896, 13.414889023293945, 13) h3_index;
+```
+
+```text
+|h3_index          |
+|------------------|
+|635554602371582271|
+```
+
+### Get the coordinates of an index
+
+A `GeoCoord` in the h3-java API is represented as a well-known-text (WKT) point, which is compatible with [Athena geospatial functions](https://docs.aws.amazon.com/athena/latest/ug/geospatial-functions-list-v2.html).
+
+```sql
+USING EXTERNAL FUNCTION h3_to_geo(h3 BIGINT)
+RETURNS VARCHAR 
+LAMBDA 'h3-athena-udf-handler'
+select h3_to_geo(635554602371582271) wkt_point;
+```
+
+```text
+|wkt_point                  |
+|---------------------------|
+|POINT (13.414849 52.496016)|
+```
+
 See [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/latest/ug/querying-udf.html)
 
-In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 enabled, select a `UDF_name` (any method of the `H3AthenaUDFHandler`) and implement the function signature like so:
+In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 enabled, select a `udf_name` (any public method of the `H3AthenaUDFHandler`) and implement the function signature like so:
 
 ```sql
 USING EXTERNAL FUNCTION udf_name(variable1 data_type[, variable2 data_type][,...])
 RETURNS data_type
-LAMBDA 'h3-athena-udf-handler'
+LAMBDA 'h3-athena-udf-handler'  -- or the LambdaFunctionName of the serverless app.
 SELECT  [...] udf_name(expression) [...]
 ```
 
@@ -64,21 +98,28 @@ Most h3-java API functions have an equivalent, snake-cased method in the `H3Athe
   - `kRings`
   - `kRingDistances`
   - `hexRange`
+- Experimental I, J coordinate h3-java API functions are not supported.
 - The following UDFs do not work as expected, and should not be used:
   - `get_res_0_indexes() RETURNS ARRAY<BIGINT>`
     - Note: always throws `NullPointerException`
   - `get_res_0_indexes_addresses() RETURNS ARRAY<VARCHAR>`
     - Note: always throws `NullPointerException`
 
-## Test Data
+## Examples
 
-### Open Street Maps
+### Data Sources
+
+#### Open Street Maps
 
 In the Athena console, run the query in [create_osm_planet_table.sql](./src/main/resources/sql/create_osm_planet_table.sql) to create some test data from the current [Open Street Maps](https://registry.opendata.aws/osm/) database and then run the query [test_functions_run.sql](./src/main/resources/sql/est_udfs_osm_planet.sql) to test drive some of the H3 functions available via this application.
 
-### Facebook High Resolution Population Density Estimates
+#### Facebook High Resolution Population Density Estimates
 
 In the Athena console, run the query in [create_fb_population_table.sql](./src/main/resources/sql/create_fb_population_table.sql) and then run the query in [repair_fb_population_table.sql](./src/main/resources/sql/repair_fb_population_table.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset. You'll have to write your own Athena SQL queries for this data source.
+
+### Athena Queries
+
+[Get restaurants per capita in Germany](./src/main/resources/sql/restaurants_per_capita.sql)
 
 ## Contributing
 
