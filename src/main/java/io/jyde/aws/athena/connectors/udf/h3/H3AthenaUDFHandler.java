@@ -465,7 +465,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String h3_to_parent_address(String h3_address, Integer res)
             throws IllegalArgumentException {
-                if (h3_address == null) {
+        if (h3_address == null) {
             return null;
         }
         return h3Core.h3ToParentAddress(h3_address, res);
@@ -494,7 +494,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public List<String> h3_to_children(String h3_address, Integer child_res)
             throws IllegalArgumentException {
-                if (h3_address == null) {
+        if (h3_address == null) {
             return null;
         }
         return h3Core.h3ToChildren(h3_address, child_res);
@@ -523,7 +523,7 @@ public class H3AthenaUDFHandler extends UserDefinedFunctionHandler {
      */
     public String h3_to_center_child(String h3_address, Integer child_res)
             throws IllegalArgumentException {
-                if (h3_address == null) {
+        if (h3_address == null) {
             return null;
         }
         return h3Core.h3ToCenterChild(h3_address, child_res);
