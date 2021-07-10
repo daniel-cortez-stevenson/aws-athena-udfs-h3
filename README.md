@@ -68,7 +68,7 @@ A `GeoCoord` in the h3-java API is represented as a well-known-text (WKT) point,
 
 ```sql
 USING EXTERNAL FUNCTION h3_to_geo(h3 BIGINT)
-RETURNS VARCHAR 
+RETURNS VARCHAR
 LAMBDA 'h3-athena-udf-handler'
 select h3_to_geo(635554602371582271) wkt_point;
 ```
@@ -78,6 +78,8 @@ select h3_to_geo(635554602371582271) wkt_point;
 |---------------------------|
 |POINT (13.414849 52.496016)|
 ```
+
+### More info
 
 See [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/latest/ug/querying-udf.html)
 
