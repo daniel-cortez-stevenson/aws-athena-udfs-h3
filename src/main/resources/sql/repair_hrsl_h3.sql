@@ -1,0 +1,1 @@
+MSCK REPAIR TABLE hrsl_h3;

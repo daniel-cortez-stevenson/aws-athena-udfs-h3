@@ -79,7 +79,22 @@ select h3_to_geo(635554602371582271) wkt_point;
 |POINT (13.414849 52.496016)|
 ```
 
-### More info
+### Get the string representation of an index
+
+```sql
+USING EXTERNAL FUNCTION h3_to_string(h3 BIGINT)
+RETURNS VARCHAR
+LAMBDA 'h3-athena-udf-handler'
+SELECT h3_to_string(635554602371582271) h3_address;
+```
+
+```text
+h3_address     |
+---------------+
+8d1f18b25b9093f|
+```
+
+### More functions
 
 See [Querying with User Defined Functions](https://docs.aws.amazon.com/athena/latest/ug/querying-udf.html)
 
@@ -88,7 +103,7 @@ In the AWS Athena Console with an Athena workgroup with Athena Query Engine 2 en
 ```sql
 USING EXTERNAL FUNCTION udf_name(variable1 data_type[, variable2 data_type][,...])
 RETURNS data_type
-LAMBDA 'h3-athena-udf-handler'  -- or the LambdaFunctionName of the serverless app.
+LAMBDA 'lambda-function-name'  -- the LambdaFunctionName of the serverless app.
 SELECT  [...] udf_name(expression) [...]
 ```
 
@@ -113,16 +128,29 @@ Most h3-java API functions have an equivalent, snake-cased method in the `H3Athe
 
 #### Open Street Maps
 
-In the Athena console, run the query in [create_osm_planet_table.sql](./src/main/resources/sql/create_osm_planet_table.sql) to create some test data from the current [Open Street Maps](https://registry.opendata.aws/osm/) database and then run the query [test_functions_run.sql](./src/main/resources/sql/est_udfs_osm_planet.sql) to test drive some of the H3 functions available via this application.
+In the Athena console, run the query in [create_planet.sql](./src/main/resources/sql/create_planet.sql) to create some test data from the current [Open Street Maps](https://registry.opendata.aws/osm/) database.
+
+Then run [test_udfs_planet.sql](./src/main/resources/sql/test_udfs_planet.sql) to test the H3 functions available via this application are registering and working correctly.
 
 #### Facebook High Resolution Population Density Estimates
 
-In the Athena console, run the query in [create_fb_population_table.sql](./src/main/resources/sql/create_fb_population_table.sql) and then run the query in [repair_fb_population_table.sql](./src/main/resources/sql/repair_fb_population_table.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset. You'll have to write your own Athena SQL queries for this data source.
+In the Athena console, run [create_hrsl.sql](./src/main/resources/sql/create_hrsl.sql), and then run [repair_hrsl.sql](./src/main/resources/sql/repair_hrsl.sql) to create some test data from the [Facebook Data For Good](https://dataforgood.fb.com/tools/population-density-maps/) Population Density dataset.
 
-### Athena Queries
+### Index Data Sources
 
-[Get restaurants per capita in Germany](./src/main/resources/sql/restaurants_per_capita.sql)
+In your SQL client, run the SQL script [create_hrsl_h3.sql](./src/main/resources/sql/create_hrsl_h3.sql) (or run each statement individually in the Athena console).
 
+Then run [create_planet_h3.sql](./src/main/resources/sql/create_planet_h3.sql).
+
+The created tables have an H3 index at resolution 15.
+
+### Useful Example Query
+
+Get restaurants per person in Germany at H3 resolution 7 and output H3 index string for mapping with tools like [Unfolded.ai](https://www.unfolded.ai) by running [restaurants_per_person.sql](./src/main/resources/sql/restaurants_per_person.sql).
+
+[Go to the interactive map](https://studio.unfolded.ai/public/262d3af7-0857-4cb7-b134-f894558f9657/embed)
+
+![Unfolded Map](./unfolded.png)
 ## Contributing
 
 ### Formatting
