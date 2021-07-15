@@ -151,6 +151,7 @@ Get restaurants per person in Germany at H3 resolution 7 and output H3 index str
 [Go to the interactive map](https://studio.unfolded.ai/public/262d3af7-0857-4cb7-b134-f894558f9657/embed)
 
 ![Unfolded Map](./unfolded.png)
+
 ## Contributing
 
 ### Formatting
