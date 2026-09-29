@@ -148,6 +148,19 @@ The created tables have an H3 index at resolution 15.
 
 Get restaurants per person in Germany at H3 resolution 7 and output H3 index string for mapping with tools like [Unfolded.ai](https://www.unfolded.ai) by running [restaurants_per_person.sql](./src/main/resources/sql/restaurants_per_person.sql).
 
+The indexing scripts assign both population points and OpenStreetMap nodes a resolution 15 cell. The example query rolls both sources up to resolution 7, giving them a common cell key for the join:
+
+```mermaid
+flowchart TB
+  P["HRSL population points"] --> PS["Index r15<br/>Parent r7<br/>Sum population"]
+  O["OSM restaurant nodes"] --> OC["Index r15<br/>Parent r7<br/>Count restaurants"]
+  PS --> J["Left join on r7 cell"]
+  OC --> J
+  J --> R["Restaurants per person"]
+```
+
+For this example, the query sums positive German total-population cells, counts restaurant nodes in each cell, left joins those counts to the population cells, and ranks the restaurant count divided by population. Cells without a matching restaurant count are treated as zero. The diagram explains the checked-in SQL; it does not establish a current AWS deployment or a refreshed map result.
+
 [Go to the interactive map](https://studio.unfolded.ai/public/262d3af7-0857-4cb7-b134-f894558f9657/embed)
 
 ![Unfolded Map](./unfolded.png)
